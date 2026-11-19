@@ -1,0 +1,8 @@
+/* Shared marketplace structure; seller storefronts keep their own layout. */
+.marketplace-public { --market-radius: 16px; }
+.market-home { align-items:start; }
+.market-sidebar { position:sticky; top:calc(var(--market-header-height, 120px) + 20px); align-self:start; max-height:calc(100dvh - var(--market-header-height, 120px) - 40px); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; padding-bottom:2px; }
+.market-anchor { scroll-margin-top:calc(var(--market-header-height, 120px) + 24px); }
+.market-category-heading h1 { letter-spacing:-.035em; }
+.marketplace-public main { min-width:0; }
+@media(prefers-reduced-motion:reduce) { .marketplace-public .home-swap { animation:none; } }

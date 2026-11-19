@@ -1,0 +1,49 @@
+"use client";
+
+import Script from "next/script";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { isValidPixelId, pixelTrack, setActiveMetaPixel } from "@/lib/meta-pixel";
+
+/**
+ * Loads the seller's Meta pixel. Render it only when the visitor allows ad
+ * tracking (<TrackingProvider> does this for you).
+ */
+export function MetaPixel({ pixelId }: { pixelId?: string | null }) {
+  const pathname = usePathname();
+  const first = useRef(true);
+  const valid = isValidPixelId(pixelId);
+
+  // Tell lib/meta-pixel which pixel is ours, so events go to it and only it.
+  useEffect(() => {
+    if (!valid) return;
+    setActiveMetaPixel(pixelId);
+    return () => setActiveMetaPixel(null);
+  }, [valid, pixelId]);
+
+  // The script sends the first PageView; this covers later client-side navigation.
+  useEffect(() => {
+    if (!valid) return;
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    pixelTrack("PageView");
+  }, [pathname, valid]);
+
+  if (!valid) return null;
+
+  return (
+    <Script id={`meta-pixel-${pixelId}`} strategy="afterInteractive">
+      {`
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','${pixelId}');
+fbq('trackSingle','${pixelId}','PageView');
+      `}
+    </Script>
+  );
+}
