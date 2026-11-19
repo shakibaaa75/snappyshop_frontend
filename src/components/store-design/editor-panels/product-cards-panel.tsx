@@ -28,8 +28,8 @@ import { type PanelProps } from "./types";
 /* Product card designs                                                */
 /* ------------------------------------------------------------------ */
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const BASE_CARDS: Partial<Record<CardVariant, ComponentType<any>>> = {
-  /* eslint-disable-line @typescript-eslint/no-explicit-any */
   classic: BaseCardPreview,
   tile: BaseCardPreview,
   minimal: BaseCardPreview,
