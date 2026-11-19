@@ -1,15 +1,31 @@
-// Merge into your existing next.config (do not replace it).
-//
-// 1) rewrites: custom domains call the API as /api/v1/... on THEIR OWN host.
-//    In production Caddy sends /api/* to the Go server. For `next dev` or
-//    `next start` without Caddy, this rewrite does the same.
-// 2) headers: safe security headers for every page. (No Content-Security-
-//    Policy here: it needs testing against your images, fonts and pixels.)
 const API = process.env.API_INTERNAL_URL ?? "http://localhost:8080";
 
+// R2 host: from the env var if set, plus the one you're using now.
+const r2Host = (() => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_R2_PUBLIC_URL ?? "").hostname;
+  } catch {
+    return null;
+  }
+})();
+const imageHosts = [
+  ...new Set([
+    "pub-26505cd19886412c924eeb2ebb98afb2.r2.dev",
+    r2Host,
+  ].filter(Boolean)),
+];
+
 module.exports = {
-  poweredByHeader: false,          // hide "X-Powered-By: Next.js"
-  productionBrowserSourceMaps: false, // keep this off so source is not public
+  poweredByHeader: false,
+  productionBrowserSourceMaps: false,
+
+  images: {
+    remotePatterns: imageHosts.map((hostname) => ({
+      protocol: "https",
+      hostname,
+      pathname: "/**",
+    })),
+  },
 
   async rewrites() {
     return [
@@ -29,7 +45,6 @@ module.exports = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(self)",
           },
-          // Only meaningful over HTTPS; browsers ignore it on http://localhost.
           {
             key: "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains",
