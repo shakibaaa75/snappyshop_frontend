@@ -114,7 +114,8 @@ export function OrDivider({ children = "or" }: { children?: React.ReactNode }) {
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 
 function oauthHref(provider: "google" | "apple", next?: string | null) {
-  const base = `${API_BASE}/api/v1/auth/${provider}/start`;
+  // The backend serves the start of the flow at /auth/google and /auth/apple.
+  const base = `${API_BASE}/api/v1/auth/${provider}`;
   return next && next.startsWith("/")
     ? `${base}?next=${encodeURIComponent(next)}`
     : base;
