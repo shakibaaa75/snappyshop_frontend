@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { USER_HEADER, signUser } from "@/lib/internal-user";
 
 /**
  * Access gate for /admin/* and /seller/*.
@@ -68,10 +69,13 @@ async function accessGate(req: NextRequest) {
   const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
 
   // Pass the path on to server layouts (they can't read the URL themselves).
-  const forward = (cookie?: string) => {
+  const forward = (cookie?: string, signedUser?: string | null) => {
     const headers = new Headers(req.headers);
     headers.set("x-pathname", path);
     if (cookie !== undefined) headers.set("cookie", cookie);
+    // Never let a value sent by the visitor through; only ours (signed below).
+    headers.delete(USER_HEADER);
+    if (signedUser) headers.set(USER_HEADER, signedUser);
     return NextResponse.next({ request: { headers } });
   };
 
@@ -125,7 +129,13 @@ async function accessGate(req: NextRequest) {
     return deny(role === "ADMIN" ? "/admin" : "/account");
   }
 
-  return finish(forward(cookie));
+  // Seller pages: hand the verified user to the layouts, signed, so they do
+  // not ask the API again. Skipped (layouts fall back to the API) when
+  // INTERNAL_AUTH_SECRET is unset.
+  const secret = process.env.INTERNAL_AUTH_SECRET;
+  const signed =
+    !isAdmin && secret && me?.user ? await signUser(me.user, secret) : null;
+  return finish(forward(cookie, signed));
 }
 
 /* ------------------------------------------------------------------ */

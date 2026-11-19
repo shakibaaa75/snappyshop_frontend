@@ -3,6 +3,7 @@ import { cache } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { AuthUser } from "@/lib/api/auth";
+import { USER_HEADER, verifyUser } from "@/lib/internal-user";
 
 /**
  * Second layer of access checks for protected layouts.
@@ -38,6 +39,14 @@ async function apiGet<T>(path: string): Promise<ApiResult<T>> {
 
 /** The signed-in user, once per request even if several layouts ask. */
 export const getSession = cache(async () => {
+  // Fast path: middleware already verified the user with the API a moment ago
+  // and passed it on, signed. Only a value whose signature checks out is used.
+  const signed = await verifyUser<AuthUser>(
+    (await headers()).get(USER_HEADER),
+    process.env.INTERNAL_AUTH_SECRET,
+  );
+  if (signed) return { user: signed };
+
   const res = await apiGet<{ user: AuthUser }>("/auth/me");
   return { user: res.body?.user ?? null };
 });
