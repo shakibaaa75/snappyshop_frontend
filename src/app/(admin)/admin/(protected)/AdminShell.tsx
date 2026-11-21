@@ -57,6 +57,7 @@ const GROUPS: NavGroup[] = [
   {
     title: "Commerce",
     items: [
+      { href: "/admin/reviews", label: "Product reviews", icon: BadgeCheck },
       { href: "/admin/plans", label: "Plans & pricing", icon: CreditCard },
       { href: "/admin/categories", label: "Categories", icon: FolderTree },
       {

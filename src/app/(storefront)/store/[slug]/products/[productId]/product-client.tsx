@@ -1,4 +1,9 @@
 "use client";
+import {
+  AddReviewButton,
+  ProductReviews,
+  ReviewScore,
+} from "@/components/reviews/Reviews";
 
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import Link from "next/link";
@@ -18,7 +23,6 @@ import {
   ShieldCheck,
   ShoppingBag,
   Zap,
-  Star,
   Truck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -834,6 +838,9 @@ export default function ProductClient({
                 <h1 className="text-2xl font-bold leading-tight tracking-tight sm:text-3xl lg:text-4xl">
                   {product.name}
                 </h1>
+                <div className="mt-2">
+                  <AddReviewButton product={product.id} />
+                </div>
                 <div className="mt-2 flex flex-wrap items-baseline gap-2.5 lg:mt-3">
                   <span className="text-2xl font-bold tracking-tight lg:text-3xl">
                     {formatPrice(price)}
@@ -858,19 +865,9 @@ export default function ProductClient({
               </div>
 
               {(marketplace || design.showRatings) && (
-                <div className="flex shrink-0 flex-col items-end gap-0.5 text-sm">
-                  <span className="flex items-center gap-1 font-semibold">
-                    <Star
-                      className="h-4 w-4"
-                      style={{ color: "#f59e0b" }}
-                      fill="currentColor"
-                    />
-                    {product.rating.toFixed(1)}
-                  </span>
-                  <span className="text-xs" style={{ color: "var(--s-muted)" }}>
-                    {product.reviews} reviews
-                  </span>
-                </div>
+                <a href="#customer-reviews">
+                  <ReviewScore product={product.id} />
+                </a>
               )}
             </div>
 
@@ -1133,6 +1130,7 @@ export default function ProductClient({
             )}
           </section>
         </main>
+        <ProductReviews product={product.id} />
 
         {!marketplace && design.showProductRelated && related.length > 0 && (
           <section className="mx-auto w-full max-w-[1200px] px-4 pb-28 lg:px-8 lg:pb-16 lg:pt-6">

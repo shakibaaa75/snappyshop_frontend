@@ -1,3 +1,4 @@
+import { MarketplaceReviews } from "@/components/reviews/Reviews";
 import { Suspense } from "react";
 import Link from "next/link";
 import { HomeShell } from "@/components/features/home/Homeshell";
@@ -77,6 +78,7 @@ export default function HomePage() {
               <TopSellingSection />
               <FeaturedSellersSection filterable />
               <RecommendedSection />
+              <MarketplaceReviews />
               <aside className="flex items-center justify-between gap-4 rounded-[14px] bg-primary px-[clamp(18px,4vw,48px)] py-[22px] text-primary-foreground">
                 <h2 className="text-[clamp(1.25rem,2vw,1.8rem)] font-bold tracking-[-.035em] text-white">
                   Sell on ShopBD

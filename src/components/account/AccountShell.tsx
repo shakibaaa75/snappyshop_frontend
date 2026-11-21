@@ -46,6 +46,7 @@ const MENU: MenuItem[] = [
   { href: "/account", label: "My profile", icon: UserRound },
   { href: "/account/profile", label: "Edit profile", icon: UserPen },
   { href: "/account/addresses", label: "Saved addresses", icon: MapPin },
+  { href: "/account/reviews", label: "My reviews", icon: Package },
   { href: "/account/orders", label: "My orders", icon: Package },
   { href: "/", label: "Back to shopping", icon: Store },
 ];

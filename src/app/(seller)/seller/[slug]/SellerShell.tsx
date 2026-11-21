@@ -56,6 +56,7 @@ const mainLinks = (slug: string): NavItem[] => [
     icon: LayoutDashboard,
   },
   { href: `/seller/${slug}/products`, label: "Products", icon: Package },
+  { href: `/seller/${slug}/reviews`, label: "Reviews", icon: ShoppingBag },
   { href: `/seller/${slug}/orders`, label: "Orders", icon: ShoppingBag },
   { href: `/seller/${slug}/couriers`, label: "Couriers", icon: Truck },
   {

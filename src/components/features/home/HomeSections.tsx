@@ -1,22 +1,28 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Tag,
+} from "lucide-react";
 import { TopSellingCard } from "@/components/features/TopSellingCard";
 import { DealCard } from "@/components/features/DealCard";
 import { SellerCard } from "@/components/features/SellerCard";
-import { CategoryCard } from "@/components/features/Categorycard";
 import { RecentlyViewedCard } from "@/components/features/RecentlyViewedCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  CategorySkeleton,
   ProductCardSkeleton,
   SectionEmpty,
   SectionError,
   chipClass,
 } from "@/components/features/home/SectionState";
 import { SectionHeader } from "@/components/features/home/SectionHeader";
+import { homeHref } from "@/lib/query/category-nav";
 import {
   BEST_RATED_MIN_REVIEWS,
   type ProductSort,
@@ -673,6 +679,50 @@ export function FeaturedSellersSection({
 /* Categories                                                          */
 /* ------------------------------------------------------------------ */
 
+/** Phones show this many category circles. "View All Categories" has the rest. */
+const CATEGORIES_ON_PHONE = 6;
+
+type CategoryItem = NonNullable<
+  ReturnType<typeof useMarketplaceCategories>["data"]
+>[number];
+
+/** One round category picture with its name underneath. */
+function CategoryCircle({
+  category: c,
+  className,
+}: {
+  category: CategoryItem;
+  className?: string;
+}) {
+  const image = (c as { image?: string }).image;
+  return (
+    <Link
+      href={homeHref({ category: c.slug })}
+      className={`group flex flex-col items-center gap-2 rounded-xl p-1 text-center outline-none focus-visible:ring-2 focus-visible:ring-[#FF6845] focus-visible:ring-offset-2 ${className ?? ""}`}
+    >
+      {/* Round picture (64px on phones, 80px from sm up) */}
+      <span className="relative block size-16 overflow-hidden rounded-full border border-border bg-[#17645F]/10 dark:bg-[#D93A2B]/15 transition-transform duration-200 group-hover:scale-105 motion-reduce:transition-none sm:size-20">
+        {image ? (
+          <Image
+            src={image}
+            alt=""
+            fill
+            sizes="80px"
+            className="object-cover"
+          />
+        ) : (
+          <span className="absolute inset-0 grid place-items-center text-[#17645F] dark:text-[#D93A2B]">
+            <Tag className="h-1/2 w-1/2" strokeWidth={1.5} />
+          </span>
+        )}
+      </span>
+      <span className="line-clamp-2 text-xs font-medium leading-tight text-foreground group-hover:text-[#17645F] dark:group-hover:text-[#FF6845]">
+        {c.name}
+      </span>
+    </Link>
+  );
+}
+
 export function CategoriesSection({
   all = false,
   contained = true,
@@ -682,7 +732,7 @@ export function CategoriesSection({
   contained?: boolean;
 }) {
   const q = useMarketplaceCategories();
-  const list = q.data ? (all ? q.data : q.data.slice(0, 9)) : [];
+  const list = q.data ?? [];
   return (
     <section
       className={
@@ -697,7 +747,18 @@ export function CategoriesSection({
         />
       )}
       {q.isPending ? (
-        <CategorySkeleton />
+        <div
+          className="grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-5 lg:grid-cols-9"
+          aria-busy="true"
+          aria-label="Loading categories"
+        >
+          {Array.from({ length: 9 }).map((_, i) => (
+            <div key={i} className="flex flex-col items-center gap-2">
+              <Skeleton className="size-16 rounded-full sm:size-20" />
+              <Skeleton className="h-3 w-12" />
+            </div>
+          ))}
+        </div>
       ) : q.isError ? (
         <SectionError
           message={`We couldn’t load categories. ${errMsg(q.error)}`}
@@ -705,12 +766,39 @@ export function CategoriesSection({
         />
       ) : list.length === 0 ? (
         <SectionEmpty>No categories yet.</SectionEmpty>
-      ) : (
-        <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-3">
+      ) : all ? (
+        // Full "all categories" view: every category in a grid.
+        <ul className="grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-5 lg:grid-cols-9">
           {list.map((c) => (
-            <CategoryCard key={c.id} category={c} />
+            <li key={c.id}>
+              <CategoryCircle category={c} />
+            </li>
           ))}
-        </div>
+        </ul>
+      ) : (
+        <>
+          {/* Phones: first 6 only (3 per row). The rest: "View All Categories". */}
+          <ul className="grid grid-cols-3 gap-x-3 gap-y-4 sm:hidden">
+            {list.slice(0, CATEGORIES_ON_PHONE).map((c) => (
+              <li key={c.id}>
+                <CategoryCircle category={c} />
+              </li>
+            ))}
+          </ul>
+
+          {/* Tablet / PC: every category in a slider (arrows + swipe). */}
+          <div className="hidden sm:block">
+            <ScrollRow bleed="">
+              {list.map((c) => (
+                <CategoryCircle
+                  key={c.id}
+                  category={c}
+                  className="w-24 shrink-0 snap-start"
+                />
+              ))}
+            </ScrollRow>
+          </div>
+        </>
       )}
     </section>
   );

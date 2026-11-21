@@ -1,4 +1,5 @@
 "use client";
+import { FeaturedReviews } from "@/components/reviews/Reviews";
 
 import { usesDropLayout, usesYokaiLayout } from "@/lib/store-design/types";
 import { templatePageLayout } from "@/lib/store-design/template-page-layout";
@@ -241,6 +242,7 @@ function LiveStorePreviewInner({
                   ))
                 )}
                 {looksSlot}
+                {d.reviewSection && <FeaturedReviews design={d} />}
               </>
             ))}
         </div>

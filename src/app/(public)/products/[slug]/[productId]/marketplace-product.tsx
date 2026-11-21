@@ -1,9 +1,14 @@
 "use client";
+import {
+  AddReviewButton,
+  ProductReviews,
+  ReviewScore,
+} from "@/components/reviews/Reviews";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Heart, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import {
   toggleWishlistItem,
   useWishlisted,
@@ -167,11 +172,6 @@ export default function MarketplaceProduct({
       value: o.values.map((v) => v.label).join(", "),
     })),
   ];
-  const ratingLabel =
-    product.reviews > 0
-      ? `${product.rating.toFixed(1)} / 5 from ${product.reviews} ${product.reviews === 1 ? "review" : "reviews"}`
-      : "No reviews yet";
-
   return (
     <article className="mx-auto max-w-[1160px] px-[clamp(16px,4vw,54px)] pb-16 [&_:is(button,a,input):focus-visible]:[outline:2px_solid_#0C68F6] [&_:is(button,a,input):focus-visible]:[outline-offset:2px]">
       <div className="mx-auto mb-[clamp(30px,4vw,52px)] mt-[clamp(16px,2.5vw,32px)] grid grid-cols-2 items-start gap-[clamp(28px,5vw,66px)] max-[740px]:grid-cols-1 [&>section]:min-w-0">
@@ -241,21 +241,16 @@ export default function MarketplaceProduct({
           <h1 className="text-[clamp(1.75rem,3.2vw,2.8rem)] font-[650] leading-[1.12] tracking-[-.035em] [overflow-wrap:anywhere]">
             {product.name}
           </h1>
-          <a
-            href="#product-information"
-            onClick={() => setTab("Reviews")}
-            className="inline-flex w-fit items-center gap-1.5 text-sm"
-          >
-            {product.reviews > 0 && (
-              <Star
-                size={16}
-                fill="currentColor"
-                aria-hidden
-                className="text-[#da960a]"
-              />
-            )}{" "}
-            <span>{ratingLabel}</span>
-          </a>
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href="#product-information"
+              onClick={() => setTab("Reviews")}
+              className="inline-flex w-fit items-center gap-1.5 text-sm"
+            >
+              <ReviewScore product={product.id} />
+            </a>
+            <AddReviewButton product={product.id} />
+          </div>
           <div className="flex items-baseline gap-2.5 text-[clamp(1.5rem,2.5vw,2rem)] tracking-[-.025em]">
             <strong>{formatPrice(price)}</strong>{" "}
             {!!product.comparePrice && product.comparePrice > price && (
@@ -452,16 +447,7 @@ export default function MarketplaceProduct({
             ) : (
               <p>No additional specifications available.</p>
             ))}
-          {tab === "Reviews" && (
-            <div>
-              <h2 className="mb-1.5 font-[650]">Customer reviews</h2>
-              <p>
-                {product.reviews > 0
-                  ? `${product.rating.toFixed(1)} out of 5 from ${product.reviews} customer ratings.`
-                  : "This product hasn’t received any reviews yet."}
-              </p>
-            </div>
-          )}
+          {tab === "Reviews" && <ProductReviews product={product.id} />}
         </div>
       </section>
       {suggestions.length > 0 && (

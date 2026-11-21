@@ -619,6 +619,12 @@ export interface StoreDesign {
   /* Product cards */
   productsPerRow: number;
   imageAspectRatio: AspectRatio;
+  reviewIds?: string[];
+  reviewSection?: boolean;
+  reviewHeading?: string;
+  reviewLayout?: "grid"|"carousel"|"testimonial";
+  reviewPadding?: number;
+  reviewColor?: string;
   showRatings: boolean;
   showStockStatus: boolean;
   showSaleBadge: boolean;
@@ -1501,6 +1507,12 @@ export function normalizeDesign(raw: unknown): StoreDesign {
   ) as Partial<StoreDesign>;
   const merged: StoreDesign = { ...defaultDesign, ...input };
 
+  merged.reviewSection = input.reviewSection === true;
+  merged.reviewHeading = typeof input.reviewHeading === "string" ? input.reviewHeading.slice(0,80) : "";
+  merged.reviewLayout = pick(input.reviewLayout, ["grid", "carousel", "testimonial"] as const, "grid");
+  merged.reviewPadding = typeof input.reviewPadding === "number" && Number.isFinite(input.reviewPadding) ? Math.max(0, Math.min(64, input.reviewPadding)) : 20;
+  merged.reviewColor = typeof input.reviewColor === "string" && /^#[a-f0-9]{6}$/i.test(input.reviewColor) ? input.reviewColor : undefined;
+  merged.reviewIds = Array.isArray(input.reviewIds) ? input.reviewIds.filter(id=>typeof id==="string" && /^[a-f0-9]{64}$/.test(id)).slice(0,10) : [];
   merged.sellingCategory = normalizeSellingCategory(input.sellingCategory);
 
   const arrays = [

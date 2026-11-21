@@ -1,11 +1,8 @@
-import { apiFetch } from "@/lib/api/http";
+import { authApi } from "./auth";
+import { apiFetch, ApiError } from "@/lib/api/http";
 
 export type OrderStatus =
-  | "pending"
-  | "confirmed"
-  | "shipped"
-  | "delivered"
-  | "cancelled";
+  "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
 
 export type DeliveryZoneId = "inside_dhaka" | "outside_dhaka";
 
@@ -148,12 +145,20 @@ export interface DeliveryQuote {
 
 export const publicOrders = {
   /** The server returns the full order, so receipts can show the breakdown. */
-  create: (slug: string, input: CreateOrderInput) =>
-    apiFetch<{ order: Order }>(`/store/${encodeURIComponent(slug)}/orders`, {
-      method: "POST",
-      body: input,
-      skipRefresh: true,
-    }).then((r) => r.order),
+  create: async (slug: string, input: CreateOrderInput) => {
+    // Refresh an expired buyer session before the checkout route accepts guest orders.
+    await authApi.me().catch((err: unknown) => {
+      if (err instanceof ApiError && err.status === 401) return null;
+      throw err;
+    });
+    return apiFetch<{ order: Order }>(
+      `/store/${encodeURIComponent(slug)}/orders`,
+      {
+        method: "POST",
+        body: input,
+      },
+    ).then((r) => r.order);
+  },
 
   /** Prices a cart for a district with the exact rules `create` uses. */
   quote: (
@@ -164,12 +169,15 @@ export const publicOrders = {
     },
     signal?: AbortSignal,
   ) =>
-    apiFetch<DeliveryQuote>(`/store/${encodeURIComponent(slug)}/delivery-quote`, {
-      method: "POST",
-      body: input,
-      skipRefresh: true,
-      signal,
-    }),
+    apiFetch<DeliveryQuote>(
+      `/store/${encodeURIComponent(slug)}/delivery-quote`,
+      {
+        method: "POST",
+        body: input,
+        skipRefresh: true,
+        signal,
+      },
+    ),
 };
 
 /* ------------------------------------------------------------------ */
