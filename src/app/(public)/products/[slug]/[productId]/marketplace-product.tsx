@@ -15,6 +15,7 @@ import { trackAnalyticsEvent } from "@/lib/api/analytics";
 import { shouldCountView } from "@/lib/api/analytics-visitor";
 import { qk } from "@/lib/query/keys";
 import { formatPrice } from "@/lib/format";
+import { recordProductView } from "@/lib/viewed-products";
 import {
   marketplaceProductHref,
   storeHref,
@@ -71,6 +72,20 @@ export default function MarketplaceProduct({
       }).catch(() => {});
     }
   }, [me.isFetched, me.data, product.id, slug]);
+
+  // Remember this product for the home page's "Recently viewed" row.
+  useEffect(() => {
+    recordProductView({
+      id: product.id,
+      slug,
+      storeName: seller || slug,
+      title: product.name,
+      price: product.price,
+      compareAtPrice: product.comparePrice,
+      image: allProductImages(product)[0],
+    });
+  }, [product, slug, seller]);
+
   const delivery = usePublicDelivery(slug);
   const charges = delivery.data && chargesFor(delivery.data, product.id);
   const [selection, setSelection] = useState<Selection>({});
@@ -218,22 +233,35 @@ export default function MarketplaceProduct({
           )}
         </section>
         <section className="grid gap-3 self-start py-1">
-          {category && <p className="text-[.8125rem] font-semibold tracking-[.025em] opacity-80">{category}</p>}
-          <h1 className="text-[clamp(1.75rem,3.2vw,2.8rem)] font-[650] leading-[1.12] tracking-[-.035em] [overflow-wrap:anywhere]">{product.name}</h1>
+          {category && (
+            <p className="text-[.8125rem] font-semibold tracking-[.025em] opacity-80">
+              {category}
+            </p>
+          )}
+          <h1 className="text-[clamp(1.75rem,3.2vw,2.8rem)] font-[650] leading-[1.12] tracking-[-.035em] [overflow-wrap:anywhere]">
+            {product.name}
+          </h1>
           <a
             href="#product-information"
             onClick={() => setTab("Reviews")}
             className="inline-flex w-fit items-center gap-1.5 text-sm"
           >
             {product.reviews > 0 && (
-              <Star size={16} fill="currentColor" aria-hidden className="text-[#da960a]" />
+              <Star
+                size={16}
+                fill="currentColor"
+                aria-hidden
+                className="text-[#da960a]"
+              />
             )}{" "}
             <span>{ratingLabel}</span>
           </a>
           <div className="flex items-baseline gap-2.5 text-[clamp(1.5rem,2.5vw,2rem)] tracking-[-.025em]">
             <strong>{formatPrice(price)}</strong>{" "}
             {!!product.comparePrice && product.comparePrice > price && (
-              <del className="text-base opacity-65">{formatPrice(product.comparePrice)}</del>
+              <del className="text-base opacity-65">
+                {formatPrice(product.comparePrice)}
+              </del>
             )}
           </div>
           {product.description && (
@@ -256,7 +284,10 @@ export default function MarketplaceProduct({
                     className="flex min-h-10 items-center gap-1.5 rounded-lg border border-[#cad0d8] px-2.5 py-1.5 disabled:cursor-not-allowed disabled:opacity-50 aria-pressed:border-[#0C68F6] aria-pressed:shadow-[inset_0_0_0_1px_#0C68F6]"
                   >
                     {v.colorHex && (
-                      <i className="h-4 w-4 rounded-full border border-[#aaa]" style={{ backgroundColor: v.colorHex }} />
+                      <i
+                        className="h-4 w-4 rounded-full border border-[#aaa]"
+                        style={{ backgroundColor: v.colorHex }}
+                      />
                     )}
                     {v.label}
                   </button>
@@ -302,7 +333,10 @@ export default function MarketplaceProduct({
               Add to cart
             </button>
             {cart.count > 0 && (
-              <Link className="rounded-[10px] bg-[#0C68F6] px-5 py-[11px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50" href="/checkout">
+              <Link
+                className="rounded-[10px] bg-[#0C68F6] px-5 py-[11px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                href="/checkout"
+              >
                 Checkout
               </Link>
             )}
@@ -327,7 +361,13 @@ export default function MarketplaceProduct({
           </div>
           <div className="border-t border-[#dde0e5] pt-3.5 text-sm leading-[1.7] opacity-80">
             <p>
-              Sold by <Link href={storeHref({ slug })} className="underline underline-offset-[3px]">{seller || slug}</Link>
+              Sold by{" "}
+              <Link
+                href={storeHref({ slug })}
+                className="underline underline-offset-[3px]"
+              >
+                {seller || slug}
+              </Link>
             </p>
             {combo?.sku && <p>SKU {combo.sku}</p>}
             {charges && (
@@ -384,14 +424,26 @@ export default function MarketplaceProduct({
               <table className="w-full border-collapse overflow-hidden rounded-[10px] text-left">
                 <thead className="bg-[#f1f4fa] text-[#21242a]">
                   <tr>
-                    <th scope="col" className="px-4 py-2.5">Feature</th>
-                    <th scope="col" className="px-4 py-2.5">Details</th>
+                    <th scope="col" className="px-4 py-2.5">
+                      Feature
+                    </th>
+                    <th scope="col" className="px-4 py-2.5">
+                      Details
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {specs.map((s, i) => (
-                    <tr key={i} className="even:bg-[#f5f5f6] even:text-[#21242a]">
-                      <th scope="row" className="w-[32%] px-4 py-2.5 font-medium">{s.key}</th>
+                    <tr
+                      key={i}
+                      className="even:bg-[#f5f5f6] even:text-[#21242a]"
+                    >
+                      <th
+                        scope="row"
+                        className="w-[32%] px-4 py-2.5 font-medium"
+                      >
+                        {s.key}
+                      </th>
                       <td className="px-4 py-2.5">{s.value}</td>
                     </tr>
                   ))}
@@ -414,7 +466,9 @@ export default function MarketplaceProduct({
       </section>
       {suggestions.length > 0 && (
         <section className="mt-[clamp(36px,6vw,84px)]">
-          <h2 className="mb-6 text-center text-[clamp(1.6rem,3vw,2.25rem)] font-[650] tracking-[-.03em]">You may also like</h2>
+          <h2 className="mb-6 text-center text-[clamp(1.6rem,3vw,2.25rem)] font-[650] tracking-[-.03em]">
+            You may also like
+          </h2>
           <div className="grid grid-cols-4 gap-[clamp(12px,2vw,24px)] max-[740px]:grid-cols-2">
             {suggestions.map((p) => (
               <TopSellingCard

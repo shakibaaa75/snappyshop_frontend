@@ -1,3 +1,5 @@
+import { forgetViewedStore } from "@/lib/viewed-products";
+
 /** sessionStorage key used to hand the registration wizard's shop details to the setup page. */
 export const ONBOARDING_STORE_KEY = "shopbd:onboarding-store";
 
@@ -23,4 +25,7 @@ export function purgeLocalStoreData(oldSlug: string): void {
       // Storage can be blocked; nothing else to do.
     }
   }
+  // The marketplace "Recently viewed" list is one shared key, so it is
+  // cleaned by store instead of by key suffix.
+  forgetViewedStore(oldSlug);
 }

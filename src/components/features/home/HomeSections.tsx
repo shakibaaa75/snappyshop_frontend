@@ -7,6 +7,7 @@ import { TopSellingCard } from "@/components/features/TopSellingCard";
 import { DealCard } from "@/components/features/DealCard";
 import { SellerCard } from "@/components/features/SellerCard";
 import { CategoryCard } from "@/components/features/Categorycard";
+import { RecentlyViewedCard } from "@/components/features/RecentlyViewedCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   CategorySkeleton,
@@ -27,6 +28,7 @@ import {
   useMarketplaceSellers,
 } from "@/lib/query/marketplace";
 import { productDiscount } from "@/lib/format";
+import { useViewedProducts } from "@/lib/viewed-products";
 import type { Product } from "@/types";
 
 const errMsg = (e: unknown) =>
@@ -711,5 +713,44 @@ export function CategoriesSection({
         </div>
       )}
     </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Recently viewed (this browser only, see lib/viewed-products.ts)     */
+/* ------------------------------------------------------------------ */
+
+/** Wide screens show one row of 5. Phones show the first 3. "See all" has the rest. */
+const RECENT_ON_DESKTOP = 5;
+const RECENT_FROM_PHONE = 3; // phones = below the md breakpoint
+
+export function RecentlyViewedSection() {
+  const viewed = useViewedProducts();
+
+  // First visit, or history cleared: no section at all (no empty box, no gap).
+  if (viewed.length === 0) return null;
+
+  return (
+    <Panel labelledBy="sec-recently-viewed">
+      <SectionHeader
+        id="sec-recently-viewed"
+        title="Recently viewed"
+        href="/recently-viewed"
+        linkLabel="See all"
+      />
+      {/* 3 columns on phones, 5 from md up. Items 4 and 5 are hidden below md. */}
+      <div className="grid grid-cols-3 gap-3 sm:gap-4 md:grid-cols-5">
+        {viewed.slice(0, RECENT_ON_DESKTOP).map((p, i) => (
+          <div
+            key={`${p.slug}/${p.id}`}
+            className={
+              i >= RECENT_FROM_PHONE ? "hidden min-w-0 md:block" : "min-w-0"
+            }
+          >
+            <RecentlyViewedCard product={p} />
+          </div>
+        ))}
+      </div>
+    </Panel>
   );
 }
