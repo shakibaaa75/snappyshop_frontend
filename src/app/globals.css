@@ -502,3 +502,26 @@ textarea.sf-input { height: auto; min-height: 140px; padding-block: 12px; resize
   }
   .sf-pop { animation: none; }
 }
+
+/*
+ * Stop iPhone/iPad Safari from auto-zooming the page when a text field is
+ * focused. Safari zooms in on any field whose text is smaller than 16px
+ * (search boxes, email, phone, textareas, selects...). This keeps every field
+ * at 16px on touch devices, site-wide, without disabling pinch-zoom (so the
+ * page stays accessible). It sits outside @layer on purpose so it beats
+ * Tailwind utilities such as text-sm / text-xs on inputs.
+ */
+@media (hover: none) and (pointer: coarse) {
+  input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"],
+    [type="file"], [type="button"], [type="submit"], [type="reset"],
+    [type="image"], [type="hidden"]),
+  select,
+  textarea,
+  [contenteditable="true"] {
+    font-size: 16px !important;
+  }
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
