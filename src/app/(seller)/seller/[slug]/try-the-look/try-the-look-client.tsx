@@ -139,9 +139,9 @@ export default function TryTheLookClient() {
         <section className="rounded-2xl border border-emerald-300 bg-emerald-50 p-5">
           <div className="flex items-start gap-3">
             {data?.source === "admin_granted" ? (
-              <Gift className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
+              <Gift className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
             ) : (
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
+              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
             )}
             <div className="min-w-0">
               <h2 className="text-sm font-semibold text-emerald-900">
@@ -169,7 +169,7 @@ export default function TryTheLookClient() {
 
       {/* ---------- Locked: sales card ---------- */}
       {!unlocked && !blocked && (
-        <section className="grid gap-6 rounded-2xl border bg-white p-6 md:grid-cols-2">
+        <section className="grid gap-6 rounded-2xl border bg-card p-6 md:grid-cols-2">
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
               <Lock className="h-4 w-4" /> Locked

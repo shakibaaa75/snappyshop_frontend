@@ -2,8 +2,6 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchMarketplaceCategories } from "@/lib/api/marketplace";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,17 +71,7 @@ export function ProductsClient() {
   });
   const categories = useMarketplaceCategories();
 
-  // Platform ids look like "fashion" (Main Type) or "fashion.hoodie" (category).
-  const mainSlug = category.split(".")[0];
-  const subs = useQuery({
-    queryKey: ["marketplace", "subcategories", mainSlug],
-    queryFn: ({ signal }) => fetchMarketplaceCategories(signal, mainSlug),
-    enabled: !!mainSlug,
-    staleTime: 60_000,
-  });
-  const activeCategory =
-    categories.data?.find((c) => c.slug === category) ??
-    subs.data?.find((c) => c.slug === category);
+  const activeCategory = categories.data?.find((c) => c.slug === category);
   const heading = q
     ? `Results for “${q}”`
     : activeCategory
@@ -153,44 +141,19 @@ export function ProductsClient() {
               <button
                 key={c.slug || "all"}
                 type="button"
-                aria-pressed={c.slug === mainSlug}
+                aria-pressed={c.slug === category}
                 onClick={() => go({ category: c.slug, page: 1 })}
                 className={cn(
                   "rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  c.slug === mainSlug
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "hover:border-accent/50",
+                  c.slug === category
+                    ? "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black"
+                    : "border-border bg-white text-black hover:border-black dark:bg-card dark:text-white dark:hover:border-white",
                 )}
               >
                 {c.name}
               </button>
             ),
           )}
-        </div>
-      )}
-
-      {mainSlug && subs.data && subs.data.length > 0 && (
-        <div
-          className="flex flex-wrap gap-2"
-          role="group"
-          aria-label="Filter by subcategory"
-        >
-          {[{ slug: mainSlug, name: "All" }, ...subs.data].map((c) => (
-            <button
-              key={c.slug}
-              type="button"
-              aria-pressed={c.slug === category}
-              onClick={() => go({ category: c.slug, page: 1 })}
-              className={cn(
-                "rounded-full border px-3 py-1 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                c.slug === category
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "hover:border-accent/50",
-              )}
-            >
-              {c.name}
-            </button>
-          ))}
         </div>
       )}
 

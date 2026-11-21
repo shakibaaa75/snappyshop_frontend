@@ -72,21 +72,21 @@ export function ShipCourierModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative z-10 flex max-h-[92vh] w-full max-w-lg flex-col rounded-t-[26px] bg-white shadow-xl sm:rounded-[26px]"
+        className="relative z-10 flex max-h-[92vh] w-full max-w-lg flex-col rounded-t-[26px] bg-card shadow-xl sm:rounded-2xl"
       >
         <div className="flex items-start justify-between gap-3 px-5 pb-2 pt-5">
           <div className="min-w-0">
             <h2 id={titleId} className="text-lg font-medium tracking-tight">
               Choose a courier
             </h2>
-            <p className="mt-0.5 text-xs text-neutral-500">{subtitle}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{subtitle}</p>
           </div>
           <button
             type="button"
             aria-label="Close"
             onClick={onClose}
             disabled={pending}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200 disabled:opacity-60"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition hover:bg-muted disabled:opacity-60"
           >
             <X className="h-4 w-4" />
           </button>
@@ -94,7 +94,7 @@ export function ShipCourierModal({
 
         <div className="overflow-y-auto px-5 pb-5 pt-2">
           {loading && (
-            <div className="flex items-center justify-center py-8 text-sm text-neutral-500">
+            <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading
               couriers…
             </div>
@@ -128,8 +128,8 @@ export function ShipCourierModal({
                     className={cn(
                       "flex w-full items-center gap-3 rounded-2xl p-3 text-left transition disabled:opacity-60",
                       on
-                        ? "bg-emerald-50 ring-2 ring-emerald-600"
-                        : "bg-neutral-100 hover:bg-neutral-200/70",
+                        ? "bg-emerald-50 ring-2 ring-primary"
+                        : "bg-muted hover:bg-muted",
                     )}
                   >
                     <CourierLogo provider={c.provider} name={c.providerName} />
@@ -137,17 +137,20 @@ export function ShipCourierModal({
                       <span className="block truncate text-sm font-medium">
                         {c.providerName}
                         {c.label ? (
-                          <span className="text-neutral-400"> · {c.label}</span>
+                          <span className="text-muted-foreground">
+                            {" "}
+                            · {c.label}
+                          </span>
                         ) : null}
                       </span>
-                      <span className="block truncate text-[11px] text-neutral-500">
+                      <span className="block truncate text-[11px] text-muted-foreground">
                         {c.accountHint
                           ? `Account ${c.accountHint}`
                           : "Connected"}
                       </span>
                     </span>
                     {on && (
-                      <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-700" />
+                      <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" />
                     )}
                   </button>
                 );
@@ -157,7 +160,7 @@ export function ShipCourierModal({
 
           {unusable.length > 0 && (
             <div className="mt-3 space-y-2">
-              <p className="text-[11px] font-medium text-neutral-500">
+              <p className="text-[11px] font-medium text-muted-foreground">
                 Not available
               </p>
               {unusable.map((c) => {
@@ -165,7 +168,7 @@ export function ShipCourierModal({
                 return (
                   <div
                     key={c.id}
-                    className="flex items-center gap-3 rounded-2xl bg-neutral-50 p-3 opacity-80"
+                    className="flex items-center gap-3 rounded-2xl bg-muted/50 p-3 opacity-80"
                   >
                     <CourierLogo
                       provider={c.provider}
@@ -176,11 +179,14 @@ export function ShipCourierModal({
                       <span className="block truncate text-sm font-medium">
                         {c.providerName}
                         {c.label ? (
-                          <span className="text-neutral-400"> · {c.label}</span>
+                          <span className="text-muted-foreground">
+                            {" "}
+                            · {c.label}
+                          </span>
                         ) : null}
                       </span>
                       {c.statusMessage && (
-                        <span className="block text-[11px] text-neutral-500">
+                        <span className="block text-[11px] text-muted-foreground">
                           {c.statusMessage}
                         </span>
                       )}
@@ -199,7 +205,7 @@ export function ShipCourierModal({
               })}
               <Link
                 href={couriersHref}
-                className="inline-block text-xs font-medium text-emerald-700 hover:underline"
+                className="inline-block text-xs font-medium text-primary hover:underline"
               >
                 Fix in Courier Services
               </Link>
@@ -216,7 +222,7 @@ export function ShipCourierModal({
             </div>
           )}
 
-          <p className="mt-4 text-xs text-neutral-500">
+          <p className="mt-4 text-xs text-muted-foreground">
             {count === 1
               ? "Pressing Ship books a real parcel with the courier you choose."
               : `Pressing Ship books ${count} real parcels with the courier you choose.`}
@@ -227,7 +233,7 @@ export function ShipCourierModal({
               type="button"
               disabled={pending}
               onClick={onClose}
-              className="rounded-full bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-200 disabled:opacity-60"
+              className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-60"
             >
               Not now
             </button>
@@ -235,7 +241,7 @@ export function ShipCourierModal({
               type="button"
               disabled={pending || !chosen}
               onClick={onSubmit}
-              className="inline-flex items-center gap-2 rounded-full bg-emerald-700 px-5 py-2 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {pending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

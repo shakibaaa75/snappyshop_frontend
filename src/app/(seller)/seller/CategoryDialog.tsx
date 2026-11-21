@@ -9,7 +9,7 @@ import { sellerCategories, type SellerCategory } from "@/lib/api/categories";
 const MAX_IMAGE_MB = 5;
 
 const RING =
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700";
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 
 /* Add category: step 1 = name, step 2 = image */
 
@@ -109,7 +109,7 @@ export function CategoryDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="cat-dialog-title"
-        className="w-full max-w-md rounded-t-[26px] bg-white p-6 shadow-[0_8px_32px_-8px_rgba(0,0,0,.35)] sm:rounded-[26px]"
+        className="w-full max-w-md rounded-t-[26px] bg-card p-6 shadow-[0_8px_32px_-8px_rgba(0,0,0,.35)] sm:rounded-2xl"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -119,7 +119,7 @@ export function CategoryDialog({
             >
               {step === 1 ? "Name your category" : "Add a category image"}
             </h2>
-            <p className="mt-1 text-sm text-neutral-600">
+            <p className="mt-1 text-sm text-muted-foreground">
               {step === 1
                 ? "Shoppers will see this name on your storefront."
                 : `Shown with “${name.trim()}”. You can skip this and add one later.`}
@@ -131,7 +131,7 @@ export function CategoryDialog({
             disabled={saving}
             aria-label="Close"
             className={cn(
-              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-neutral-600 transition hover:bg-neutral-100 disabled:opacity-40",
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted disabled:opacity-40",
               RING,
             )}
           >
@@ -157,8 +157,8 @@ export function CategoryDialog({
               aria-invalid={!!nameError}
               aria-describedby={nameError ? "cat-name-error" : undefined}
               className={cn(
-                "mt-2 h-11 w-full rounded-xl border bg-white px-4 text-sm outline-none transition placeholder:text-neutral-500 focus:ring-2 focus:ring-emerald-600/40",
-                nameError ? "border-red-600" : "border-neutral-300",
+                "mt-2 h-11 w-full rounded-xl border bg-card px-4 text-sm outline-none transition placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/40",
+                nameError ? "border-red-600" : "border-border",
               )}
             />
             {nameError && (
@@ -175,7 +175,7 @@ export function CategoryDialog({
                 type="button"
                 onClick={onClose}
                 className={cn(
-                  "h-11 rounded-full px-5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100",
+                  "h-11 rounded-full px-5 text-sm font-medium text-foreground transition hover:bg-muted",
                   RING,
                 )}
               >
@@ -184,7 +184,7 @@ export function CategoryDialog({
               <button
                 type="submit"
                 className={cn(
-                  "h-11 rounded-full bg-emerald-700 px-6 text-sm font-medium text-white transition hover:bg-emerald-800",
+                  "h-11 rounded-full bg-primary px-6 text-sm font-medium text-white transition hover:bg-primary/90",
                   RING,
                 )}
               >
@@ -195,7 +195,7 @@ export function CategoryDialog({
         ) : (
           <div className="mt-5">
             {preview ? (
-              <div className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100">
+              <div className="relative overflow-hidden rounded-2xl border border-border bg-muted">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={preview}
@@ -207,7 +207,7 @@ export function CategoryDialog({
                   onClick={() => setFile(null)}
                   disabled={saving}
                   className={cn(
-                    "absolute right-2 top-2 inline-flex h-9 items-center gap-1.5 rounded-full bg-white px-3.5 text-xs font-medium text-neutral-900 shadow-sm transition hover:bg-neutral-100 disabled:opacity-40",
+                    "absolute right-2 top-2 inline-flex h-9 items-center gap-1.5 rounded-full bg-card px-3.5 text-xs font-medium text-foreground shadow-sm transition hover:bg-muted disabled:opacity-40",
                     RING,
                   )}
                 >
@@ -218,15 +218,15 @@ export function CategoryDialog({
             ) : (
               <label
                 className={cn(
-                  "flex aspect-[4/3] w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-neutral-300 bg-neutral-50 text-center transition hover:border-emerald-600 hover:bg-emerald-50/50",
-                  "focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-emerald-700",
+                  "flex aspect-[4/3] w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-muted/50 text-center transition hover:border-primary hover:bg-muted",
+                  "focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary",
                 )}
               >
-                <ImagePlus className="h-6 w-6 text-neutral-600" />
-                <span className="text-sm font-medium text-neutral-800">
+                <ImagePlus className="h-6 w-6 text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground">
                   Choose an image
                 </span>
-                <span className="text-xs text-neutral-600">
+                <span className="text-xs text-muted-foreground">
                   JPG, PNG or WebP, up to {MAX_IMAGE_MB} MB
                 </span>
                 <input
@@ -253,7 +253,7 @@ export function CategoryDialog({
                 onClick={() => setStep(1)}
                 disabled={saving}
                 className={cn(
-                  "h-11 rounded-full px-5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 disabled:opacity-40",
+                  "h-11 rounded-full px-5 text-sm font-medium text-foreground transition hover:bg-muted disabled:opacity-40",
                   RING,
                 )}
               >
@@ -264,7 +264,7 @@ export function CategoryDialog({
                 onClick={save}
                 disabled={saving}
                 className={cn(
-                  "inline-flex h-11 items-center gap-2 rounded-full bg-emerald-700 px-6 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:opacity-60",
+                  "inline-flex h-11 items-center gap-2 rounded-full bg-primary px-6 text-sm font-medium text-white transition hover:bg-primary/90 disabled:opacity-60",
                   RING,
                 )}
               >
@@ -288,7 +288,7 @@ function DialogFooter({
 }) {
   return (
     <div className="mt-6 flex items-center justify-between gap-3">
-      <span className="text-xs tabular-nums text-neutral-600">
+      <span className="text-xs tabular-nums text-muted-foreground">
         Step {step} of 2
       </span>
       <div className="flex items-center gap-2">{children}</div>

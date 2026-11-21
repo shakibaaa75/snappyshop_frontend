@@ -32,7 +32,7 @@ const LOW_STOCK = 5;
 const CATEGORIES_KEY = ["seller", "categories"] as const;
 
 const RING =
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700";
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 
 const ROW_GRID =
   "md:grid md:grid-cols-[minmax(0,2.4fr)_1fr_1.2fr_1fr_auto] md:items-center md:gap-4";
@@ -141,7 +141,7 @@ export default function SellerProductsPage() {
           <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">
             Products
           </h1>
-          <p className="mt-1 text-sm text-neutral-600">
+          <p className="mt-1 text-sm text-muted-foreground">
             Manage everything you sell. Changes go live on your storefront.
           </p>
         </div>
@@ -150,7 +150,7 @@ export default function SellerProductsPage() {
             type="button"
             onClick={() => setDialogOpen(true)}
             className={cn(
-              "inline-flex h-11 items-center gap-2 rounded-full border border-neutral-300 bg-white px-5 text-sm font-medium text-neutral-800 transition hover:border-neutral-400 hover:bg-neutral-50",
+              "inline-flex h-11 items-center gap-2 rounded-full border border-border bg-card px-5 text-sm font-medium text-foreground transition hover:border-foreground/40 hover:bg-muted",
               RING,
             )}
           >
@@ -163,7 +163,7 @@ export default function SellerProductsPage() {
               disabled
               aria-disabled
               title={`Your plan allows up to ${productLimit} products. Upgrade to add more.`}
-              className="inline-flex h-11 cursor-not-allowed items-center gap-2 rounded-full bg-neutral-200 px-5 text-sm font-medium text-neutral-500"
+              className="inline-flex h-11 cursor-not-allowed items-center gap-2 rounded-full bg-muted px-5 text-sm font-medium text-muted-foreground"
             >
               <Lock className="h-4 w-4" />
               Add product
@@ -172,7 +172,7 @@ export default function SellerProductsPage() {
             <Link
               href={`/seller/${slug}/products/new`}
               className={cn(
-                "inline-flex h-11 items-center gap-2 rounded-full bg-emerald-700 px-5 text-sm font-medium text-white transition hover:bg-emerald-800",
+                "inline-flex h-11 items-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-white transition hover:bg-primary/90",
                 RING,
               )}
             >
@@ -198,7 +198,7 @@ export default function SellerProductsPage() {
       )}
 
       {isLoading && (
-        <div className="flex items-center justify-center rounded-[26px] bg-white py-20 text-sm text-neutral-600 shadow-sm">
+        <div className="flex items-center justify-center rounded-2xl bg-card py-20 text-sm text-muted-foreground shadow-sm">
           <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading products…
         </div>
       )}
@@ -219,14 +219,14 @@ export default function SellerProductsPage() {
       )}
 
       {!isLoading && !error && products.length > 0 && (
-        <section className="rounded-[26px] bg-white shadow-sm">
+        <section className="rounded-2xl bg-card shadow-sm">
           {/* Toolbar */}
           <div className="space-y-3 p-4 sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div
                 role="group"
                 aria-label="Filter by status"
-                className="flex flex-wrap gap-1 rounded-full bg-neutral-100 p-1"
+                className="flex flex-wrap gap-1 rounded-full bg-muted p-1"
               >
                 {filters.map((f) => {
                   const on = filter === f.id;
@@ -240,15 +240,15 @@ export default function SellerProductsPage() {
                         "inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition",
                         RING,
                         on
-                          ? "bg-white text-neutral-900 shadow-sm"
-                          : "text-neutral-600 hover:text-neutral-900",
+                          ? "bg-card text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground",
                       )}
                     >
                       {f.label}
                       <span
                         className={cn(
                           "text-xs tabular-nums",
-                          on ? "text-emerald-700" : "text-neutral-500",
+                          on ? "text-primary" : "text-muted-foreground",
                         )}
                       >
                         {counts[f.id]}
@@ -260,12 +260,12 @@ export default function SellerProductsPage() {
 
               <label className="relative w-full sm:w-64">
                 <span className="sr-only">Search products</span>
-                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
+                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search products"
-                  className="h-10 w-full rounded-full bg-neutral-100 pl-10 pr-4 text-sm outline-none transition placeholder:text-neutral-500 focus:ring-2 focus:ring-emerald-600/40"
+                  className="h-10 w-full rounded-full bg-muted pl-10 pr-4 text-sm outline-none transition placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/40"
                 />
               </label>
             </div>
@@ -300,7 +300,7 @@ export default function SellerProductsPage() {
           <div
             aria-hidden
             className={cn(
-              "hidden border-y border-neutral-200 bg-neutral-50 px-5 py-2.5 text-xs font-medium text-neutral-600",
+              "hidden border-y border-border bg-muted/50 px-5 py-2.5 text-xs font-medium text-muted-foreground",
               ROW_GRID,
               "md:grid",
             )}
@@ -312,7 +312,7 @@ export default function SellerProductsPage() {
             <span className="text-right">Actions</span>
           </div>
 
-          <ul className="divide-y divide-neutral-200 border-t border-neutral-200 md:border-t-0">
+          <ul className="divide-y divide-border border-t border-border md:border-t-0">
             {visible.map((p) => (
               <ProductRow
                 key={p.id}
@@ -331,7 +331,7 @@ export default function SellerProductsPage() {
 
           {visible.length === 0 && (
             <div className="flex flex-col items-center gap-3 px-6 py-14 text-center">
-              <p className="text-sm text-neutral-600">
+              <p className="text-sm text-muted-foreground">
                 No products match your search or filters.
               </p>
               {hasActiveFilters && (
@@ -339,7 +339,7 @@ export default function SellerProductsPage() {
                   type="button"
                   onClick={clearFilters}
                   className={cn(
-                    "rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-800 transition hover:bg-neutral-50",
+                    "rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:bg-muted",
                     RING,
                   )}
                 >
@@ -391,12 +391,12 @@ function ProductRow({
   return (
     <li
       className={cn(
-        "flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-4 transition hover:bg-neutral-50 sm:px-5",
+        "flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-4 transition hover:bg-muted sm:px-5",
         ROW_GRID,
       )}
     >
       <div className="flex w-full min-w-0 items-center gap-3 md:w-auto">
-        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
+        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-muted">
           <ProductArt
             product={
               {
@@ -419,9 +419,9 @@ function ProductRow({
         </div>
         <div className="min-w-0">
           <p className="truncate font-medium">{p.name}</p>
-          <p className="truncate text-xs text-neutral-600">
+          <p className="truncate text-xs text-muted-foreground">
             {categoryName && <span>{categoryName} · </span>}
-            <span className="text-emerald-700">/{p.slug}</span>
+            <span className="text-primary">/{p.slug}</span>
           </p>
         </div>
       </div>
@@ -431,7 +431,7 @@ function ProductRow({
           {formatPrice(p.price)}
         </span>
         {!!p.comparePrice && p.comparePrice > p.price && (
-          <span className="text-xs tabular-nums text-neutral-500 line-through">
+          <span className="text-xs tabular-nums text-muted-foreground line-through">
             {formatPrice(p.comparePrice)}
           </span>
         )}
@@ -457,7 +457,7 @@ function ProductRow({
               : "Preview (hidden, only you can see it)"
           }
           className={cn(
-            "flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-700 transition hover:border-emerald-700 hover:bg-emerald-700 hover:text-white",
+            "flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-foreground transition hover:border-primary hover:bg-primary/90 hover:text-white",
             RING,
           )}
         >
@@ -467,7 +467,7 @@ function ProductRow({
           href={`/seller/${slug}/products/${p.id}/edit`}
           aria-label={`Edit ${p.name}`}
           className={cn(
-            "flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-700 transition hover:border-emerald-700 hover:bg-emerald-700 hover:text-white",
+            "flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-foreground transition hover:border-primary hover:bg-primary/90 hover:text-white",
             RING,
           )}
         >
@@ -479,7 +479,7 @@ function ProductRow({
           onClick={onDelete}
           disabled={busy}
           className={cn(
-            "flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-700 transition hover:border-red-600 hover:bg-red-600 hover:text-white disabled:opacity-40",
+            "flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-foreground transition hover:border-red-600 hover:bg-red-600 hover:text-white disabled:opacity-40",
             RING,
           )}
         >
@@ -505,7 +505,7 @@ function Pill({
     green: ["bg-emerald-100 text-emerald-900", "bg-emerald-600"],
     amber: ["bg-amber-100 text-amber-900", "bg-amber-600"],
     red: ["bg-red-100 text-red-900", "bg-red-600"],
-    neutral: ["bg-neutral-200 text-neutral-800", "bg-neutral-500"],
+    neutral: ["bg-muted text-foreground", "bg-neutral-500"],
   }[tone];
   return (
     <span
@@ -547,8 +547,8 @@ function CategoryChip({
         imageUrl ? "pl-1.5" : "pl-3.5",
         RING,
         active
-          ? "border-emerald-700 bg-emerald-700 text-white"
-          : "border-neutral-300 bg-white text-neutral-800 hover:border-neutral-400 hover:bg-neutral-50",
+          ? "border-primary bg-primary text-white"
+          : "border-border bg-card text-foreground hover:border-foreground/40 hover:bg-muted",
       )}
     >
       {imageUrl && (
@@ -564,7 +564,7 @@ function CategoryChip({
         <span
           className={cn(
             "text-xs tabular-nums",
-            active ? "text-white/80" : "text-neutral-500",
+            active ? "text-white/80" : "text-muted-foreground",
           )}
         >
           {count}
@@ -580,13 +580,13 @@ function CategoryChip({
 
 function EmptyState({ slug }: { slug: string }) {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-[26px] bg-white px-6 py-16 text-center shadow-sm">
-      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-neutral-100">
-        <Package className="h-6 w-6 text-neutral-600" />
+    <div className="flex flex-col items-center gap-4 rounded-2xl bg-card px-6 py-16 text-center shadow-sm">
+      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+        <Package className="h-6 w-6 text-muted-foreground" />
       </span>
       <div>
         <p className="text-lg font-semibold">No products yet</p>
-        <p className="mt-1 max-w-md text-sm text-neutral-600">
+        <p className="mt-1 max-w-md text-sm text-muted-foreground">
           Add your first product and it&apos;ll appear on your storefront
           immediately.
         </p>
@@ -594,7 +594,7 @@ function EmptyState({ slug }: { slug: string }) {
       <Link
         href={`/seller/${slug}/products/new`}
         className={cn(
-          "inline-flex h-11 items-center gap-2 rounded-full bg-emerald-700 px-5 text-sm font-medium text-white transition hover:bg-emerald-800",
+          "inline-flex h-11 items-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-white transition hover:bg-primary/90",
           RING,
         )}
       >

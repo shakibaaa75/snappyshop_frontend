@@ -626,7 +626,7 @@ export function AddReviewButton({
       <Dialog.Root open={open} onOpenChange={setOpen}>
         {variant === "solid" ? (
           <Dialog.Trigger
-            className="inline-flex min-h-11 items-center gap-2 px-6 text-sm font-semibold transition hover:opacity-90"
+            className="inline-flex min-h-9 items-center gap-1.5 px-4 text-sm font-semibold transition hover:opacity-90 sm:min-h-11 sm:gap-2 sm:px-6"
             style={{
               background: T.primary,
               color: T.onPrimary,
@@ -770,24 +770,30 @@ export function ProductReviews({ product }: { product: string }) {
       className="mx-auto w-full max-w-5xl space-y-5 p-5"
     >
       <div
-        className="flex flex-wrap items-start justify-between gap-4 pb-4"
+        className="flex items-start justify-between gap-3 pb-3 sm:pb-4"
         style={{ borderBottom: `1px solid ${T.border}` }}
       >
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">
+        <div className="min-w-0">
+          <h2 className="text-lg font-bold tracking-tight sm:text-2xl">
             Customer reviews
           </h2>
           {!!q.data?.count && (
-            <div className="mt-2 flex flex-wrap items-center gap-3">
-              <span className="text-4xl font-bold">
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 sm:mt-2 sm:gap-3">
+              <span className="text-2xl font-bold leading-none sm:text-4xl">
                 {q.data.average.toFixed(1)}
               </span>
-              <Stars value={q.data.average} size={22} />
-              <span style={{ color: T.muted }}>({q.data.count} reviews)</span>
+              <span className="inline-flex [&_svg]:size-4 sm:[&_svg]:size-[22px]">
+                <Stars value={q.data.average} size={22} />
+              </span>
+              <span className="text-xs sm:text-base" style={{ color: T.muted }}>
+                ({q.data.count} {q.data.count === 1 ? "review" : "reviews"})
+              </span>
             </div>
           )}
         </div>
-        <AddReviewButton product={product} variant="solid" />
+        <div className="shrink-0">
+          <AddReviewButton product={product} variant="solid" />
+        </div>
       </div>
       {q.isSuccess && !q.data.rows?.length && (
         <p className="text-sm" style={{ color: T.muted }}>

@@ -96,7 +96,7 @@ export function NotificationBell({ className }: { className?: string }) {
     <Link
       href={allHref}
       onClick={() => setOpen(false)}
-      className="block border-t border-neutral-200 px-4 py-3 text-center text-sm font-semibold text-[#17645F] transition hover:bg-neutral-50"
+      className="block border-t border-border px-4 py-3 text-center text-sm font-semibold text-primary transition hover:bg-muted"
     >
       View all notifications
     </Link>
@@ -125,7 +125,7 @@ export function NotificationBell({ className }: { className?: string }) {
       role="dialog"
       aria-modal="true"
       aria-label="Notifications"
-      className="nb-slide-in fixed inset-0 z-[70] flex flex-col bg-white pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)]"
+      className="nb-slide-in fixed inset-0 z-[70] flex flex-col bg-card pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)]"
     >
       <style>{SLIDE_CSS}</style>
       {panel({ onBack: () => setOpen(false), className: "h-full flex-1" })}
@@ -137,7 +137,7 @@ export function NotificationBell({ className }: { className?: string }) {
     <div
       role="dialog"
       aria-label="Notifications"
-      className="absolute right-0 top-full z-[70] mt-2 w-[400px] overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-2xl"
+      className="absolute right-0 top-full z-[70] mt-2 w-[400px] overflow-hidden rounded-3xl border border-border bg-card shadow-2xl"
     >
       {panel({ className: "max-h-[min(70vh,560px)]" })}
     </div>
@@ -157,7 +157,7 @@ export function NotificationBell({ className }: { className?: string }) {
       >
         <Bell className="h-[18px] w-[18px]" strokeWidth={1.9} />
         {unread > 0 && (
-          <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-[#FF6845] px-1 text-[10px] font-bold text-white ring-2 ring-background">
+          <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground ring-2 ring-background">
             {unread > 99 ? "99+" : unread}
           </span>
         )}
@@ -166,7 +166,11 @@ export function NotificationBell({ className }: { className?: string }) {
       {open &&
         (phone
           ? typeof document !== "undefined" &&
-            createPortal(phoneView, document.body)
+            createPortal(
+              phoneView,
+              wrap.current?.closest<HTMLElement>(".marketplace-public") ??
+                document.body,
+            )
           : desktopView)}
     </div>
   );

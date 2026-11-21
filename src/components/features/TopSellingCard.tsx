@@ -35,9 +35,12 @@ const focus =
 
 export function TopSellingCard({
   product,
+  coverImage = false,
 }: {
   product: CardProduct;
   rank?: number;
+  /** Always fill the whole image box (used on the public home page). */
+  coverImage?: boolean;
 }) {
   const { id, store, title, images, price, compareAtPrice } = product;
   const saved = useWishlisted(store.slug, id);
@@ -57,7 +60,7 @@ export function TopSellingCard({
             alt=""
             fill
             sizes="(max-width: 640px) 46vw, (max-width: 1000px) 30vw, 22vw"
-            data-fit={fit}
+            data-fit={coverImage ? "cover" : fit}
             className="object-contain p-[5%] mix-blend-multiply data-[fit=cover]:object-cover data-[fit=cover]:p-0 data-[fit=cover]:mix-blend-normal"
             onLoad={(e) => {
               const img = e.currentTarget;

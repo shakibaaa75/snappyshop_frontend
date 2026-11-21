@@ -96,7 +96,7 @@ export function ProductTypePicker({
         )}
       >
         {value && (
-          <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-emerald-600 bg-emerald-600 py-0.5 pl-2.5 pr-1 text-sm font-medium text-white">
+          <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-primary bg-emerald-600 py-0.5 pl-2.5 pr-1 text-sm font-medium text-white">
             <Check className="h-3.5 w-3.5 shrink-0" />
             <span className="truncate">{value}</span>
             <button
@@ -105,7 +105,7 @@ export function ProductTypePicker({
                 e.stopPropagation();
                 clear();
               }}
-              className="ml-0.5 rounded-full p-0.5 text-white hover:bg-emerald-800"
+              className="ml-0.5 rounded-full p-0.5 text-white hover:bg-primary/90"
               aria-label={`Remove ${value}`}
             >
               <X className="h-3.5 w-3.5" />
@@ -158,7 +158,7 @@ export function ProductTypePicker({
                         "flex w-full items-center justify-between rounded-md px-3 py-1.5 text-left text-sm",
                         idx === active && "bg-muted",
                         selected &&
-                          "font-medium text-emerald-700 dark:text-emerald-300",
+                          "font-medium text-primary dark:text-emerald-300",
                       )}
                     >
                       {t}

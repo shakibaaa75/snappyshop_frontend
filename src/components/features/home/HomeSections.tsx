@@ -15,11 +15,11 @@ import { DealCard } from "@/components/features/DealCard";
 import { SellerCard } from "@/components/features/SellerCard";
 import { RecentlyViewedCard } from "@/components/features/RecentlyViewedCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import {
   ProductCardSkeleton,
   SectionEmpty,
   SectionError,
-  chipClass,
 } from "@/components/features/home/SectionState";
 import { SectionHeader } from "@/components/features/home/SectionHeader";
 import { homeHref } from "@/lib/query/category-nav";
@@ -127,6 +127,16 @@ function ScrollRow({
   );
 }
 
+/** Simple black and white pill for the section filters and sorts. */
+function blackWhiteChip(active: boolean) {
+  return cn(
+    "inline-flex h-9 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 text-xs font-medium outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[#F5A524] focus-visible:ring-offset-2",
+    active
+      ? "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black"
+      : "border-border bg-white text-black hover:border-black dark:bg-card dark:text-white dark:hover:border-white",
+  );
+}
+
 /** Category pills bleed to the panel edge on phones. Equals the panel's p-3. */
 const PILLS_BLEED_PANEL = "-mx-3 px-3 sm:mx-0 sm:px-0";
 
@@ -191,9 +201,9 @@ function CategoryFilter({
   const base =
     "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors duration-200";
   const on =
-    "border-[#17645F] dark:border-[#D93A2B] bg-[#17645F] dark:bg-[#D93A2B] text-white";
+    "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black";
   const off =
-    "border-border bg-muted text-primary/80 hover:bg-muted/80 hover:text-primary";
+    "border-border bg-white text-black hover:border-black dark:bg-card dark:text-white dark:hover:border-white";
 
   return (
     <div
@@ -317,6 +327,7 @@ function ProductsSection({
               key={p.id}
               product={p}
               rank={ranked ? i + 1 : undefined}
+              coverImage
             />
           ))}
         </div>
@@ -381,10 +392,13 @@ export function BigDealsSection() {
 
           <Link
             href={viewAll}
-            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#17645F] dark:bg-[#D93A2B] px-3.5 py-2 text-xs font-semibold text-white outline-none transition-colors hover:bg-[#17645F]/90 dark:hover:bg-[#D93A2B]/90 focus-visible:ring-2 focus-visible:ring-[#FF6845] focus-visible:ring-offset-2 sm:gap-2 sm:px-5 sm:py-3 sm:text-sm"
+            className="group inline-flex shrink-0 items-center gap-1 rounded-sm text-xs font-semibold text-foreground underline-offset-4 outline-none transition-colors hover:text-primary hover:underline focus-visible:ring-2 focus-visible:ring-[#F5A524] focus-visible:ring-offset-2"
           >
             View All{" "}
-            <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden />
+            <ArrowRight
+              className="h-4 w-4 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none"
+              aria-hidden
+            />
           </Link>
         </div>
 
@@ -411,7 +425,7 @@ export function BigDealsSection() {
             }`}
           >
             {items.map((p) => (
-              <DealCard key={p.id} product={p} />
+              <DealCard key={p.id} product={p} coverImage />
             ))}
           </div>
         )}
@@ -487,7 +501,7 @@ export function RecommendedSection() {
             type="button"
             aria-pressed={sort === o.value}
             onClick={() => setSort(o.value)}
-            className={chipClass(sort === o.value)}
+            className={blackWhiteChip(sort === o.value)}
           >
             {o.label}
           </button>
@@ -520,7 +534,7 @@ export function RecommendedSection() {
             }`}
           >
             {items.map((p) => (
-              <TopSellingCard key={p.id} product={p} />
+              <TopSellingCard key={p.id} product={p} coverImage />
             ))}
           </div>
 
@@ -835,7 +849,7 @@ export function RecentlyViewedSection() {
               i >= RECENT_FROM_PHONE ? "hidden min-w-0 md:block" : "min-w-0"
             }
           >
-            <RecentlyViewedCard product={p} />
+            <RecentlyViewedCard product={p} coverImage />
           </div>
         ))}
       </div>

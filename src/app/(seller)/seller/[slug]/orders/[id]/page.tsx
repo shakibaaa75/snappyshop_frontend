@@ -356,7 +356,7 @@ export default function SellerOrderDetailPage() {
                   href={shipment.trackingUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 font-medium text-emerald-700 hover:underline"
+                  className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
                 >
                   {shipment.trackingCode}
                   <ExternalLink className="h-3 w-3" />

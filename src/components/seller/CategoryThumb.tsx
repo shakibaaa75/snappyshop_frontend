@@ -29,7 +29,7 @@ export function CategoryThumb({
     <span
       aria-hidden
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-full bg-neutral-200 font-semibold text-neutral-700",
+        "flex shrink-0 items-center justify-center rounded-full bg-muted font-semibold text-foreground",
         textClassName ?? "text-xs",
         className,
       )}

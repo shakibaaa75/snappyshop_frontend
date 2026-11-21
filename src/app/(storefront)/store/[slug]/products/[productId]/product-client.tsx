@@ -527,7 +527,7 @@ export default function ProductClient({
 
         <main
           className={cn(
-            "mx-auto w-full max-w-[1200px] pb-28 lg:grid lg:items-start lg:gap-14 lg:px-8 lg:py-10 lg:pb-16",
+            "mx-auto w-full max-w-[1200px] pb-6 lg:grid lg:items-start lg:gap-14 lg:px-8 lg:py-10 lg:pb-16",
             PRODUCT_GRID_COLS[layout],
           )}
           style={{ "--pp-r": `${productRadius(design)}px` } as CSSProperties}
@@ -1131,6 +1131,12 @@ export default function ProductClient({
           </section>
         </main>
         <ProductReviews product={product.id} />
+        {/* Room for the fixed add-to-cart bar on phones. Related products and
+            the footer already reserve it; only add it when neither is shown. */}
+        {!(!marketplace && design.showProductRelated && related.length > 0) &&
+          !(!marketplace && design.showFooter) && (
+            <div className="h-24 lg:hidden" aria-hidden="true" />
+          )}
 
         {!marketplace && design.showProductRelated && related.length > 0 && (
           <section className="mx-auto w-full max-w-[1200px] px-4 pb-28 lg:px-8 lg:pb-16 lg:pt-6">

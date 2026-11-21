@@ -44,7 +44,7 @@ export function SeoPanel({ design, update }: PanelProps) {
         <div className="space-y-2 rounded-xl border bg-background p-4">
           <Label>Google preview</Label>
           <p className="truncate text-lg text-blue-700">{title}</p>
-          <p className="truncate text-xs text-emerald-700">{url}</p>
+          <p className="truncate text-xs text-primary">{url}</p>
           <p className="line-clamp-2 text-sm text-muted-foreground">{desc}</p>
         </div>
       </Panel>

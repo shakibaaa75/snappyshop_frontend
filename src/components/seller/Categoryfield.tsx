@@ -120,12 +120,12 @@ export function CategoryField({
     <div ref={wrapRef} className="relative">
       <div
         className={cn(
-          "flex min-h-10 flex-wrap items-center gap-2 rounded-md border bg-background px-2 py-1.5 focus-within:ring-2 focus-within:ring-emerald-600/40",
+          "flex min-h-10 flex-wrap items-center gap-2 rounded-md border bg-background px-2 py-1.5 focus-within:ring-2 focus-within:ring-primary/40",
           error ? "border-destructive" : "border-input",
         )}
       >
         {hasValue && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-700 py-1 pl-2.5 pr-1 text-sm font-medium text-white">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary py-1 pl-2.5 pr-1 text-sm font-medium text-white">
             <Check className="h-3.5 w-3.5" />
             {label}
             {!selectedId && (
@@ -137,7 +137,7 @@ export function CategoryField({
               type="button"
               aria-label={`Remove ${label}`}
               onClick={onClear}
-              className="flex h-5 w-5 items-center justify-center rounded-full hover:bg-emerald-900"
+              className="flex h-5 w-5 items-center justify-center rounded-full hover:bg-primary/90"
             >
               <X className="h-3 w-3" />
             </button>
@@ -167,7 +167,7 @@ export function CategoryField({
       </div>
 
       {open && (matches.length > 0 || showCustom) && (
-        <ul className="absolute z-30 mt-1 max-h-64 w-full overflow-auto rounded-md border bg-white p-1 shadow-lg">
+        <ul className="absolute z-30 mt-1 max-h-64 w-full overflow-auto rounded-md border bg-card p-1 shadow-lg">
           {matches.map((o) => {
             const on = o.id === selectedId;
             return (
@@ -178,7 +178,7 @@ export function CategoryField({
                   onClick={() => pick(o.id)}
                   className={cn(
                     "flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm",
-                    on ? "bg-emerald-700 text-white" : "hover:bg-neutral-100",
+                    on ? "bg-primary text-white" : "hover:bg-muted",
                   )}
                 >
                   <span>{o.name}</span>
@@ -187,7 +187,7 @@ export function CategoryField({
                       <span
                         className={cn(
                           "text-xs",
-                          on ? "text-white/80" : "text-neutral-500",
+                          on ? "text-white/80" : "text-muted-foreground",
                         )}
                       >
                         {o.hint}
@@ -205,7 +205,7 @@ export function CategoryField({
                 type="button"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={addCustom}
-                className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-sm text-emerald-800 hover:bg-emerald-50"
+                className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-sm text-primary hover:bg-muted"
               >
                 <Plus className="h-4 w-4" />
                 Use “{typed}” as custom

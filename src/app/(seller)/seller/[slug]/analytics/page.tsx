@@ -310,7 +310,7 @@ export default function AnalyticsPage() {
                         key={p.id}
                         className="flex items-center gap-3 rounded-xl bg-muted/50 px-3 py-2"
                       >
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-xs font-semibold text-white">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
                           {i + 1}
                         </span>
                         <div className="min-w-0 flex-1">
@@ -325,7 +325,7 @@ export default function AnalyticsPage() {
                           className={cn(
                             "inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-medium",
                             p.growth >= 0
-                              ? "bg-emerald-100 text-emerald-700"
+                              ? "bg-emerald-100 text-primary"
                               : "bg-red-100 text-red-600",
                           )}
                         >

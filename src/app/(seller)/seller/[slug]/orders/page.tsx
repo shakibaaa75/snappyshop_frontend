@@ -126,12 +126,12 @@ function FraudPopupHost({ enabled }: { enabled: boolean }) {
         aria-modal="true"
         aria-label={`Fraud check for order ${target.number}`}
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[90dvh] w-full overflow-y-auto rounded-t-3xl bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-xl sm:max-w-md sm:rounded-3xl"
+        className="max-h-[90dvh] w-full overflow-y-auto rounded-t-3xl bg-card p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-xl sm:max-w-md sm:rounded-3xl"
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h2 className="text-base font-medium">Fraud check</h2>
-            <p className="truncate text-xs text-neutral-500">
+            <p className="truncate text-xs text-muted-foreground">
               {target.number} · {target.name}
             </p>
           </div>
@@ -139,7 +139,7 @@ function FraudPopupHost({ enabled }: { enabled: boolean }) {
             type="button"
             aria-label="Close"
             onClick={() => setTarget(null)}
-            className="-m-1 shrink-0 rounded-full p-2 text-neutral-500 hover:bg-neutral-100"
+            className="-m-1 shrink-0 rounded-full p-2 text-muted-foreground hover:bg-muted"
           >
             <X className="h-4 w-4" />
           </button>
@@ -462,13 +462,15 @@ export default function SellerOrdersPage() {
     if (o.shipment) {
       return (
         <div className="min-w-0 text-xs md:text-left">
-          <p className="truncate text-neutral-500">{o.shipment.providerName}</p>
+          <p className="truncate text-muted-foreground">
+            {o.shipment.providerName}
+          </p>
           {o.shipment.trackingUrl ? (
             <a
               href={o.shipment.trackingUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="break-all font-medium text-emerald-700 hover:underline"
+              className="break-all font-medium text-primary hover:underline"
             >
               {o.shipment.trackingCode}
             </a>
@@ -485,7 +487,7 @@ export default function SellerOrdersPage() {
           disabled={anyBusy}
           title="Choose a courier and ship"
           onClick={() => openShip([o.id])}
-          className="inline-flex items-center gap-1.5 rounded-full bg-emerald-700 px-4 py-2 text-xs font-medium text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50 md:px-3.5 md:py-1.5"
+          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50 md:px-3.5 md:py-1.5"
         >
           <Truck className="h-3.5 w-3.5" />
           Ship
@@ -493,7 +495,7 @@ export default function SellerOrdersPage() {
       );
     }
     return (
-      <span className="text-xs text-neutral-400">
+      <span className="text-xs text-muted-foreground">
         {o.status === "pending" ? "Confirm first" : "—"}
       </span>
     );
@@ -505,7 +507,7 @@ export default function SellerOrdersPage() {
         <h1 className="text-2xl font-medium tracking-tight sm:text-3xl md:text-4xl">
           Orders
         </h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="mt-1 text-sm text-muted-foreground">
           Track, confirm and ship what your customers have ordered.
         </p>
       </header>
@@ -548,11 +550,11 @@ export default function SellerOrdersPage() {
         </div>
       )}
 
-      <section className="rounded-3xl bg-white p-3 shadow-sm sm:rounded-[26px] sm:p-5">
+      <section className="rounded-3xl bg-card p-3 shadow-sm sm:rounded-2xl sm:p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           {/* Filter tabs scroll sideways; bleed to the card edge on phones */}
           <div className="-mx-3 overflow-x-auto px-3 [scrollbar-width:none] sm:mx-0 sm:px-0 md:max-w-full [&::-webkit-scrollbar]:hidden">
-            <div className="flex w-max gap-1 rounded-full bg-neutral-100 p-1">
+            <div className="flex w-max gap-1 rounded-full bg-muted p-1">
               {FILTERS.map((f) => (
                 <button
                   key={f.id}
@@ -561,8 +563,8 @@ export default function SellerOrdersPage() {
                   className={cn(
                     "flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition sm:px-4",
                     filter === f.id
-                      ? "bg-emerald-700 text-white"
-                      : "text-neutral-500 hover:text-neutral-900",
+                      ? "bg-primary text-white"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {f.label}
@@ -571,7 +573,7 @@ export default function SellerOrdersPage() {
                       "rounded-full px-1.5 text-[11px]",
                       filter === f.id
                         ? "bg-white/20"
-                        : "bg-white text-neutral-500",
+                        : "bg-card text-muted-foreground",
                     )}
                   >
                     {counts[f.id] ?? 0}
@@ -581,13 +583,13 @@ export default function SellerOrdersPage() {
             </div>
           </div>
           <label className="relative block w-full md:w-64">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search order or customer"
               // text-base on phones stops iOS from zooming in on focus
-              className="h-11 w-full rounded-full bg-neutral-100 pl-10 pr-4 text-base outline-none transition placeholder:text-neutral-400 focus:ring-2 focus:ring-emerald-600/40 sm:h-10 sm:text-sm"
+              className="h-11 w-full rounded-full bg-muted pl-10 pr-4 text-base outline-none transition placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/40 sm:h-10 sm:text-sm"
             />
           </label>
         </div>
@@ -603,7 +605,7 @@ export default function SellerOrdersPage() {
             </span>
             <Link
               href={`/seller/${slug}/couriers`}
-              className="shrink-0 rounded-full bg-white px-4 py-2 text-center text-xs font-medium text-amber-900 shadow-sm hover:bg-amber-100 sm:py-1.5"
+              className="shrink-0 rounded-full bg-card px-4 py-2 text-center text-xs font-medium text-amber-900 shadow-sm hover:bg-amber-100 sm:py-1.5"
             >
               Courier Services
             </Link>
@@ -612,7 +614,7 @@ export default function SellerOrdersPage() {
 
         {/* Bulk bar: sticks to the bottom of the screen on phones */}
         {selectedShippable.length > 0 && (
-          <div className="sticky bottom-3 z-20 mt-4 flex items-center justify-between gap-3 rounded-2xl bg-emerald-50 p-3 text-sm text-emerald-900 shadow-lg ring-1 ring-emerald-200 sm:static sm:shadow-none sm:ring-0">
+          <div className="sticky bottom-3 z-20 mt-4 flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-3 text-sm text-foreground shadow-lg sm:static sm:shadow-none sm:ring-0">
             <span className="font-medium">
               {selectedShippable.length} selected
             </span>
@@ -621,7 +623,7 @@ export default function SellerOrdersPage() {
                 type="button"
                 onClick={() => setSelected(new Set())}
                 disabled={anyBusy}
-                className="rounded-full bg-white px-4 py-2 text-xs font-medium text-neutral-700 shadow-sm hover:bg-neutral-50 disabled:opacity-60 sm:py-1.5"
+                className="rounded-full bg-card px-4 py-2 text-xs font-medium text-foreground shadow-sm hover:bg-muted disabled:opacity-60 sm:py-1.5"
               >
                 Clear
               </button>
@@ -629,7 +631,7 @@ export default function SellerOrdersPage() {
                 type="button"
                 onClick={() => openShip(selectedShippable.map((o) => o.id))}
                 disabled={anyBusy}
-                className="inline-flex items-center gap-2 rounded-full bg-emerald-700 px-4 py-2 text-xs font-medium text-white transition hover:bg-emerald-800 disabled:opacity-60 sm:py-1.5"
+                className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-medium text-white transition hover:bg-primary/90 disabled:opacity-60 sm:py-1.5"
               >
                 <Truck className="h-3.5 w-3.5" />
                 Ship {selectedShippable.length}…
@@ -639,7 +641,7 @@ export default function SellerOrdersPage() {
         )}
 
         {isLoading && (
-          <div className="flex items-center justify-center py-20 text-sm text-neutral-500">
+          <div className="flex items-center justify-center py-20 text-sm text-muted-foreground">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading orders…
           </div>
         )}
@@ -654,10 +656,10 @@ export default function SellerOrdersPage() {
 
         {!isLoading && !error && visible.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-16 text-center">
-            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-neutral-100">
-              <PackageOpen className="h-6 w-6 text-neutral-500" />
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+              <PackageOpen className="h-6 w-6 text-muted-foreground" />
             </span>
-            <p className="max-w-sm px-4 text-sm text-neutral-500">
+            <p className="max-w-sm px-4 text-sm text-muted-foreground">
               {orders.length === 0
                 ? "No orders yet. When someone buys from your store, it shows up here."
                 : "No orders match your search or filter."}
@@ -669,13 +671,13 @@ export default function SellerOrdersPage() {
         {!isLoading && !error && visible.length > 0 && isDesktop === false && (
           <div className="mt-4">
             {visibleShippable.length > 0 && (
-              <label className="mb-3 flex items-center gap-3 px-1 text-sm text-neutral-600">
+              <label className="mb-3 flex items-center gap-3 px-1 text-sm text-muted-foreground">
                 <input
                   type="checkbox"
                   checked={allVisibleSelected}
                   disabled={anyBusy}
                   onChange={toggleAllVisible}
-                  className="h-5 w-5 rounded accent-emerald-700"
+                  className="h-5 w-5 rounded accent-primary"
                 />
                 Select all shippable ({visibleShippable.length})
               </label>
@@ -692,8 +694,8 @@ export default function SellerOrdersPage() {
                     className={cn(
                       "rounded-2xl border p-3.5 transition",
                       selected.has(o.id)
-                        ? "border-emerald-300 bg-emerald-50/50"
-                        : "border-neutral-200",
+                        ? "border-primary bg-primary/5"
+                        : "border-border",
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -704,7 +706,7 @@ export default function SellerOrdersPage() {
                           checked={selected.has(o.id)}
                           disabled={anyBusy}
                           onChange={() => toggle(o.id)}
-                          className="h-5 w-5 shrink-0 rounded accent-emerald-700"
+                          className="h-5 w-5 shrink-0 rounded accent-primary"
                         />
                       )}
                       <Link
@@ -723,7 +725,7 @@ export default function SellerOrdersPage() {
                           <span className="block truncate text-sm font-medium">
                             {o.customerName}
                           </span>
-                          <span className="block truncate text-xs text-neutral-500">
+                          <span className="block truncate text-xs text-muted-foreground">
                             {o.number} ·{" "}
                             <span className="text-emerald-600">
                               {PAYMENT_LABEL[o.paymentMethod]}
@@ -738,7 +740,7 @@ export default function SellerOrdersPage() {
                           onPointerEnter={() => prefetchFraud(o.id)}
                           onFocus={() => prefetchFraud(o.id)}
                           onClick={() => openFraud(o)}
-                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 transition active:bg-emerald-700 active:text-white"
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary transition active:bg-primary active:text-primary-foreground"
                         >
                           <ShieldCheck className="h-4 w-4" />
                         </button>
@@ -746,7 +748,7 @@ export default function SellerOrdersPage() {
                       <Link
                         href={href}
                         aria-label={`Open order ${o.number}`}
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 transition active:bg-emerald-700 active:text-white"
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition active:bg-primary active:text-white"
                       >
                         <ArrowUpRight className="h-4 w-4" />
                       </Link>
@@ -771,7 +773,7 @@ export default function SellerOrdersPage() {
                     </div>
 
                     <div className="mt-3 flex items-center justify-between gap-3 border-t border-neutral-100 pt-3">
-                      <span className="text-xs text-neutral-500">
+                      <span className="text-xs text-muted-foreground">
                         {d.toLocaleDateString("en-GB", {
                           day: "2-digit",
                           month: "short",
@@ -799,7 +801,7 @@ export default function SellerOrdersPage() {
           <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[860px] text-sm">
               <thead>
-                <tr className="text-left text-xs text-neutral-500">
+                <tr className="text-left text-xs text-muted-foreground">
                   <th className="w-10 px-3 py-2">
                     <input
                       type="checkbox"
@@ -807,7 +809,7 @@ export default function SellerOrdersPage() {
                       checked={allVisibleSelected}
                       disabled={visibleShippable.length === 0 || anyBusy}
                       onChange={toggleAllVisible}
-                      className="h-4 w-4 rounded accent-emerald-700"
+                      className="h-4 w-4 rounded accent-primary"
                     />
                   </th>
                   <th className="px-3 py-2 font-normal">Order</th>
@@ -829,7 +831,7 @@ export default function SellerOrdersPage() {
                   const shippable = canShip(o);
                   return (
                     <tr key={o.id} className="group">
-                      <td className="rounded-l-2xl px-3 py-3 transition group-hover:bg-neutral-100">
+                      <td className="rounded-l-2xl px-3 py-3 transition group-hover:bg-muted">
                         {shippable ? (
                           <input
                             type="checkbox"
@@ -837,11 +839,11 @@ export default function SellerOrdersPage() {
                             checked={selected.has(o.id)}
                             disabled={anyBusy}
                             onChange={() => toggle(o.id)}
-                            className="h-4 w-4 rounded accent-emerald-700"
+                            className="h-4 w-4 rounded accent-primary"
                           />
                         ) : null}
                       </td>
-                      <td className="px-3 py-3 transition group-hover:bg-neutral-100">
+                      <td className="px-3 py-3 transition group-hover:bg-muted">
                         <Link href={href} className="flex items-center gap-3">
                           <span
                             className={cn(
@@ -861,20 +863,20 @@ export default function SellerOrdersPage() {
                           </span>
                         </Link>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-3 transition group-hover:bg-neutral-100">
+                      <td className="whitespace-nowrap px-3 py-3 transition group-hover:bg-muted">
                         {d.toLocaleDateString("en-GB", {
                           day: "2-digit",
                           month: "short",
                           year: "numeric",
                         })}
                       </td>
-                      <td className="px-3 py-3 transition group-hover:bg-neutral-100">
+                      <td className="px-3 py-3 transition group-hover:bg-muted">
                         {d.toLocaleTimeString("en-GB", {
                           hour: "2-digit",
                           minute: "2-digit",
                         })}
                       </td>
-                      <td className="px-3 py-3 transition group-hover:bg-neutral-100">
+                      <td className="px-3 py-3 transition group-hover:bg-muted">
                         <span
                           className={cn(
                             "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
@@ -888,13 +890,13 @@ export default function SellerOrdersPage() {
                           {ORDER_STATUS_LABEL[o.status]}
                         </span>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-3 text-right font-medium transition group-hover:bg-neutral-100">
+                      <td className="whitespace-nowrap px-3 py-3 text-right font-medium transition group-hover:bg-muted">
                         {formatBDT(o.total)}
                       </td>
-                      <td className="px-3 py-3 transition group-hover:bg-neutral-100">
+                      <td className="px-3 py-3 transition group-hover:bg-muted">
                         {renderShipping(o, shippable)}
                       </td>
-                      <td className="rounded-r-2xl px-3 py-3 transition group-hover:bg-neutral-100">
+                      <td className="rounded-r-2xl px-3 py-3 transition group-hover:bg-muted">
                         <div className="flex items-center gap-2">
                           {fraudEnabled && (
                             <button
@@ -904,7 +906,7 @@ export default function SellerOrdersPage() {
                               onPointerEnter={() => prefetchFraud(o.id)}
                               onFocus={() => prefetchFraud(o.id)}
                               onClick={() => openFraud(o)}
-                              className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-emerald-700 shadow-sm transition hover:bg-emerald-700 hover:text-white"
+                              className="flex h-9 w-9 items-center justify-center rounded-full bg-card text-primary shadow-sm transition hover:bg-primary/90 hover:text-white"
                             >
                               <ShieldCheck className="h-4 w-4" />
                             </button>
@@ -912,7 +914,7 @@ export default function SellerOrdersPage() {
                           <Link
                             href={href}
                             aria-label={`Open order ${o.number}`}
-                            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-neutral-600 shadow-sm transition hover:bg-emerald-700 hover:text-white"
+                            className="flex h-9 w-9 items-center justify-center rounded-full bg-card text-muted-foreground shadow-sm transition hover:bg-primary/90 hover:text-white"
                           >
                             <ArrowUpRight className="h-4 w-4" />
                           </Link>

@@ -13,7 +13,14 @@ import type { ViewedProduct } from "@/lib/viewed-products";
  * price + cart button row. Opening the product is the one action here, and
  * the saved stock status could be out of date anyway.
  */
-export function RecentlyViewedCard({ product }: { product: ViewedProduct }) {
+export function RecentlyViewedCard({
+  product,
+  coverImage = false,
+}: {
+  product: ViewedProduct;
+  /** Fill the whole image box (used on the public home page). */
+  coverImage?: boolean;
+}) {
   const { id, slug, title, image, price, compareAtPrice } = product;
 
   return (
@@ -28,7 +35,7 @@ export function RecentlyViewedCard({ product }: { product: ViewedProduct }) {
             alt=""
             fill
             sizes="(max-width: 767px) 31vw, 20vw"
-            className="object-contain p-[5%] mix-blend-multiply transition-transform duration-200 group-hover:scale-[1.04] motion-reduce:transition-none"
+            className={`${coverImage ? "object-cover" : "object-contain p-[5%] mix-blend-multiply"} transition-transform duration-200 group-hover:scale-[1.04] motion-reduce:transition-none`}
           />
         ) : (
           <span className="absolute inset-0 grid place-items-center text-neutral-400">

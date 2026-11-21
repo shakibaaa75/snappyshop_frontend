@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { OPEN_NOTIFICATIONS_EVENT } from "@/components/seller/NotificationDrawer";
 import { useQuery } from "@tanstack/react-query";
 import { authApi } from "@/lib/api/auth";
 import { qk } from "@/lib/query/keys";
@@ -50,12 +50,15 @@ export function NotificationBanner() {
       ))}
       {me?.storeSlug && (
         <div className="flex justify-end">
-          <Link
-            href={`/seller/${me.storeSlug}/notifications`}
-            className="text-sm font-medium text-emerald-700 underline-offset-2 hover:underline"
+          <button
+            type="button"
+            onClick={() =>
+              window.dispatchEvent(new Event(OPEN_NOTIFICATIONS_EVENT))
+            }
+            className="text-sm font-medium text-primary underline-offset-2 hover:underline"
           >
             {more > 0 ? `${more} more · ` : ""}View all notifications
-          </Link>
+          </button>
         </div>
       )}
     </section>

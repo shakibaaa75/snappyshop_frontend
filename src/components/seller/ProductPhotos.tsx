@@ -528,7 +528,7 @@ export function ProductPhotos({
                         aria-label={`Photo ${i + 1} options`}
                         aria-expanded={menuFor === url}
                         onClick={() => setMenuFor(menuFor === url ? null : url)}
-                        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg bg-white/90 text-foreground shadow transition hover:bg-white"
+                        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg bg-white/90 text-foreground shadow transition hover:bg-card"
                       >
                         <MoreHorizontal className="h-4 w-4" />
                       </button>
@@ -546,7 +546,7 @@ export function ProductPhotos({
                           className={cn(
                             "absolute bottom-2 left-2 right-2 inline-flex max-w-full items-center gap-1.5 rounded-full px-2 py-1 text-[11px] font-medium shadow transition",
                             info
-                              ? "bg-white/95 text-foreground hover:bg-white"
+                              ? "bg-white/95 text-foreground hover:bg-card"
                               : "border border-dashed border-white/80 bg-black/45 text-white hover:bg-black/60",
                           )}
                         >

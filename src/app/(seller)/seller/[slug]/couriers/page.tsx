@@ -60,11 +60,7 @@ function formatWhen(iso?: string) {
 }
 
 function Skeleton({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn("animate-pulse rounded-xl bg-neutral-200/80", className)}
-    />
-  );
+  return <div className={cn("animate-pulse rounded-xl bg-muted", className)} />;
 }
 
 /* ------------------------------------------------------------------ */
@@ -171,7 +167,7 @@ function CourierAccounts() {
           <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">
             Courier Services
           </h1>
-          <p className="mt-1 max-w-xl text-sm text-neutral-500">
+          <p className="mt-1 max-w-xl text-sm text-muted-foreground">
             Connect your own courier accounts. Your credentials are verified
             with the courier, stored encrypted, and only used for your store.
           </p>
@@ -184,8 +180,8 @@ function CourierAccounts() {
           className={cn(
             "inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium shadow-sm transition",
             courierLocked
-              ? "cursor-not-allowed bg-neutral-200 text-neutral-500"
-              : "bg-emerald-700 text-white hover:bg-emerald-800",
+              ? "cursor-not-allowed bg-muted text-muted-foreground"
+              : "bg-primary text-white hover:bg-primary/90",
           )}
         >
           {courierLocked ? (
@@ -231,7 +227,7 @@ function CourierAccounts() {
         </div>
       )}
 
-      <section className="rounded-[26px] bg-white p-4 shadow-sm sm:p-5">
+      <section className="rounded-2xl bg-card p-4 shadow-sm sm:p-5">
         {connections.isLoading && (
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -248,7 +244,7 @@ function CourierAccounts() {
             <button
               type="button"
               onClick={() => connections.refetch()}
-              className="rounded-full bg-white px-4 py-1.5 text-xs font-medium text-neutral-700 shadow-sm hover:bg-neutral-50"
+              className="rounded-full bg-card px-4 py-1.5 text-xs font-medium text-foreground shadow-sm hover:bg-muted"
             >
               Try again
             </button>
@@ -257,10 +253,10 @@ function CourierAccounts() {
 
         {!connections.isLoading && !connections.error && list.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
-            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-neutral-100">
-              <Truck className="h-6 w-6 text-neutral-500" />
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+              <Truck className="h-6 w-6 text-muted-foreground" />
             </span>
-            <p className="max-w-sm text-sm text-neutral-500">
+            <p className="max-w-sm text-sm text-muted-foreground">
               No couriers connected yet. Add one to start using your own courier
               account with your store.
             </p>
@@ -269,7 +265,7 @@ function CourierAccounts() {
               onClick={openAdd}
               disabled={courierLocked}
               aria-disabled={courierLocked}
-              className="rounded-full bg-emerald-700 px-5 py-2 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Add Courier Service
             </button>
@@ -283,10 +279,7 @@ function CourierAccounts() {
               const checked = formatWhen(c.lastCheckedAt);
               const busy = testingId === c.id;
               return (
-                <li
-                  key={c.id}
-                  className="min-w-0 rounded-2xl bg-neutral-50 p-4"
-                >
+                <li key={c.id} className="min-w-0 rounded-2xl bg-muted/50 p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <CourierLogo
@@ -297,13 +290,13 @@ function CourierAccounts() {
                         <p className="truncate text-sm font-medium">
                           {c.providerName}
                           {c.label ? (
-                            <span className="text-neutral-400">
+                            <span className="text-muted-foreground">
                               {" "}
                               · {c.label}
                             </span>
                           ) : null}
                         </p>
-                        <p className="truncate text-[11px] text-neutral-500">
+                        <p className="truncate text-[11px] text-muted-foreground">
                           {c.accountHint ? `Account ${c.accountHint}` : "—"}
                           {checked ? ` · Checked ${checked}` : ""}
                         </p>
@@ -324,7 +317,7 @@ function CourierAccounts() {
                   </div>
 
                   {c.status !== "connected" && c.statusMessage && (
-                    <p className="mt-3 rounded-xl bg-white px-3 py-2 text-xs text-neutral-600">
+                    <p className="mt-3 rounded-xl bg-card px-3 py-2 text-xs text-muted-foreground">
                       {c.statusMessage}
                     </p>
                   )}
@@ -334,7 +327,7 @@ function CourierAccounts() {
                       type="button"
                       disabled={busy}
                       onClick={() => testMutation.mutate(c.id)}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-medium text-neutral-700 shadow-sm transition hover:bg-emerald-700 hover:text-white disabled:opacity-60"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-card px-3.5 py-1.5 text-xs font-medium text-foreground shadow-sm transition hover:bg-primary/90 hover:text-white disabled:opacity-60"
                     >
                       {busy ? (
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -348,7 +341,7 @@ function CourierAccounts() {
                       onClick={() =>
                         setModal({ kind: "update", connection: c })
                       }
-                      className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-medium text-neutral-700 shadow-sm transition hover:bg-emerald-700 hover:text-white"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-card px-3.5 py-1.5 text-xs font-medium text-foreground shadow-sm transition hover:bg-primary/90 hover:text-white"
                     >
                       <KeyRound className="h-3.5 w-3.5" />
                       Update Credentials
@@ -356,7 +349,7 @@ function CourierAccounts() {
                     <button
                       type="button"
                       onClick={() => setConfirmDisconnect(c)}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-medium text-red-600 shadow-sm transition hover:bg-red-600 hover:text-white"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-card px-3.5 py-1.5 text-xs font-medium text-red-600 shadow-sm transition hover:bg-red-600 hover:text-white"
                     >
                       <Unplug className="h-3.5 w-3.5" />
                       Disconnect
@@ -403,7 +396,7 @@ function CourierAccounts() {
             if (!disconnectMutation.isPending) setConfirmDisconnect(null);
           }}
         >
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-muted-foreground">
             This removes {confirmDisconnect.providerName}
             {confirmDisconnect.label ? ` (${confirmDisconnect.label})` : ""} and
             deletes its stored credentials. You can reconnect later by adding it
@@ -414,7 +407,7 @@ function CourierAccounts() {
               type="button"
               disabled={disconnectMutation.isPending}
               onClick={() => setConfirmDisconnect(null)}
-              className="rounded-full bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-200 disabled:opacity-60"
+              className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-60"
             >
               Cancel
             </button>
@@ -477,7 +470,7 @@ function ModalShell({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative z-10 flex max-h-[92vh] w-full max-w-lg flex-col rounded-t-[26px] bg-white shadow-xl sm:rounded-[26px]"
+        className="relative z-10 flex max-h-[92vh] w-full max-w-lg flex-col rounded-t-[26px] bg-card shadow-xl sm:rounded-2xl"
       >
         <div className="flex items-center justify-between gap-3 px-5 pb-2 pt-5">
           <h2 id={titleId} className="text-lg font-medium tracking-tight">
@@ -487,7 +480,7 @@ function ModalShell({
             type="button"
             aria-label="Close"
             onClick={onClose}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition hover:bg-muted"
           >
             <X className="h-4 w-4" />
           </button>
@@ -603,7 +596,7 @@ function CredentialsModal({
       {/* Provider picker (add mode only) */}
       {mode === "add" && (
         <div>
-          <p className="text-xs font-medium text-neutral-600">Courier</p>
+          <p className="text-xs font-medium text-muted-foreground">Courier</p>
           {providersLoading ? (
             <div className="mt-2 grid grid-cols-2 gap-2">
               <Skeleton className="h-14 rounded-2xl" />
@@ -614,7 +607,7 @@ function CredentialsModal({
               {providersError}
             </p>
           ) : providers.length === 0 ? (
-            <p className="mt-2 rounded-2xl bg-neutral-100 p-4 text-sm text-neutral-600">
+            <p className="mt-2 rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
               No couriers are available to connect yet. Couriers appear here
               once their integration has been built and tested.
             </p>
@@ -635,8 +628,8 @@ function CredentialsModal({
                   className={cn(
                     "flex items-center gap-3 rounded-2xl p-3 text-left transition",
                     providerId === p.id
-                      ? "bg-emerald-50 ring-2 ring-emerald-600"
-                      : "bg-neutral-100 hover:bg-neutral-200/70",
+                      ? "bg-primary/5 ring-2 ring-primary"
+                      : "bg-muted hover:bg-muted",
                   )}
                 >
                   <CourierLogo provider={p.id} name={p.name} size={36} />
@@ -649,7 +642,7 @@ function CredentialsModal({
       )}
 
       {mode === "update" && !provider && !providersLoading && (
-        <p className="rounded-2xl bg-neutral-100 p-4 text-sm text-neutral-600">
+        <p className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
           This courier is no longer available. Disconnect it and add another.
         </p>
       )}
@@ -658,11 +651,11 @@ function CredentialsModal({
       {provider && (
         <form onSubmit={submit} className="mt-4 space-y-4" autoComplete="off">
           {provider.credentialHelp.length > 0 && (
-            <div className="rounded-2xl bg-neutral-100 p-3.5">
-              <p className="text-xs font-medium text-neutral-700">
+            <div className="rounded-2xl bg-muted p-3.5">
+              <p className="text-xs font-medium text-foreground">
                 Where to find these
               </p>
-              <ol className="mt-1.5 list-decimal space-y-1 pl-4 text-xs text-neutral-600">
+              <ol className="mt-1.5 list-decimal space-y-1 pl-4 text-xs text-muted-foreground">
                 {provider.credentialHelp.map((s, i) => (
                   <li key={i}>{s}</li>
                 ))}
@@ -672,7 +665,7 @@ function CredentialsModal({
                   href={provider.docsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-emerald-700 hover:underline"
+                  className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
                 >
                   Courier documentation <ExternalLink className="h-3 w-3" />
                 </a>
@@ -681,7 +674,7 @@ function CredentialsModal({
           )}
 
           {mode === "update" && (
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-muted-foreground">
               Saved secrets are never shown. Enter the new values to replace
               them. The old ones are kept if verification fails.
             </p>
@@ -689,7 +682,7 @@ function CredentialsModal({
 
           {mode === "add" && (
             <label className="block">
-              <span className="text-xs font-medium text-neutral-600">
+              <span className="text-xs font-medium text-muted-foreground">
                 Nickname (optional)
               </span>
               <input
@@ -698,7 +691,7 @@ function CredentialsModal({
                 onChange={(e) => setLabel(e.target.value)}
                 placeholder="e.g. Dhaka warehouse"
                 disabled={mutation.isPending}
-                className="mt-1 h-11 w-full rounded-full bg-neutral-100 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:ring-2 focus:ring-emerald-600/40"
+                className="mt-1 h-11 w-full rounded-full bg-muted px-4 text-sm outline-none transition placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/40"
               />
             </label>
           )}
@@ -709,7 +702,7 @@ function CredentialsModal({
             const err = fieldErrors[f.key];
             return (
               <label key={f.key} className="block">
-                <span className="text-xs font-medium text-neutral-600">
+                <span className="text-xs font-medium text-muted-foreground">
                   {f.label}
                   {f.required ? <span className="text-red-500"> *</span> : null}
                 </span>
@@ -735,7 +728,7 @@ function CredentialsModal({
                     spellCheck={false}
                     aria-invalid={!!err}
                     className={cn(
-                      "h-11 w-full rounded-full bg-neutral-100 pl-4 text-sm outline-none transition placeholder:text-neutral-400 focus:ring-2 focus:ring-emerald-600/40",
+                      "h-11 w-full rounded-full bg-muted pl-4 text-sm outline-none transition placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/40",
                       isSecret ? "pr-11" : "pr-4",
                       err && "ring-2 ring-red-400",
                     )}
@@ -747,7 +740,7 @@ function CredentialsModal({
                       onClick={() =>
                         setRevealed((r) => ({ ...r, [f.key]: !r[f.key] }))
                       }
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     >
                       {show ? (
                         <EyeOff className="h-4 w-4" />
@@ -760,7 +753,7 @@ function CredentialsModal({
                 {err ? (
                   <span className="mt-1 block text-xs text-red-600">{err}</span>
                 ) : f.helpText ? (
-                  <span className="mt-1 block text-[11px] text-neutral-500">
+                  <span className="mt-1 block text-[11px] text-muted-foreground">
                     {f.helpText}
                   </span>
                 ) : null}
@@ -783,14 +776,14 @@ function CredentialsModal({
               type="button"
               disabled={mutation.isPending}
               onClick={close}
-              className="rounded-full bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-200 disabled:opacity-60"
+              className="rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-60"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={mutation.isPending}
-              className="inline-flex items-center gap-2 rounded-full bg-emerald-700 px-5 py-2 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-medium text-white transition hover:bg-primary/90 disabled:opacity-60"
             >
               {mutation.isPending && (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -858,8 +851,8 @@ export default function SellerCouriersPage() {
             className={cn(
               "min-h-10 shrink-0 rounded-full border px-4 text-sm font-medium transition",
               tab === t.id
-                ? "border-emerald-700 bg-emerald-700 text-white"
-                : "border-transparent bg-white text-neutral-500 hover:text-neutral-900",
+                ? "border-primary bg-primary text-white"
+                : "border-transparent bg-card text-muted-foreground hover:text-foreground",
             )}
           >
             {t.label}
@@ -880,7 +873,7 @@ export default function SellerCouriersPage() {
               <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">
                 Delivery charges
               </h1>
-              <p className="mt-1 max-w-xl text-sm text-neutral-500">
+              <p className="mt-1 max-w-xl text-sm text-muted-foreground">
                 What your customers pay for delivery, inside and outside Dhaka.
                 These also appear in your store editor.
               </p>

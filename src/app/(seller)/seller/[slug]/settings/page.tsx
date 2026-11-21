@@ -7,7 +7,7 @@ export default function SellerSettingsPage() {
         <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">
           Settings
         </h1>
-        <p className="mt-1 max-w-xl text-sm text-neutral-500">
+        <p className="mt-1 max-w-xl text-sm text-muted-foreground">
           Manage how customers find your store.
         </p>
       </header>

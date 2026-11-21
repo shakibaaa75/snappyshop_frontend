@@ -18,6 +18,7 @@ import {
   Settings,
   ShoppingBag,
   Sparkles,
+  Star,
   Store,
   Truck,
   type LucideIcon,
@@ -36,14 +37,21 @@ import { fetchPublicStore } from "@/lib/store-design/api";
 import { qk } from "@/lib/query/keys";
 import { useSellerNotifications } from "@/lib/query/notifications";
 import { cn } from "@/lib/utils";
+import {
+  NotificationDrawer,
+  OPEN_NOTIFICATIONS_EVENT,
+} from "@/components/seller/NotificationDrawer";
+import { MARKETPLACE_THEME } from "@/lib/marketplace-theme";
 
 type NavItem = { href: string; label: string; icon: LucideIcon };
+
+const isNotifications = (item: NavItem) => item.href.endsWith("/notifications");
 
 /** Unread-count bubble on a nav icon. */
 function Badge({ count }: { count: number }) {
   if (count <= 0) return null;
   return (
-    <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold leading-none text-white">
+    <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold leading-none text-white">
       {count > 9 ? "9+" : count}
     </span>
   );
@@ -56,7 +64,7 @@ const mainLinks = (slug: string): NavItem[] => [
     icon: LayoutDashboard,
   },
   { href: `/seller/${slug}/products`, label: "Products", icon: Package },
-  { href: `/seller/${slug}/reviews`, label: "Reviews", icon: ShoppingBag },
+  { href: `/seller/${slug}/reviews`, label: "Reviews", icon: Star },
   { href: `/seller/${slug}/orders`, label: "Orders", icon: ShoppingBag },
   { href: `/seller/${slug}/couriers`, label: "Couriers", icon: Truck },
   {
@@ -97,25 +105,25 @@ function isActive(pathname: string, href: string, slug: string) {
 /* ------------------------------------------------------------------ */
 
 const ANIMATION_CSS = `
-@keyframes seller-page-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: none; }
-}
 @keyframes seller-fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-.seller-page-enter {
-  /* "backwards" (not "both") so no transform is left behind after the
-     animation ends — a lingering transform would break fixed children. */
-  animation: seller-page-in 320ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
-}
+/* Opacity only: no movement, so nothing jumps while a page appears. */
+.seller-page-enter,
 .seller-fade-enter {
-  animation: seller-fade-in 240ms ease-out backwards;
+  animation: seller-fade-in 160ms ease-out backwards;
 }
+/* Loading skeletons wait a moment, so fast page changes never flash them. */
+.seller-delay-in {
+  animation: seller-fade-in 200ms ease-out 180ms backwards;
+}
+/* Keeps the page from shifting sideways when a scrollbar appears. */
+html { scrollbar-gutter: stable; }
 @media (prefers-reduced-motion: reduce) {
   .seller-page-enter,
-  .seller-fade-enter { animation: none; }
+  .seller-fade-enter,
+  .seller-delay-in { animation: none; }
   .seller-pill { transition: none !important; }
 }
 `;
@@ -171,7 +179,7 @@ function UserMenu({
         aria-expanded={open}
         aria-label="Profile menu"
         title={name || email}
-        className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-emerald-700 text-sm font-semibold text-white transition-all duration-200 hover:scale-105 hover:bg-emerald-800 active:scale-95"
+        className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-primary text-sm font-semibold text-primary-foreground transition-colors duration-200 hover:bg-primary/90"
       >
         {showLogo ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -198,14 +206,16 @@ function UserMenu({
           {/* Opens to the right of the rail */}
           <div
             role="menu"
-            className="seller-fade-enter absolute left-14 top-0 z-50 w-64 origin-top-left rounded-2xl border bg-white p-2 shadow-xl"
+            className="seller-fade-enter absolute left-14 top-0 z-50 w-64 origin-top-left rounded-2xl border border-border bg-card p-2 shadow-lg"
           >
-            <div className="rounded-xl bg-neutral-50 px-3 py-2.5">
+            <div className="rounded-xl bg-muted/50 px-3 py-2.5">
               <p className="truncate text-sm font-semibold">{name || email}</p>
               {name && (
-                <p className="truncate text-xs text-neutral-500">{email}</p>
+                <p className="truncate text-xs text-muted-foreground">
+                  {email}
+                </p>
               )}
-              <p className="mt-1 truncate text-xs font-medium text-emerald-700">
+              <p className="mt-1 truncate text-xs font-medium text-primary">
                 /store/{slug}
               </p>
             </div>
@@ -213,21 +223,21 @@ function UserMenu({
               href={`/store/${slug}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-1 flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-neutral-700 transition hover:bg-neutral-100"
+              className="mt-1 flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-foreground transition hover:bg-muted"
             >
               <ExternalLink className="h-4 w-4" /> View store
             </a>
             <Link
               href={`/seller/${slug}/settings`}
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-neutral-700 transition hover:bg-neutral-100"
+              className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-foreground transition hover:bg-muted"
             >
               <Settings className="h-4 w-4" /> Settings
             </Link>
             <button
               type="button"
               onClick={onLogout}
-              className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-red-600 transition hover:bg-red-50"
+              className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-foreground transition hover:bg-muted"
             >
               <LogOut className="h-4 w-4" /> Log out
             </button>
@@ -246,13 +256,43 @@ function RailButton({
   item,
   active,
   onHover,
+  onClick,
   badge = 0,
 }: {
   item: NavItem;
   active: boolean;
   onHover?: (href: string) => void;
+  /** When set, renders a button (opens a drawer) instead of a link. */
+  onClick?: () => void;
   badge?: number;
 }) {
+  const className = cn(
+    "relative flex h-11 w-11 items-center justify-center rounded-full transition-colors duration-200",
+    active
+      ? "bg-primary text-primary-foreground"
+      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+  );
+  const inner = (
+    <>
+      <item.icon className="h-[18px] w-[18px]" />
+      <Badge count={badge} />
+    </>
+  );
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        title={item.label}
+        aria-label={item.label}
+        aria-haspopup="dialog"
+        aria-expanded={active}
+        onClick={onClick}
+        className={className}
+      >
+        {inner}
+      </button>
+    );
+  }
   return (
     <Link
       href={item.href}
@@ -261,15 +301,9 @@ function RailButton({
       aria-current={active ? "page" : undefined}
       onMouseEnter={() => onHover?.(item.href)}
       onFocus={() => onHover?.(item.href)}
-      className={cn(
-        "relative flex h-11 w-11 items-center justify-center rounded-full transition-all duration-300 ease-out active:scale-90",
-        active
-          ? "scale-105 bg-emerald-700 text-white shadow-md"
-          : "text-neutral-500 hover:scale-105 hover:bg-neutral-100 hover:text-neutral-900",
-      )}
+      className={className}
     >
-      <item.icon className="h-[18px] w-[18px]" />
-      <Badge count={badge} />
+      {inner}
     </Link>
   );
 }
@@ -281,6 +315,8 @@ function Rail({
   logoUrl,
   pathname,
   unread,
+  notifOpen,
+  onOpenNotifications,
   onHover,
   onLogout,
 }: {
@@ -290,12 +326,14 @@ function Rail({
   logoUrl?: string;
   pathname: string;
   unread: number;
+  notifOpen: boolean;
+  onOpenNotifications: () => void;
   onHover: (href: string) => void;
   onLogout: () => void;
 }) {
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col items-center gap-1.5 rounded-full bg-white p-2 shadow-sm">
+      <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-card p-1.5">
         <UserMenu
           name={name}
           email={email}
@@ -304,7 +342,7 @@ function Rail({
           onLogout={onLogout}
         />
       </div>
-      <div className="flex flex-col items-center gap-1.5 rounded-full bg-white p-2 shadow-sm">
+      <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-card p-1.5">
         {mainLinks(slug).map((l) => (
           <RailButton
             key={l.href}
@@ -314,24 +352,27 @@ function Rail({
           />
         ))}
       </div>
-      <div className="flex flex-col items-center gap-1.5 rounded-full bg-white p-2 shadow-sm">
+      <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-card p-1.5">
         {moreLinks(slug).map((l) => (
           <RailButton
             key={l.href}
             item={l}
-            active={isActive(pathname, l.href, slug)}
-            badge={l.href.endsWith("/notifications") ? unread : 0}
+            active={
+              isNotifications(l) ? notifOpen : isActive(pathname, l.href, slug)
+            }
+            onClick={isNotifications(l) ? onOpenNotifications : undefined}
+            badge={isNotifications(l) ? unread : 0}
           />
         ))}
       </div>
-      <div className="flex flex-col items-center gap-1.5 rounded-full bg-white p-2 shadow-sm">
+      <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-card p-1.5">
         <a
           href={`/store/${slug}`}
           target="_blank"
           rel="noopener noreferrer"
           title="View store"
           aria-label="View store"
-          className="flex h-11 w-11 items-center justify-center rounded-full text-neutral-500 transition-all duration-300 hover:scale-105 hover:bg-neutral-100 hover:text-neutral-900 active:scale-90"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground"
         >
           <ExternalLink className="h-[18px] w-[18px]" />
         </a>
@@ -340,7 +381,7 @@ function Rail({
           title="Log out"
           aria-label="Log out"
           onClick={onLogout}
-          className="flex h-11 w-11 items-center justify-center rounded-full text-neutral-500 transition-all duration-300 hover:scale-105 hover:bg-red-50 hover:text-red-600 active:scale-90"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground"
         >
           <LogOut className="h-[18px] w-[18px]" />
         </button>
@@ -359,6 +400,7 @@ function MobileMenu({
   slug,
   pathname,
   unread,
+  onOpenNotifications,
   onHover,
   onLogout,
 }: {
@@ -367,6 +409,7 @@ function MobileMenu({
   slug: string;
   pathname: string;
   unread: number;
+  onOpenNotifications: () => void;
   onHover: (href: string) => void;
   onLogout: () => void;
 }) {
@@ -390,11 +433,10 @@ function MobileMenu({
         <button
           type="button"
           aria-label="Open menu"
-          className="flex min-h-12 w-full flex-col items-center justify-center gap-1 rounded-xl text-[10px] font-medium text-neutral-600 hover:bg-neutral-100 lg:hidden"
+          className="flex min-h-12 w-full flex-col items-center justify-center gap-1 rounded-xl text-[10px] font-medium text-muted-foreground hover:bg-muted lg:hidden"
         >
           <span className="relative">
             <Menu className="h-5 w-5" />
-            <Badge count={unread} />
           </span>
           Menu
         </button>
@@ -415,7 +457,7 @@ function MobileMenu({
       >
         <div className="flex h-full flex-col">
           <div className="border-b p-4">
-            <SheetTitle className="flex items-center gap-2 text-lg font-bold text-emerald-800">
+            <SheetTitle className="flex items-center gap-2 text-lg font-bold text-foreground">
               <Store className="h-5 w-5" /> Seller Hub
             </SheetTitle>
             <p className="mt-2 truncate text-xs text-muted-foreground">
@@ -423,32 +465,56 @@ function MobileMenu({
             </p>
           </div>
           <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-            {[...mainLinks(slug), ...moreLinks(slug)].map((l) => {
-              const active = isActive(pathname, l.href, slug);
-              return (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  aria-current={active ? "page" : undefined}
-                  onClick={close}
-                  onMouseEnter={() => onHover(l.href)}
-                  className={cn(
-                    "flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium transition-all duration-300 active:scale-[0.98]",
-                    active
-                      ? "bg-emerald-700 text-white"
-                      : "text-neutral-600 hover:bg-neutral-100",
-                  )}
-                >
-                  <l.icon className="h-4 w-4" />
-                  {l.label}
-                  {l.href.endsWith("/notifications") && unread > 0 && (
-                    <span className="ml-auto rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                      {unread > 9 ? "9+" : unread}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
+            {[...mainLinks(slug), ...moreLinks(slug)]
+              .filter((l) => !isNotifications(l))
+              .map((l) => {
+                const active = isActive(pathname, l.href, slug);
+                const itemClass = cn(
+                  "flex w-full items-center gap-3 rounded-full px-4 py-3 text-left text-sm font-medium transition-colors duration-200",
+                  active
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-muted",
+                );
+                const badge = isNotifications(l) && unread > 0 && (
+                  <span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
+                    {unread > 9 ? "9+" : unread}
+                  </span>
+                );
+                // Notifications: close this menu, then slide the drawer in.
+                if (isNotifications(l)) {
+                  return (
+                    <button
+                      key={l.href}
+                      type="button"
+                      onClick={() => {
+                        close();
+                        window.setTimeout(onOpenNotifications, 200);
+                      }}
+                      className={cn(
+                        itemClass,
+                        "bg-transparent text-muted-foreground hover:bg-muted",
+                      )}
+                    >
+                      <l.icon className="h-4 w-4" />
+                      {l.label}
+                      {badge}
+                    </button>
+                  );
+                }
+                return (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    aria-current={active ? "page" : undefined}
+                    onClick={close}
+                    onMouseEnter={() => onHover(l.href)}
+                    className={itemClass}
+                  >
+                    <l.icon className="h-4 w-4" />
+                    {l.label}
+                  </Link>
+                );
+              })}
           </nav>
           <div className="border-t p-3">
             <button
@@ -457,7 +523,7 @@ function MobileMenu({
                 close();
                 onLogout();
               }}
-              className="flex w-full items-center gap-3 rounded-full px-4 py-3 text-sm font-medium text-red-600 transition hover:bg-red-50"
+              className="flex w-full items-center gap-3 rounded-full px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted"
             >
               <LogOut className="h-4 w-4" /> Log Out
             </button>
@@ -490,6 +556,7 @@ export function SellerShell({
   const pathname = usePathname();
   const router = useRouter();
   const qc = useQueryClient();
+  const [notifOpen, setNotifOpen] = useState(false);
 
   const { data: me, isLoading } = useQuery({
     queryKey: qk.auth.me,
@@ -552,13 +619,28 @@ export function SellerShell({
     !!me.storeSlug &&
     urlSlug === me.storeSlug;
 
-  // Unread admin messages: red bubble on the Notifications icon.
+  // Any seller page (e.g. a dashboard banner) can ask for the drawer.
+  useEffect(() => {
+    const open = () => setNotifOpen(true);
+    window.addEventListener(OPEN_NOTIFICATIONS_EVENT, open);
+    return () => window.removeEventListener(OPEN_NOTIFICATIONS_EVENT, open);
+  }, []);
+
+  // Menus and dialogs render in a portal outside this wrapper, so the website
+  // colours also go on <body> while the seller area is open.
+  useEffect(() => {
+    const tokens = MARKETPLACE_THEME.split(" ").filter(Boolean);
+    document.body.classList.add(...tokens);
+    return () => document.body.classList.remove(...tokens);
+  }, []);
+
+  // Unread admin messages: blue bubble on the Notifications icon.
   const { data: notif } = useSellerNotifications(ready);
   const unread = notif?.unread ?? 0;
 
   if (!ready || !me || !me.storeSlug) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#e4e5e8] text-sm text-neutral-500">
+      <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
         <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading your
         dashboard…
       </div>
@@ -571,30 +653,36 @@ export function SellerShell({
   const prefetch = (href: string) => {
     if (href.endsWith("/dashboard")) {
       qc.prefetchQuery({
+        staleTime: 30_000,
         queryKey: qk.seller.stats(),
         queryFn: () => sellerOrders.stats(),
       });
       qc.prefetchQuery({
+        staleTime: 30_000,
         queryKey: qk.seller.orders.list("all"),
         queryFn: () => sellerOrders.list({ status: "all", limit: 100 }),
       });
     } else if (href.endsWith("/products")) {
       qc.prefetchQuery({
+        staleTime: 30_000,
         queryKey: qk.seller.products.list(),
         queryFn: sellerProducts.list,
       });
     } else if (href.endsWith("/orders")) {
       qc.prefetchQuery({
+        staleTime: 30_000,
         queryKey: qk.seller.orders.list("all"),
         queryFn: () => sellerOrders.list({ status: "all", limit: 100 }),
       });
       // The orders page needs the connected couriers for its Ship buttons.
       qc.prefetchQuery({
+        staleTime: 30_000,
         queryKey: qk.seller.couriers.list(),
         queryFn: sellerCouriers.list,
       });
     } else if (href.endsWith("/couriers")) {
       qc.prefetchQuery({
+        staleTime: 30_000,
         queryKey: qk.seller.couriers.list(),
         queryFn: sellerCouriers.list,
       });
@@ -617,7 +705,9 @@ export function SellerShell({
   const isDesigner = pathname.startsWith(`/seller/${storeSlug}/store-design`);
 
   return (
-    <div className="min-h-screen bg-[#f2f2f2]">
+    <div
+      className={cn("min-h-screen bg-muted text-foreground", MARKETPLACE_THEME)}
+    >
       <style>{ANIMATION_CSS}</style>
 
       <div className="fixed inset-y-0 left-0 z-50 hidden w-[120px] items-center justify-center pl-[36px] lg:flex">
@@ -628,6 +718,8 @@ export function SellerShell({
           logoUrl={logoUrl}
           pathname={pathname}
           unread={unread}
+          notifOpen={notifOpen}
+          onOpenNotifications={() => setNotifOpen(true)}
           onHover={prefetch}
           onLogout={handleLogout}
         />
@@ -636,44 +728,61 @@ export function SellerShell({
       <nav
         aria-label="Seller navigation"
         className={cn(
-          "fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t bg-white px-2 pt-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] lg:hidden",
-          isDesigner && "hidden",
+          "fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t bg-card px-2 pt-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] lg:hidden",
         )}
       >
-        {[
-          mainLinks(storeSlug)[0],
-          mainLinks(storeSlug)[1],
-          mainLinks(storeSlug)[2],
-          mainLinks(storeSlug)[4],
-        ].map((link) => {
+        {(["Dashboard", "Products", "Orders"] as const).map((label) => {
+          const link = mainLinks(storeSlug).find((l) => l.label === label)!;
           const active = isActive(pathname, link.href, storeSlug);
           return (
             <Link
               key={link.href}
               href={link.href}
               aria-current={active ? "page" : undefined}
+              onMouseEnter={() => prefetch(link.href)}
               className={cn(
-                "flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 rounded-xl text-[10px] font-medium",
-                active ? "bg-emerald-50 text-emerald-800" : "text-neutral-600",
+                "flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 rounded-xl text-[10px] font-medium transition-colors duration-200",
+                active
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground",
               )}
             >
               <link.icon className="h-5 w-5" />
-              <span className="truncate">
-                {link.label === "Store Design" ? "Design" : link.label}
-              </span>
+              <span className="truncate">{link.label}</span>
             </Link>
           );
         })}
+        <button
+          type="button"
+          aria-haspopup="dialog"
+          aria-expanded={notifOpen}
+          onClick={() => setNotifOpen(true)}
+          className={cn(
+            "flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 rounded-xl text-[10px] font-medium transition-colors duration-200",
+            notifOpen
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground",
+          )}
+        >
+          <span className="relative">
+            <Bell className="h-5 w-5" />
+            <Badge count={unread} />
+          </span>
+          <span className="truncate">Notifications</span>
+        </button>
         <MobileMenu
           name={me.name}
           email={me.email}
           slug={storeSlug}
           pathname={pathname}
           unread={unread}
+          onOpenNotifications={() => setNotifOpen(true)}
           onHover={prefetch}
           onLogout={handleLogout}
         />
       </nav>
+
+      <NotificationDrawer open={notifOpen} onOpenChange={setNotifOpen} />
 
       <div className="px-2 pt-2 sm:px-4 sm:pt-4 lg:pl-[136px] lg:pr-6">
         {isDesigner ? (

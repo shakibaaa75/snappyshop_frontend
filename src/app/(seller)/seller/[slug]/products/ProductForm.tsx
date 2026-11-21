@@ -611,8 +611,8 @@ export function ProductForm({
                     className={cn(
                       "rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
                       values.mainId === m.id
-                        ? "border-emerald-700 bg-emerald-700 text-white"
-                        : "hover:border-emerald-600",
+                        ? "border-primary bg-primary text-white"
+                        : "hover:border-primary",
                     )}
                   >
                     {m.name}

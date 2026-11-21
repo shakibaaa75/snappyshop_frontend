@@ -332,7 +332,7 @@ export default function SubscriptionClient() {
                     type="button"
                     onClick={() => claim.mutate(g.id)}
                     disabled={claim.isPending}
-                    className="inline-flex h-10 items-center gap-2 rounded-lg bg-emerald-700 px-4 text-sm font-semibold text-white transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 disabled:opacity-60"
+                    className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-white transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-60"
                   >
                     {claim.isPending && claim.variables === g.id ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -392,7 +392,7 @@ export default function SubscriptionClient() {
           {!onTopPlan && (
             <a
               href="#plans"
-              className="inline-flex h-10 items-center rounded-lg bg-emerald-700 px-4 text-sm font-semibold text-white transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
+              className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-semibold text-white transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               {currentPlan === "free" ? "See plans" : "Renew or upgrade"}
             </a>
@@ -475,7 +475,7 @@ export default function SubscriptionClient() {
                     ? "border-emerald-950 bg-emerald-950 text-white"
                     : "bg-card",
                   isPicked &&
-                    "ring-2 ring-emerald-500 ring-offset-2 ring-offset-background",
+                    "ring-2 ring-primary ring-offset-2 ring-offset-background",
                 )}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -521,7 +521,7 @@ export default function SubscriptionClient() {
                         <p
                           className={cn(
                             "mt-1 text-sm font-medium",
-                            dark ? "text-emerald-300" : "text-emerald-700",
+                            dark ? "text-emerald-300" : "text-primary",
                           )}
                         >
                           Save {q.totalPct}% off{" "}
@@ -554,12 +554,12 @@ export default function SubscriptionClient() {
                     }
                   }}
                   className={cn(
-                    "mt-5 h-11 w-full rounded-lg text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
+                    "mt-5 h-11 w-full rounded-lg text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                     disabled
                       ? "cursor-not-allowed bg-muted text-muted-foreground"
                       : dark
-                        ? "bg-white text-emerald-950 hover:bg-emerald-50"
-                        : "bg-emerald-700 text-white hover:bg-emerald-800",
+                        ? "bg-card text-emerald-950 hover:bg-muted"
+                        : "bg-primary text-white hover:bg-primary/90",
                   )}
                 >
                   {isCurrent
@@ -607,7 +607,7 @@ export default function SubscriptionClient() {
                     <summary
                       className={cn(
                         "flex cursor-pointer list-none items-center gap-1 font-medium [&::-webkit-details-marker]:hidden",
-                        dark ? "text-emerald-200" : "text-emerald-700",
+                        dark ? "text-emerald-200" : "text-primary",
                       )}
                     >
                       About {p.name}
@@ -660,7 +660,7 @@ export default function SubscriptionClient() {
                         setSelected(p.id as PaidPlanId);
                       }}
                       className={cn(
-                        "rounded-md px-3 py-1 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600",
+                        "rounded-md px-3 py-1 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                         selected === p.id
                           ? "bg-background text-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground",
@@ -711,9 +711,9 @@ export default function SubscriptionClient() {
                         aria-checked={on}
                         onClick={() => setBilling(d.id)}
                         className={cn(
-                          "flex flex-col rounded-xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2",
+                          "flex flex-col rounded-xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                           on
-                            ? "border-emerald-600 bg-emerald-50 ring-1 ring-emerald-600 dark:bg-emerald-950/40"
+                            ? "border-primary bg-emerald-50 ring-1 ring-primary dark:bg-emerald-950/40"
                             : "hover:border-foreground/30 hover:bg-muted/40",
                         )}
                       >
@@ -780,14 +780,14 @@ export default function SubscriptionClient() {
                         role="radio"
                         aria-checked={on}
                         onClick={() => setMethod(m.id)}
-                        className="flex w-full items-center gap-4 rounded-xl p-3.5 text-left transition hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 sm:p-4"
+                        className="flex w-full items-center gap-4 rounded-xl p-3.5 text-left transition hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:p-4"
                         style={{
                           boxShadow: on
                             ? `0 0 0 2px ${m.color}`
                             : "0 0 0 1px hsl(var(--border))",
                         }}
                       >
-                        <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white p-1.5 ring-1 ring-black/5">
+                        <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-card p-1.5 ring-1 ring-black/5">
                           {/* Plain <img>: the logos are on an external host, so no
                               next/image remotePatterns setting is needed. */}
                           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -847,7 +847,7 @@ export default function SubscriptionClient() {
                   {(periodSave > 0 || firstSave > 0) && (
                     <dl className="mt-3 space-y-2 border-t border-dashed pt-3 text-sm">
                       {periodSave > 0 && (
-                        <div className="flex justify-between gap-3 text-emerald-700 dark:text-emerald-400">
+                        <div className="flex justify-between gap-3 text-primary dark:text-emerald-400">
                           <dt>
                             {durationLabel(billing)} discount ({quote.periodPct}
                             %)
@@ -858,7 +858,7 @@ export default function SubscriptionClient() {
                         </div>
                       )}
                       {firstSave > 0 && (
-                        <div className="flex justify-between gap-3 text-emerald-700 dark:text-emerald-400">
+                        <div className="flex justify-between gap-3 text-primary dark:text-emerald-400">
                           <dt>First purchase ({quote.firstPurchasePct}%)</dt>
                           <dd className="tabular-nums">
                             −{formatBDT(firstSave)}
@@ -875,7 +875,7 @@ export default function SubscriptionClient() {
                     </span>
                   </div>
                   {quote.totalPct > 0 && (
-                    <p className="mt-1 text-right text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                    <p className="mt-1 text-right text-xs font-medium text-primary dark:text-emerald-400">
                       You save {formatBDT(quote.listAmount - quote.amount)} (
                       {quote.totalPct}%)
                     </p>
@@ -922,7 +922,7 @@ export default function SubscriptionClient() {
                     pay.mutate({ plan: selected, interval: billing, method })
                   }
                   className={cn(
-                    "mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-emerald-700 text-sm font-semibold text-white transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2",
+                    "mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-white transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                     pay.isPending && "cursor-not-allowed opacity-70",
                   )}
                 >
@@ -1052,7 +1052,7 @@ function DurationPicker({
             aria-checked={on}
             onClick={() => onChange(d.id)}
             className={cn(
-              "flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600",
+              "flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
               on
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
@@ -1060,7 +1060,7 @@ function DurationPicker({
           >
             {d.label}
             {d.discountPct > 0 && (
-              <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+              <span className="text-xs font-semibold text-primary dark:text-emerald-400">
                 Save {d.discountPct}%
               </span>
             )}
@@ -1101,7 +1101,7 @@ function StepHeading({
       id={id}
       className="mb-3 flex items-center gap-2.5 text-sm font-semibold"
     >
-      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-700 text-xs font-semibold text-white">
+      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
         {n}
       </span>
       {title}

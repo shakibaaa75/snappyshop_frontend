@@ -146,7 +146,7 @@ function Skeleton({
 }) {
   return (
     <div
-      className={cn("animate-pulse rounded-xl bg-neutral-200/80", className)}
+      className={cn("animate-pulse rounded-xl bg-muted", className)}
       style={style}
     />
   );
@@ -174,7 +174,7 @@ function RecentOrdersSkeleton() {
 
 function RevenueCardSkeleton() {
   return (
-    <div className="relative mt-4 overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600/80 to-emerald-800/80 p-5">
+    <div className="relative mt-4 overflow-hidden rounded-2xl bg-primary p-5">
       <div className="flex items-center justify-between">
         <Skeleton className="h-4 w-20 bg-white/20" />
         <Skeleton className="h-4 w-4 rounded bg-white/20" />
@@ -307,16 +307,16 @@ export default function SellerDashboardPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="min-w-0 text-2xl font-medium tracking-tight sm:text-3xl lg:text-4xl">
           Welcome Back,{" "}
-          <span className="break-words text-neutral-400">{firstName}</span>
+          <span className="break-words text-muted-foreground">{firstName}</span>
         </h1>
         <div className="flex items-center gap-2">
-          <span className="hidden items-center gap-2 rounded-full bg-white px-3 py-2 text-sm shadow-sm sm:inline-flex sm:px-4 sm:py-2.5">
-            <CalendarDays className="h-4 w-4 text-neutral-500" />
+          <span className="hidden items-center gap-2 rounded-full bg-card px-3 py-2 text-sm shadow-sm sm:inline-flex sm:px-4 sm:py-2.5">
+            <CalendarDays className="h-4 w-4 text-muted-foreground" />
             {today}
           </span>
           <Link
             href={`/seller/${slug}/products/new`}
-            className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-sm font-medium shadow-sm transition hover:bg-emerald-700 hover:text-white sm:px-4 sm:py-2.5"
+            className="inline-flex items-center gap-2 rounded-full bg-card px-3 py-2 text-sm font-medium shadow-sm transition hover:bg-primary/90 hover:text-white sm:px-4 sm:py-2.5"
           >
             <Plus className="h-4 w-4" />
             <span>Add Product</span>
@@ -336,7 +336,7 @@ export default function SellerDashboardPage() {
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h2 className="text-sm font-semibold">Recent Orders</h2>
-              <p className="mt-0.5 text-xs text-neutral-500">
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 The 5 most recent orders at your store
               </p>
             </div>
@@ -347,8 +347,8 @@ export default function SellerDashboardPage() {
             <RecentOrdersSkeleton />
           ) : recent.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-12 text-center">
-              <Package className="h-6 w-6 text-neutral-400" />
-              <p className="text-sm text-neutral-500">
+              <Package className="h-6 w-6 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
                 No orders yet. When someone buys from your store, it shows up
                 here.
               </p>
@@ -364,7 +364,7 @@ export default function SellerDashboardPage() {
                     <Link
                       key={o.id}
                       href={`/seller/${slug}/orders/${o.id}`}
-                      className="flex w-full min-w-0 items-center gap-3 overflow-hidden rounded-2xl bg-neutral-50 p-3 transition active:bg-neutral-100"
+                      className="flex w-full min-w-0 items-center gap-3 overflow-hidden rounded-2xl bg-muted/50 p-3 transition active:bg-muted"
                     >
                       <span
                         className={cn(
@@ -378,7 +378,7 @@ export default function SellerDashboardPage() {
                         <p className="truncate text-sm font-medium">
                           {o.number} · {o.customerName}
                         </p>
-                        <p className="mt-0.5 truncate text-[11px] text-neutral-500">
+                        <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
                           {d.toLocaleDateString("en-GB", {
                             day: "2-digit",
                             month: "short",
@@ -412,7 +412,7 @@ export default function SellerDashboardPage() {
               <div className="mt-4 hidden overflow-x-auto md:block">
                 <table className="w-full min-w-[560px] text-sm">
                   <thead>
-                    <tr className="text-left text-xs text-neutral-500">
+                    <tr className="text-left text-xs text-muted-foreground">
                       <th className="px-3 py-2 font-normal">Order</th>
                       <th className="px-3 py-2 font-normal">Date</th>
                       <th className="px-3 py-2 font-normal">Time</th>
@@ -428,7 +428,7 @@ export default function SellerDashboardPage() {
                       const d = new Date(o.createdAt);
                       return (
                         <tr key={o.id} className="group">
-                          <td className="rounded-l-2xl px-3 py-3 transition group-hover:bg-neutral-100">
+                          <td className="rounded-l-2xl px-3 py-3 transition group-hover:bg-muted">
                             <Link
                               href={`/seller/${slug}/orders/${o.id}`}
                               className="flex items-center gap-3"
@@ -451,20 +451,20 @@ export default function SellerDashboardPage() {
                               </span>
                             </Link>
                           </td>
-                          <td className="px-3 py-3 transition group-hover:bg-neutral-100">
+                          <td className="px-3 py-3 transition group-hover:bg-muted">
                             {d.toLocaleDateString("en-GB", {
                               day: "2-digit",
                               month: "short",
                               year: "numeric",
                             })}
                           </td>
-                          <td className="px-3 py-3 transition group-hover:bg-neutral-100">
+                          <td className="px-3 py-3 transition group-hover:bg-muted">
                             {d.toLocaleTimeString("en-GB", {
                               hour: "2-digit",
                               minute: "2-digit",
                             })}
                           </td>
-                          <td className="px-3 py-3 transition group-hover:bg-neutral-100">
+                          <td className="px-3 py-3 transition group-hover:bg-muted">
                             <span
                               className={cn(
                                 "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
@@ -481,7 +481,7 @@ export default function SellerDashboardPage() {
                               {ORDER_STATUS_LABEL[o.status]}
                             </span>
                           </td>
-                          <td className="rounded-r-2xl px-3 py-3 text-right font-medium transition group-hover:bg-neutral-100">
+                          <td className="rounded-r-2xl px-3 py-3 text-right font-medium transition group-hover:bg-muted">
                             {formatBDT(o.total)}
                           </td>
                         </tr>
@@ -505,7 +505,7 @@ export default function SellerDashboardPage() {
             {statsLoading ? (
               <RevenueCardSkeleton />
             ) : (
-              <div className="relative mt-4 overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-800 p-5 text-white">
+              <div className="relative mt-4 overflow-hidden rounded-2xl bg-primary p-5 text-white">
                 <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10" />
                 <div className="pointer-events-none absolute -bottom-10 right-6 h-28 w-28 rounded-full bg-white/10" />
                 <p className="relative flex items-center justify-between gap-3 text-sm font-semibold italic">
@@ -529,7 +529,7 @@ export default function SellerDashboardPage() {
           </Card>
 
           <Card className="flex flex-col justify-center">
-            <p className="text-xs text-neutral-500">Avg order value</p>
+            <p className="text-xs text-muted-foreground">Avg order value</p>
             {statsLoading ? (
               <div className="mt-2 flex items-center justify-between gap-2">
                 <Skeleton className="h-8 w-28" />
@@ -540,7 +540,7 @@ export default function SellerDashboardPage() {
                 <p className="min-w-0 break-words text-xl font-semibold tracking-tight sm:text-2xl">
                   {stats ? formatBDT(Math.round(stats.avgOrderValue)) : "—"}
                 </p>
-                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-1 text-[11px] font-medium text-white">
+                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[11px] font-medium text-primary-foreground">
                   <TrendingUp className="h-3 w-3" /> All time
                 </span>
               </div>
@@ -576,20 +576,22 @@ export default function SellerDashboardPage() {
                   pending
                 </span>
               </div>
-              <div className="mt-4 rounded-2xl bg-neutral-100 p-3">
-                <p className="text-xs font-medium text-neutral-600">
+              <div className="mt-4 rounded-2xl bg-muted p-3">
+                <p className="text-xs font-medium text-muted-foreground">
                   Recent customers
                 </p>
                 <div className="mt-2 flex items-center">
                   {recentCustomers.length === 0 ? (
-                    <p className="text-xs text-neutral-400">No customers yet</p>
+                    <p className="text-xs text-muted-foreground">
+                      No customers yet
+                    </p>
                   ) : (
                     recentCustomers.map((name, i) => (
                       <span
                         key={name}
                         title={name}
                         className={cn(
-                          "-ml-2 flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold text-white ring-2 ring-neutral-100 first:ml-0 sm:h-10 sm:w-10",
+                          "-ml-2 flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold text-white ring-2 ring-border first:ml-0 sm:h-10 sm:w-10",
                           avatarColor(name),
                         )}
                         style={{ zIndex: 10 - i }}
@@ -608,13 +610,13 @@ export default function SellerDashboardPage() {
         <Card className="min-h-[360px] md:col-span-1 xl:min-h-[420px]">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-neutral-100 sm:h-10 sm:w-10">
-                <ShoppingBag className="h-4 w-4 text-neutral-600" />
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-muted sm:h-10 sm:w-10">
+                <ShoppingBag className="h-4 w-4 text-muted-foreground" />
               </span>
               <span className="text-sm font-medium">Orders Overview</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="flex rounded-full bg-neutral-100 p-1 text-sm">
+              <div className="flex rounded-full bg-muted p-1 text-sm">
                 {(["weekly", "monthly"] as const).map((r) => (
                   <button
                     key={r}
@@ -623,8 +625,8 @@ export default function SellerDashboardPage() {
                     className={cn(
                       "rounded-full px-3 py-1.5 font-medium capitalize transition sm:px-4",
                       range === r
-                        ? "bg-emerald-700 text-white"
-                        : "text-neutral-500 hover:text-neutral-900",
+                        ? "bg-primary text-white"
+                        : "text-muted-foreground hover:text-foreground",
                     )}
                   >
                     {r === "weekly" ? "Weekly" : "Monthly"}
@@ -649,7 +651,7 @@ export default function SellerDashboardPage() {
           ) : (
             <>
               <div className="mt-3 text-center">
-                <p className="text-xs text-neutral-500">Inventory value</p>
+                <p className="text-xs text-muted-foreground">Inventory value</p>
                 <p className="break-words text-2xl font-semibold tracking-tight sm:text-3xl">
                   {formatBDT(Math.round(inventory.value))}
                 </p>
@@ -657,22 +659,26 @@ export default function SellerDashboardPage() {
               <AreaChart series={series} />
 
               <div className="mt-4 grid grid-cols-2 gap-2 text-center">
-                <div className="rounded-2xl bg-neutral-100 px-3 py-2.5">
-                  <p className="text-[11px] text-neutral-500">Products</p>
+                <div className="rounded-2xl bg-muted px-3 py-2.5">
+                  <p className="text-[11px] text-muted-foreground">Products</p>
                   <p className="text-sm font-semibold">{inventory.count}</p>
                 </div>
-                <div className="rounded-2xl bg-neutral-100 px-3 py-2.5">
-                  <p className="text-[11px] text-neutral-500">Units in stock</p>
+                <div className="rounded-2xl bg-muted px-3 py-2.5">
+                  <p className="text-[11px] text-muted-foreground">
+                    Units in stock
+                  </p>
                   <p className="text-sm font-semibold">{inventory.units}</p>
                 </div>
-                <div className="rounded-2xl bg-neutral-100 px-3 py-2.5">
-                  <p className="text-[11px] text-neutral-500">Low stock</p>
+                <div className="rounded-2xl bg-muted px-3 py-2.5">
+                  <p className="text-[11px] text-muted-foreground">Low stock</p>
                   <p className="text-sm font-semibold text-amber-600">
                     {inventory.lowStock}
                   </p>
                 </div>
-                <div className="rounded-2xl bg-neutral-100 px-3 py-2.5">
-                  <p className="text-[11px] text-neutral-500">Out of stock</p>
+                <div className="rounded-2xl bg-muted px-3 py-2.5">
+                  <p className="text-[11px] text-muted-foreground">
+                    Out of stock
+                  </p>
                   <p className="text-sm font-semibold text-red-600">
                     {inventory.outOfStock}
                   </p>
@@ -682,13 +688,13 @@ export default function SellerDashboardPage() {
               <div className="mt-3 flex flex-wrap justify-center gap-2">
                 <Link
                   href={`/seller/${slug}/orders`}
-                  className="rounded-full bg-emerald-700 px-5 py-2 text-sm font-medium text-white transition hover:bg-emerald-800"
+                  className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-white transition hover:bg-primary/90"
                 >
                   View orders
                 </Link>
                 <Link
                   href={`/seller/${slug}/analytics`}
-                  className="rounded-full bg-neutral-100 px-5 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-200"
+                  className="rounded-full bg-muted px-5 py-2 text-sm font-medium text-foreground transition hover:bg-muted"
                 >
                   Analytics
                 </Link>
@@ -771,7 +777,7 @@ function Card({
   return (
     <section
       className={cn(
-        "min-w-0 max-w-full rounded-[26px] bg-white p-4 shadow-sm sm:p-5",
+        "min-w-0 max-w-full rounded-2xl bg-card p-4 shadow-sm sm:p-5",
         className,
       )}
     >
@@ -785,7 +791,7 @@ function ArrowButton({ href }: { href: string }) {
     <Link
       href={href}
       aria-label="Open"
-      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 transition hover:bg-emerald-700 hover:text-white sm:h-10 sm:w-10"
+      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition hover:bg-primary/90 hover:text-white sm:h-10 sm:w-10"
     >
       <ArrowUpRight className="h-4 w-4" />
     </Link>
@@ -805,7 +811,7 @@ function CardHead({
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
         <h2 className="text-sm font-semibold">{title}</h2>
-        <p className="mt-0.5 text-xs text-neutral-500">{sub}</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>
       </div>
       <ArrowButton href={href} />
     </div>
@@ -830,7 +836,7 @@ function BarChart({ bars }: { bars: { label: string; value: number }[] }) {
   return (
     <div className="mt-6 min-w-0">
       <div className="flex gap-2 sm:gap-3">
-        <div className="flex h-52 flex-col justify-between text-right text-[11px] text-neutral-400 sm:h-64">
+        <div className="flex h-52 flex-col justify-between text-right text-[11px] text-muted-foreground sm:h-64">
           {ticks.map((t, i) => (
             <span key={i}>{t}</span>
           ))}
@@ -838,10 +844,7 @@ function BarChart({ bars }: { bars: { label: string; value: number }[] }) {
         <div className="relative min-w-0 flex-1">
           <div className="pointer-events-none absolute inset-x-0 top-0 flex h-52 flex-col justify-between sm:h-64">
             {ticks.map((_, i) => (
-              <div
-                key={i}
-                className="border-t border-dashed border-neutral-200"
-              />
+              <div key={i} className="border-t border-dashed border-border" />
             ))}
           </div>
           <div className="relative flex h-52 items-end justify-between gap-1.5 sm:h-64 sm:gap-2 md:gap-4">
@@ -861,10 +864,10 @@ function BarChart({ bars }: { bars: { label: string; value: number }[] }) {
                       className="absolute left-1/2 z-10 -translate-x-1/2 -translate-y-1"
                       style={{ bottom: `${h}%` }}
                     >
-                      <span className="block whitespace-nowrap rounded-full bg-emerald-700 px-2 py-0.5 text-[10px] font-medium text-white sm:px-2.5 sm:py-1 sm:text-[11px]">
+                      <span className="block whitespace-nowrap rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-white sm:px-2.5 sm:py-1 sm:text-[11px]">
                         {delta}
                       </span>
-                      <span className="mx-auto mt-1 block h-2 w-2 rounded-full border-2 border-white bg-emerald-700 sm:h-2.5 sm:w-2.5" />
+                      <span className="mx-auto mt-1 block h-2 w-2 rounded-full border-2 border-white bg-primary sm:h-2.5 sm:w-2.5" />
                     </div>
                   )}
                   <div
@@ -872,8 +875,8 @@ function BarChart({ bars }: { bars: { label: string; value: number }[] }) {
                     className={cn(
                       "w-full max-w-[52px] rounded-full transition-all duration-500",
                       peak
-                        ? "bg-emerald-700 [background-image:repeating-linear-gradient(135deg,rgba(255,255,255,0.14)_0,rgba(255,255,255,0.14)_2px,transparent_2px,transparent_6px)]"
-                        : "bg-emerald-600/45 [background-image:repeating-linear-gradient(135deg,rgba(255,255,255,0.22)_0,rgba(255,255,255,0.22)_2px,transparent_2px,transparent_6px)]",
+                        ? "bg-primary [background-image:repeating-linear-gradient(135deg,rgba(255,255,255,0.14)_0,rgba(255,255,255,0.14)_2px,transparent_2px,transparent_6px)]"
+                        : "bg-primary/45 [background-image:repeating-linear-gradient(135deg,rgba(255,255,255,0.22)_0,rgba(255,255,255,0.22)_2px,transparent_2px,transparent_6px)]",
                     )}
                     style={{ height: `${h}%` }}
                   />
@@ -885,7 +888,7 @@ function BarChart({ bars }: { bars: { label: string; value: number }[] }) {
             {bars.map((b, i) => (
               <span
                 key={b.label + i}
-                className="min-w-0 flex-1 text-center text-[10px] tracking-wide text-neutral-500 sm:text-[11px]"
+                className="min-w-0 flex-1 text-center text-[10px] tracking-wide text-muted-foreground sm:text-[11px]"
               >
                 {b.label}
               </span>
@@ -894,7 +897,7 @@ function BarChart({ bars }: { bars: { label: string; value: number }[] }) {
         </div>
       </div>
       {max === 0 && (
-        <p className="mt-3 text-center text-xs text-neutral-400">
+        <p className="mt-3 text-center text-xs text-muted-foreground">
           No orders in this period yet.
         </p>
       )}
@@ -956,7 +959,7 @@ function StatusTile({
 }) {
   const c = ORDER_STATUS_COLOR[status];
   return (
-    <div className="flex min-w-0 items-center justify-between gap-2 rounded-full bg-white px-4 py-2.5 shadow-sm sm:px-5 sm:py-3">
+    <div className="flex min-w-0 items-center justify-between gap-2 rounded-full bg-card px-4 py-2.5 shadow-sm sm:px-5 sm:py-3">
       <span className="flex min-w-0 items-center gap-2 text-sm">
         <span className={cn("h-2 w-2 shrink-0 rounded-full", c.dot)} />
         <span className="truncate">{label}</span>
@@ -978,15 +981,15 @@ function QuickLink({
   return (
     <Link
       href={href}
-      className="group flex min-w-0 flex-col gap-2 rounded-[26px] bg-white p-4 shadow-sm transition hover:ring-2 hover:ring-emerald-600/40 sm:p-5"
+      className="group flex min-w-0 flex-col gap-2 rounded-2xl bg-card p-4 shadow-sm transition hover:ring-2 hover:ring-primary/40 sm:p-5"
     >
       <div className="flex items-center justify-between gap-2">
         <p className="min-w-0 truncate text-sm font-semibold">{title}</p>
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 transition group-hover:bg-emerald-700 group-hover:text-white">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition group-hover:bg-primary/90 group-hover:text-white">
           <ArrowUpRight className="h-4 w-4" />
         </span>
       </div>
-      <p className="text-xs text-neutral-500">{text}</p>
+      <p className="text-xs text-muted-foreground">{text}</p>
     </Link>
   );
 }

@@ -1,31 +1,25 @@
 "use client";
 
-import {
-  useMarkAllNotificationsRead,
-  useMarkNotificationRead,
-  useSellerNotifications,
-} from "@/lib/query/notifications";
-import { NotificationPanel } from "@/components/notifications/notification-ui";
+import { useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { OPEN_NOTIFICATIONS_EVENT } from "@/components/seller/NotificationDrawer";
 
+/**
+ * Notifications no longer have their own page: they open in a drawer on the
+ * right. Old links and bookmarks land here, go to the dashboard and open it.
+ */
 export default function SellerNotificationsPage() {
-  const q = useSellerNotifications(true);
-  const markRead = useMarkNotificationRead();
-  const markAll = useMarkAllNotificationsRead();
+  const router = useRouter();
+  const { slug } = useParams<{ slug: string }>();
 
-  return (
-    <div className="mx-auto w-full max-w-2xl">
-      <div className="overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm">
-        <NotificationPanel
-          items={q.data?.items ?? []}
-          unread={q.data?.unread ?? 0}
-          loading={q.isLoading}
-          error={q.isError}
-          onRetry={() => q.refetch()}
-          onRead={(id) => markRead.mutate(id)}
-          onReadAll={() => markAll.mutate()}
-          readAllPending={markAll.isPending}
-        />
-      </div>
-    </div>
-  );
+  useEffect(() => {
+    router.replace(`/seller/${slug}/dashboard`);
+    const t = window.setTimeout(
+      () => window.dispatchEvent(new Event(OPEN_NOTIFICATIONS_EVENT)),
+      300,
+    );
+    return () => window.clearTimeout(t);
+  }, [router, slug]);
+
+  return null;
 }

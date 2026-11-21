@@ -26,7 +26,7 @@ const RISK: Record<
   low: {
     label: "Low risk",
     box: "border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/40",
-    text: "text-emerald-700 dark:text-emerald-300",
+    text: "text-primary dark:text-emerald-300",
     Icon: ShieldCheck,
   },
   medium: {

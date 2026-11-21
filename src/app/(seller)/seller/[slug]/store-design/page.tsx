@@ -256,7 +256,7 @@ function DeviceToggle({
 }) {
   return (
     <div
-      className="flex rounded-full bg-neutral-200/70 p-1"
+      className="flex rounded-full bg-muted p-1"
       role="radiogroup"
       aria-label="Preview device"
     >
@@ -580,12 +580,12 @@ export default function StoreDesignPage() {
   ) : null;
 
   return (
-    <div className="min-h-screen bg-[#f2f2f2] text-foreground">
+    <div className="min-h-screen bg-muted text-foreground">
       <header
-        className="sticky top-0 z-40 bg-[#f2f2f2]/95 px-2 pt-1.5 backdrop-blur md:px-3"
+        className="sticky top-0 z-40 bg-muted/95 px-2 pt-1.5 backdrop-blur md:px-3"
         style={{ height: TOPBAR }}
       >
-        <div className="flex h-[calc(100%-6px)] items-center justify-between gap-3 rounded-full bg-white px-3 shadow-sm md:px-5">
+        <div className="flex h-[calc(100%-6px)] items-center justify-between gap-3 rounded-full bg-card px-3 shadow-sm md:px-5">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
@@ -594,11 +594,11 @@ export default function StoreDesignPage() {
               }
               aria-label="Open seller navigation"
               data-seller-menu-trigger
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 transition hover:bg-neutral-200 lg:hidden"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition hover:bg-muted lg:hidden"
             >
               <Menu className="h-4 w-4" />
             </button>
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-white">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-white">
               <Paintbrush className="h-4 w-4" />
             </span>
             <div className="min-w-0">
@@ -627,7 +627,7 @@ export default function StoreDesignPage() {
             <button
               type="button"
               onClick={() => setPreviewOpen(true)}
-              className="hidden h-9 items-center gap-2 rounded-full bg-neutral-100 px-4 text-sm font-medium transition hover:bg-neutral-200 md:inline-flex"
+              className="hidden h-9 items-center gap-2 rounded-full bg-muted px-4 text-sm font-medium transition hover:bg-muted md:inline-flex"
             >
               <Eye className="h-4 w-4" />
               Live preview
@@ -635,7 +635,7 @@ export default function StoreDesignPage() {
             <Button
               variant="accent"
               size="sm"
-              className="ml-1 hidden h-9 rounded-full bg-emerald-700 px-5 hover:bg-emerald-800 xl:inline-flex"
+              className="ml-1 hidden h-9 rounded-full bg-primary px-5 hover:bg-primary/90 xl:inline-flex"
               onClick={handlePublish}
               disabled={publishDisabled}
             >
@@ -647,7 +647,7 @@ export default function StoreDesignPage() {
 
       <nav
         aria-label="Sections"
-        className="sticky z-30 bg-[#f2f2f2]/95 backdrop-blur xl:hidden"
+        className="sticky z-30 bg-muted/95 backdrop-blur xl:hidden"
         style={{ top: TOPBAR }}
       >
         <div className="flex gap-2 overflow-x-auto px-4 py-2.5 [scrollbar-width:none] md:px-6">
@@ -664,8 +664,8 @@ export default function StoreDesignPage() {
                 className={cn(
                   "flex min-h-10 shrink-0 items-center gap-2 rounded-full border px-4 text-sm font-medium transition",
                   selected
-                    ? "border-emerald-700 bg-emerald-700 text-white"
-                    : "border-transparent bg-white text-muted-foreground hover:text-foreground",
+                    ? "border-primary bg-primary text-white"
+                    : "border-transparent bg-card text-muted-foreground hover:text-foreground",
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -680,7 +680,7 @@ export default function StoreDesignPage() {
       <div className="xl:grid xl:h-[calc(100dvh-60px)] xl:grid-cols-[220px_minmax(480px,600px)_minmax(0,1fr)] xl:overflow-hidden">
         <aside className="hidden p-3 pr-0 xl:block">
           <div
-            className="sticky overflow-y-auto rounded-[26px] bg-white p-3 shadow-sm"
+            className="sticky overflow-y-auto rounded-2xl bg-card p-3 shadow-sm"
             style={{ top: TOPBAR, height: `calc(100dvh - ${TOPBAR}px - 24px)` }}
           >
             <nav aria-label="Sections" className="space-y-1">
@@ -696,8 +696,8 @@ export default function StoreDesignPage() {
                     className={cn(
                       "flex w-full items-center gap-3 rounded-full px-4 py-2.5 text-left transition",
                       selected
-                        ? "bg-emerald-700 text-white shadow-sm"
-                        : "text-muted-foreground hover:bg-neutral-100 hover:text-foreground",
+                        ? "bg-primary text-white shadow-sm"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )}
                   >
                     <Icon
@@ -729,7 +729,7 @@ export default function StoreDesignPage() {
         {/* ============ THE FIX: main is the scroll container ============ */}
         <main
           id="editor-scroll"
-          className="min-w-0 px-4 pb-32 pt-5 md:px-6 xl:h-full xl:overflow-y-auto xl:overscroll-contain xl:pb-10"
+          className="min-w-0 px-4 pb-44 pt-5 md:px-6 lg:pb-32 xl:h-full xl:overflow-y-auto xl:overscroll-contain xl:pb-10"
         >
           <div className="mb-5">
             <h2 className="text-2xl font-semibold tracking-tight">
@@ -769,7 +769,7 @@ export default function StoreDesignPage() {
             ) : (
               <Button
                 variant="accent"
-                className="h-11 rounded-full bg-emerald-700 px-8 hover:bg-emerald-800"
+                className="h-11 rounded-full bg-primary px-8 hover:bg-primary/90"
                 onClick={handlePublish}
                 disabled={publishDisabled}
               >
@@ -820,7 +820,7 @@ export default function StoreDesignPage() {
         </aside>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 pt-3 backdrop-blur xl:hidden pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className="fixed inset-x-0 bottom-[calc(3.5625rem+max(0.25rem,env(safe-area-inset-bottom)))] z-40 border-t bg-background/95 px-4 py-3 backdrop-blur lg:bottom-0 xl:hidden">
         <div className="mx-auto flex max-w-2xl gap-3">
           <Button
             variant="outline"
@@ -843,7 +843,7 @@ export default function StoreDesignPage() {
           )}
           <Button
             variant="accent"
-            className="h-12 flex-1 rounded-full bg-emerald-700 hover:bg-emerald-800"
+            className="h-12 flex-1 rounded-full bg-primary hover:bg-primary/90"
             onClick={handlePublish}
             disabled={publishDisabled}
           >
@@ -858,19 +858,19 @@ export default function StoreDesignPage() {
           role="dialog"
           aria-modal="true"
           aria-label={previewTemplate ? "Template preview" : "Store preview"}
-          className="fixed inset-0 z-[70] flex flex-col bg-[#eeeeec] animate-in fade-in duration-200"
+          className="fixed inset-0 z-[70] flex flex-col bg-muted animate-in fade-in duration-200"
         >
-          <div className="flex h-12 shrink-0 items-center gap-2 border-b border-neutral-200 bg-white px-2 shadow-sm sm:gap-3 sm:px-4">
+          <div className="flex h-12 shrink-0 items-center gap-2 border-b border-border bg-card px-2 shadow-sm sm:gap-3 sm:px-4">
             <button
               type="button"
               onClick={closePreview}
-              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-neutral-600 transition hover:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-800"
+              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-800"
             >
               <ArrowLeft className="h-4 w-4" />
               <span className="hidden sm:inline">Back to editor</span>
               <span className="sm:hidden">Back</span>
             </button>
-            <div className="min-w-0 flex-1 border-l border-neutral-200 pl-3 sm:pl-5">
+            <div className="min-w-0 flex-1 border-l border-border pl-3 sm:pl-5">
               {previewTemplate ? (
                 <select
                   aria-label="Preview template"
@@ -882,7 +882,7 @@ export default function StoreDesignPage() {
                       >,
                     )
                   }
-                  className="h-8 w-full max-w-48 rounded bg-white py-0 text-sm font-semibold text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-800"
+                  className="h-8 w-full max-w-48 rounded bg-card py-0 text-sm font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-800"
                 >
                   {storeTemplates
                     .filter(
@@ -897,7 +897,7 @@ export default function StoreDesignPage() {
                     ))}
                 </select>
               ) : (
-                <p className="truncate text-sm font-semibold text-neutral-900">
+                <p className="truncate text-sm font-semibold text-foreground">
                   {design.storeName}
                 </p>
               )}
@@ -908,7 +908,7 @@ export default function StoreDesignPage() {
             {previewTemplate ? (
               <Link
                 href={upgradeUrl}
-                className="inline-flex h-8 shrink-0 items-center justify-center rounded-lg bg-neutral-900 px-3 text-xs font-semibold text-white transition hover:bg-neutral-700"
+                className="inline-flex h-8 shrink-0 items-center justify-center rounded-lg bg-primary px-3 text-xs font-semibold text-white transition hover:bg-primary/90"
               >
                 Upgrade to use
               </Link>
@@ -923,7 +923,7 @@ export default function StoreDesignPage() {
               </Button>
             )}
           </div>
-          <div className="min-h-0 flex-1 overflow-hidden bg-neutral-100">
+          <div className="min-h-0 flex-1 overflow-hidden bg-muted">
             {device === "mobile" || !isSm ? (
               <div className="h-full min-h-0 p-3 sm:p-5">
                 <StorePreviewViewport
@@ -934,7 +934,7 @@ export default function StoreDesignPage() {
                 />
               </div>
             ) : previewTemplate || previewMode === "storefront" ? (
-              <div className="h-full overflow-y-auto overscroll-contain bg-white">
+              <div className="h-full overflow-y-auto overscroll-contain bg-card">
                 <LiveStorePreview
                   {...previewProps}
                   device="desktop"
@@ -951,7 +951,7 @@ export default function StoreDesignPage() {
             )}
           </div>
           {previewTemplate && (
-            <div className="flex shrink-0 items-center justify-center gap-2 border-t border-neutral-200 bg-white px-4 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] text-center text-xs text-neutral-500">
+            <div className="flex shrink-0 items-center justify-center gap-2 border-t border-border bg-card px-4 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] text-center text-xs text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
               Preview only. Upgrade to use and publish this template.
             </div>

@@ -33,9 +33,7 @@ function StatusChip({ on }: { on: boolean }) {
     <span
       className={cn(
         "rounded-full px-2 py-0.5 text-[11px] font-medium",
-        on
-          ? "bg-emerald-100 text-emerald-700"
-          : "bg-muted text-muted-foreground",
+        on ? "bg-emerald-100 text-primary" : "bg-muted text-muted-foreground",
       )}
     >
       {on ? "Active" : "Not connected"}
@@ -268,7 +266,7 @@ export function TrackingSettingsPanel() {
               Save settings
             </button>
             {saved && (
-              <span className="inline-flex items-center gap-1 text-sm text-emerald-700">
+              <span className="inline-flex items-center gap-1 text-sm text-primary">
                 <CheckCircle2 className="h-4 w-4" /> Saved. Changes apply to
                 your live store right away.
               </span>

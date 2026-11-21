@@ -1,11 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, Check, Info, Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -118,9 +114,10 @@ function signature(form: Form): string {
   };
   const row = (c: Cells) => `${cell(c.inside)}|${cell(c.outside)}`;
   const ids = Object.keys(form.custom).sort();
-  return [row(form.global), ...ids.map((id) => `${id}=${row(form.custom[id])}`)].join(
-    ";",
-  );
+  return [
+    row(form.global),
+    ...ids.map((id) => `${id}=${row(form.custom[id])}`),
+  ].join(";");
 }
 
 /* ------------------------------------------------------------------ */
@@ -382,7 +379,8 @@ export function DeliverySettingsForm({
         setServerErrors(err.fields);
         setSubmitted(true);
         setBanner(
-          err.fields.products ?? "Some amounts need fixing before this can be saved.",
+          err.fields.products ??
+            "Some amounts need fixing before this can be saved.",
         );
         if (Object.keys(err.fields).some((k) => k.startsWith("products."))) {
           setQuery("");
@@ -392,7 +390,10 @@ export function DeliverySettingsForm({
         return;
       }
       setBanner(
-        getApiErrorMessage(err, "Couldn't save your delivery charges. Try again."),
+        getApiErrorMessage(
+          err,
+          "Couldn't save your delivery charges. Try again.",
+        ),
       );
     },
   });
@@ -467,13 +468,15 @@ export function DeliverySettingsForm({
   /* ---- derived values ---- */
 
   const configured = settings.data.configured;
-  const threshold = freeDeliveryThreshold ?? settings.data.freeDeliveryThreshold;
+  const threshold =
+    freeDeliveryThreshold ?? settings.data.freeDeliveryThreshold;
   const globalInside = parseCharge(form.global.inside);
   const globalOutside = parseCharge(form.global.outside);
 
   const known = new Set(products.map((p) => p.id));
-  const customCount = Object.keys(form.custom).filter((id) => known.has(id))
-    .length;
+  const customCount = Object.keys(form.custom).filter((id) =>
+    known.has(id),
+  ).length;
 
   const needle = query.trim().toLowerCase();
   const filtered = products.filter(
@@ -493,7 +496,9 @@ export function DeliverySettingsForm({
     <div className="space-y-5">
       {!configured && (
         <Notice tone="info">
-          <p className="font-medium">You haven&apos;t set delivery charges yet.</p>
+          <p className="font-medium">
+            You haven&apos;t set delivery charges yet.
+          </p>
           <p className="mt-0.5">
             Until you save, your store keeps working as it does today:{" "}
             {threshold > 0
@@ -584,7 +589,7 @@ export function DeliverySettingsForm({
               <div
                 role="radiogroup"
                 aria-label="Show"
-                className="flex rounded-full bg-neutral-200/70 p-1"
+                className="flex rounded-full bg-muted p-1"
               >
                 {(
                   [
@@ -703,9 +708,8 @@ export function DeliverySettingsForm({
         <p className="text-sm leading-6">
           {threshold > 0 ? (
             <>
-              Orders of{" "}
-              <strong>৳{threshold.toLocaleString("en-US")}</strong> or more get
-              free delivery, whatever the charges above.
+              Orders of <strong>৳{threshold.toLocaleString("en-US")}</strong> or
+              more get free delivery, whatever the charges above.
             </>
           ) : (
             <>You don&apos;t offer free delivery over a minimum order.</>
@@ -737,7 +741,7 @@ export function DeliverySettingsForm({
                   </Button>
                   <Button
                     variant="accent"
-                    className="h-10 rounded-full bg-emerald-700 px-5 hover:bg-emerald-800"
+                    className="h-10 rounded-full bg-primary px-5 hover:bg-primary/90"
                     onClick={onSave}
                     disabled={save.isPending}
                   >
@@ -753,7 +757,7 @@ export function DeliverySettingsForm({
                 </div>
               </>
             ) : (
-              <p className="flex items-center gap-2 text-sm font-medium text-emerald-700">
+              <p className="flex items-center gap-2 text-sm font-medium text-primary">
                 <Check className="h-4 w-4" />
                 Delivery charges saved. Customers see them right away.
               </p>
@@ -795,7 +799,9 @@ export function DeliverySettingsForm({
 /** DOM id of the money box for an error key like "products.abc.insideDhaka". */
 function inputId(key: string): string {
   if (key.startsWith("global.")) {
-    return key.endsWith("insideDhaka") ? "dlv-global-inside" : "dlv-global-outside";
+    return key.endsWith("insideDhaka")
+      ? "dlv-global-inside"
+      : "dlv-global-outside";
   }
   return `dlv-${key.replace(/\./g, "-")}`;
 }

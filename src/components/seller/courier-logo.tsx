@@ -39,7 +39,7 @@ export function CourierLogo({
         style={box}
         className={cn(
           "flex shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white",
-          muted ? "bg-neutral-300" : "bg-emerald-700",
+          muted ? "bg-neutral-300" : "bg-primary",
           className,
         )}
       >
@@ -52,7 +52,7 @@ export function CourierLogo({
     <span
       style={box}
       className={cn(
-        "flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ring-1 ring-neutral-200",
+        "flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-card ring-1 ring-border",
         muted && "opacity-60 grayscale",
         className,
       )}

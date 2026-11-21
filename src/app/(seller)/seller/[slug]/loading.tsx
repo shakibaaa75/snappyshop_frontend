@@ -12,7 +12,7 @@ import {
 export default function SellerPageLoading() {
   return (
     <div
-      className="w-full min-w-0 max-w-full space-y-5"
+      className="seller-delay-in w-full min-w-0 max-w-full space-y-5"
       aria-busy="true"
       aria-live="polite"
     >

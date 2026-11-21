@@ -236,7 +236,7 @@ function CategoryView({ category }: { category: string }) {
             aria-busy={q.isPlaceholderData}
           >
             {q.data.items.map((p) => (
-              <TopSellingCard key={p.id} product={p} />
+              <TopSellingCard key={p.id} product={p} coverImage />
             ))}
           </div>
 

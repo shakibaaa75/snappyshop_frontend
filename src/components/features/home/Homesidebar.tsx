@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-} from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
@@ -33,8 +27,6 @@ import { homeHref, mainIdOf } from "@/lib/query/category-nav";
 
 /** Height of one row. The sliding notch moves in steps of this value. */
 const ROW_H = 52;
-/** Radius of the curved joins above/below the notch. */
-const FILLET = 20;
 
 export type SideLink = {
   icon: LucideIcon;
@@ -116,12 +108,6 @@ function indexFromUrl(
   return 0;
 }
 
-/** Concave "bite" corners: page-coloured square with a quarter circle cut out. */
-const filletMask = (at: string): CSSProperties => {
-  const g = `radial-gradient(circle at ${at}, transparent ${FILLET - 1}px, #000 ${FILLET}px)`;
-  return { WebkitMaskImage: g, maskImage: g };
-};
-
 export function HomeSidebar() {
   const pathname = usePathname();
   const params = useSearchParams();
@@ -155,7 +141,7 @@ export function HomeSidebar() {
             style={{ height: (links.length + (isPending ? 4 : 0)) * ROW_H }}
             aria-busy={isPending}
           >
-            {/* Sliding notch + bubble */}
+            {/* Sliding bubble behind the active icon */}
             <div
               aria-hidden
               className="pointer-events-none absolute inset-x-0 top-0 z-0 transition-[transform,opacity] duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
@@ -165,26 +151,7 @@ export function HomeSidebar() {
                 opacity: hasActive ? 1 : 0,
               }}
             >
-              <div className="absolute inset-0 bg-background" />
-              <span
-                className="absolute -top-5 right-0 h-5 w-5 bg-background"
-                style={filletMask("0 0")}
-              />
-              <span
-                className="absolute -bottom-5 right-0 h-5 w-5 bg-background"
-                style={filletMask("0 100%")}
-              />
-              <span
-                className="absolute -top-5 left-0 h-5 w-5 bg-background"
-                style={filletMask("100% 0")}
-              />
-              <span
-                className="absolute -bottom-5 left-0 h-5 w-5 bg-background"
-                style={filletMask("100% 100%")}
-              />
-              <span className="absolute -left-1.5 top-1/2 h-[54px] w-[54px] -translate-y-1/2 rounded-full bg-background p-[7px]">
-                <span className="block h-10 w-10 rounded-full bg-[#FF6845] dark:bg-white" />
-              </span>
+              <span className="absolute left-[11px] top-1/2 h-10 w-10 -translate-y-1/2 rounded-full bg-[#FF6845] dark:bg-white" />
             </div>
 
             {/* Rows */}
@@ -219,11 +186,11 @@ export function HomeSidebar() {
                         }`}
                         strokeWidth={1.75}
                       />
-                      {/* Active label sits on the cream notch, so it is teal */}
+                      {/* Active label stays white on the blue panel */}
                       <span
                         className={`min-w-0 flex-1 truncate transition-colors duration-200 ${
                           active
-                            ? "font-semibold text-primary"
+                            ? "font-semibold text-white"
                             : "text-white/75 group-hover:text-white"
                         }`}
                       >

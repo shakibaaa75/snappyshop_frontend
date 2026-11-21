@@ -40,11 +40,11 @@ export const LEVEL_STYLE: Record<
   }
 > = {
   info: {
-    box: "border-sky-200 bg-sky-50",
-    icon: "text-sky-600",
-    chip: "bg-sky-100 text-sky-800",
-    tint: "bg-sky-100",
-    badge: "bg-sky-500",
+    box: "border-primary/20 bg-primary/5",
+    icon: "text-primary",
+    chip: "bg-primary/10 text-primary",
+    tint: "bg-primary/10",
+    badge: "bg-primary",
     Icon: Info,
   },
   success: {
@@ -52,7 +52,7 @@ export const LEVEL_STYLE: Record<
     icon: "text-emerald-600",
     chip: "bg-emerald-100 text-emerald-800",
     tint: "bg-emerald-100",
-    badge: "bg-emerald-500",
+    badge: "bg-primary",
     Icon: CheckCircle2,
   },
   warning: {
@@ -98,20 +98,20 @@ function Avatar({ n }: { n: SellerNotification }) {
     <span
       className={cn(
         "relative grid h-11 w-11 shrink-0 place-items-center rounded-full sm:h-12 sm:w-12",
-        n.read ? "bg-neutral-100" : style.tint,
+        n.read ? "bg-muted" : style.tint,
       )}
     >
       <Icon
         className={cn(
           "h-5 w-5 sm:h-6 sm:w-6",
-          n.read ? "text-neutral-400" : style.icon,
+          n.read ? "text-muted-foreground" : style.icon,
         )}
         strokeWidth={1.8}
       />
       <span
         className={cn(
-          "absolute -bottom-0.5 -right-0.5 grid h-5 w-5 place-items-center rounded-full text-white ring-2 ring-white",
-          n.read ? "bg-neutral-300" : style.badge,
+          "absolute -bottom-0.5 -right-0.5 grid h-5 w-5 place-items-center rounded-full text-white ring-2 ring-card",
+          n.read ? "bg-muted-foreground/40" : style.badge,
         )}
       >
         <Bell className="h-2.5 w-2.5" strokeWidth={2.4} />
@@ -121,9 +121,9 @@ function Avatar({ n }: { n: SellerNotification }) {
 }
 
 const pillDark =
-  "inline-flex h-9 items-center justify-center rounded-full bg-neutral-900 px-5 text-sm font-semibold text-white transition hover:bg-neutral-700";
+  "inline-flex h-9 items-center justify-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90";
 const pillLight =
-  "inline-flex h-9 items-center justify-center rounded-full bg-neutral-100 px-5 text-sm font-semibold text-neutral-800 transition hover:bg-neutral-200";
+  "inline-flex h-9 items-center justify-center rounded-full bg-muted px-5 text-sm font-semibold text-foreground transition hover:bg-border";
 
 /**
  * A notification, flat (no box) so it can sit in a list. Left: avatar with a
@@ -168,8 +168,8 @@ export function NotificationRow({
             className={cn(
               "min-w-0 text-[15px] leading-snug",
               n.read
-                ? "font-medium text-neutral-500"
-                : "font-semibold text-neutral-900",
+                ? "font-medium text-muted-foreground"
+                : "font-semibold text-foreground",
             )}
           >
             {n.title}
@@ -177,19 +177,19 @@ export function NotificationRow({
           {!n.read && (
             <span
               aria-label="Unread"
-              className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-500"
+              className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary"
             />
           )}
         </div>
 
-        <p className="mt-0.5 text-xs text-neutral-400">
+        <p className="mt-0.5 text-xs text-muted-foreground">
           {timeAgo(n.createdAt)}
         </p>
 
         <p
           className={cn(
             "mt-1.5 whitespace-pre-line break-words text-sm leading-relaxed",
-            n.read ? "text-neutral-400" : "text-neutral-500",
+            n.read ? "text-muted-foreground" : "text-muted-foreground",
             compact && "line-clamp-2",
           )}
         >
@@ -241,7 +241,7 @@ export function NotificationCard({
   dismissible?: boolean;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
       <NotificationRow n={n} onRead={onRead} compact />
       {dismissible && !n.read && (
         <button
@@ -249,7 +249,7 @@ export function NotificationCard({
           onClick={() => onRead?.(n.id)}
           aria-label="Dismiss notification"
           title="Mark as read"
-          className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full text-neutral-400 transition hover:bg-neutral-100 hover:text-neutral-800"
+          className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground"
         >
           <X className="h-4 w-4" />
         </button>
@@ -306,13 +306,13 @@ export function NotificationPanel({
       className={cn(
         "rounded-full px-3.5 py-1.5 text-sm font-medium transition",
         tab === id
-          ? "bg-neutral-100 text-neutral-900"
-          : "text-neutral-500 hover:text-neutral-800",
+          ? "bg-muted text-foreground"
+          : "text-muted-foreground hover:text-foreground",
       )}
     >
       {label}
       {id === "unread" && unread > 0 && (
-        <span className="ml-1.5 rounded-full bg-emerald-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
+        <span className="ml-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold text-primary-foreground">
           {unread > 99 ? "99+" : unread}
         </span>
       )}
@@ -320,7 +320,7 @@ export function NotificationPanel({
   );
 
   return (
-    <div className={cn("flex min-h-0 flex-col bg-white", className)}>
+    <div className={cn("flex min-h-0 flex-col bg-card", className)}>
       <div className="flex items-center justify-between gap-3 px-4 py-3.5 sm:px-5">
         <div className="flex min-w-0 items-center gap-2">
           {onBack && (
@@ -328,12 +328,12 @@ export function NotificationPanel({
               type="button"
               onClick={onBack}
               aria-label="Back"
-              className="-ml-1.5 grid h-9 w-9 shrink-0 place-items-center rounded-full text-neutral-800 transition hover:bg-neutral-100"
+              className="-ml-1.5 grid h-9 w-9 shrink-0 place-items-center rounded-full text-foreground transition hover:bg-muted"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
           )}
-          <h2 className="truncate text-lg font-semibold tracking-tight text-neutral-900">
+          <h2 className="truncate text-lg font-semibold tracking-tight text-foreground">
             Notifications
           </h2>
         </div>
@@ -342,15 +342,15 @@ export function NotificationPanel({
           {tabBtn("unread", "Unread")}
         </div>
       </div>
-      <div className="border-t border-neutral-200" />
+      <div className="border-t border-border" />
 
       <div className={cn("min-h-0 flex-1 overflow-y-auto", listClassName)}>
         {loading ? (
-          <div className="flex items-center justify-center gap-2 py-14 text-sm text-neutral-500">
+          <div className="flex items-center justify-center gap-2 py-14 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading…
           </div>
         ) : error ? (
-          <div className="px-5 py-10 text-center text-sm text-red-700">
+          <div className="px-5 py-10 text-center text-sm text-destructive">
             Could not load notifications.{" "}
             {onRetry && (
               <button
@@ -364,18 +364,18 @@ export function NotificationPanel({
           </div>
         ) : shown.length === 0 ? (
           <div className="flex flex-col items-center gap-2 px-5 py-14 text-center">
-            <Bell className="h-8 w-8 text-neutral-300" />
-            <p className="text-sm font-medium text-neutral-800">
+            <Bell className="h-8 w-8 text-muted-foreground/50" />
+            <p className="text-sm font-medium text-foreground">
               {tab === "unread"
                 ? "No unread messages"
                 : "You are all caught up"}
             </p>
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-muted-foreground">
               Messages from the ShopBD team will show up here.
             </p>
           </div>
         ) : (
-          <ul className="divide-y divide-neutral-200">
+          <ul className="divide-y divide-border">
             {shown.map((n) => (
               <li key={n.id}>
                 <NotificationRow
@@ -391,13 +391,13 @@ export function NotificationPanel({
       </div>
 
       {(unread > 0 || footer) && (
-        <div className="border-t border-neutral-200">
+        <div className="border-t border-border">
           {unread > 0 && (
             <button
               type="button"
               onClick={onReadAll}
               disabled={readAllPending}
-              className="flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-neutral-800 transition hover:bg-neutral-50 disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-muted disabled:opacity-60"
             >
               <CheckCheck className="h-4 w-4" /> Mark all as read
             </button>

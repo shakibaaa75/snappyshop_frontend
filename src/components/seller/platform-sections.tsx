@@ -198,7 +198,7 @@ function PlatformSection({
               <p className="text-xs text-muted-foreground">{def.tagline}</p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-medium text-emerald-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-medium text-primary">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
             {def.pixelLabel} active
           </span>

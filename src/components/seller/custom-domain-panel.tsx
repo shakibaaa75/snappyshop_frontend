@@ -64,7 +64,7 @@ function CopyButton({ value, label }: { value: string; label: string }) {
           /* clipboard blocked: the value is still selectable */
         }
       }}
-      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-800"
+      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground"
     >
       {copied ? (
         <Check className="h-3.5 w-3.5 text-emerald-600" />
@@ -77,24 +77,24 @@ function CopyButton({ value, label }: { value: string; label: string }) {
 
 function RecordRow({ rec }: { rec: CustomDomainRecord }) {
   return (
-    <li className="rounded-2xl border border-neutral-200 p-3">
+    <li className="rounded-2xl border border-border p-3">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-md bg-neutral-900 px-2 py-0.5 font-mono text-[11px] font-semibold text-white">
+        <span className="rounded-md bg-primary px-2 py-0.5 font-mono text-[11px] font-semibold text-white">
           {rec.type}
         </span>
-        <span className="text-xs text-neutral-500">
+        <span className="text-xs text-muted-foreground">
           {rec.purpose === "ownership" ? "Ownership" : "Routing"}
         </span>
       </div>
       <dl className="mt-2 grid gap-2 text-sm sm:grid-cols-[5rem_1fr]">
-        <dt className="text-neutral-500">Name</dt>
+        <dt className="text-muted-foreground">Name</dt>
         <dd className="flex min-w-0 items-center gap-1">
           <code className="min-w-0 break-all font-mono text-[13px]">
             {rec.name}
           </code>
           <CopyButton value={rec.name} label="record name" />
         </dd>
-        <dt className="text-neutral-500">Value</dt>
+        <dt className="text-muted-foreground">Value</dt>
         <dd className="flex min-w-0 items-center gap-1">
           <code className="min-w-0 break-all font-mono text-[13px]">
             {rec.value}
@@ -102,7 +102,9 @@ function RecordRow({ rec }: { rec: CustomDomainRecord }) {
           <CopyButton value={rec.value} label="record value" />
         </dd>
       </dl>
-      {rec.note && <p className="mt-2 text-xs text-neutral-500">{rec.note}</p>}
+      {rec.note && (
+        <p className="mt-2 text-xs text-muted-foreground">{rec.note}</p>
+      )}
     </li>
   );
 }
@@ -113,9 +115,7 @@ function StatusBadge({ data }: { data: CustomDomain }) {
     <span
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
-        verified
-          ? "bg-emerald-50 text-emerald-700"
-          : "bg-amber-50 text-amber-700",
+        verified ? "bg-emerald-50 text-primary" : "bg-amber-50 text-amber-700",
       )}
     >
       {verified ? (
@@ -205,7 +205,9 @@ export function CustomDomainPanel() {
   const locked = data ? !data.planAllowed : false;
   const cleaned = cleanDomain(input);
   const busy =
-    setMutation.isPending || verifyMutation.isPending || removeMutation.isPending;
+    setMutation.isPending ||
+    verifyMutation.isPending ||
+    removeMutation.isPending;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -214,18 +216,19 @@ export function CustomDomainPanel() {
     setMutation.mutate(cleaned);
   };
 
-  const ownership = data?.records.filter((r) => r.purpose === "ownership") ?? [];
+  const ownership =
+    data?.records.filter((r) => r.purpose === "ownership") ?? [];
   const routing = data?.records.filter((r) => r.purpose !== "ownership") ?? [];
 
   return (
-    <section className="rounded-[26px] bg-white p-4 shadow-sm sm:p-6">
+    <section className="rounded-2xl bg-card p-4 shadow-sm sm:p-6">
       <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-neutral-100">
-          <Globe className="h-5 w-5 text-neutral-700" />
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted">
+          <Globe className="h-5 w-5 text-foreground" />
         </span>
         <div className="min-w-0">
           <h2 className="text-lg font-medium tracking-tight">Custom domain</h2>
-          <p className="mt-0.5 max-w-xl text-sm text-neutral-500">
+          <p className="mt-0.5 max-w-xl text-sm text-muted-foreground">
             Use your own web address, like shop.yourbrand.com, instead of the
             default store link.
           </p>
@@ -269,20 +272,23 @@ export function CustomDomainPanel() {
 
         {query.isLoading && (
           <div className="space-y-3">
-            <div className="h-11 animate-pulse rounded-full bg-neutral-200/80" />
-            <div className="h-24 animate-pulse rounded-2xl bg-neutral-200/80" />
+            <div className="h-11 animate-pulse rounded-full bg-muted" />
+            <div className="h-24 animate-pulse rounded-2xl bg-muted" />
           </div>
         )}
 
         {query.error && (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
             <span>
-              {errorMessage(query.error, "Could not load your domain settings.")}
+              {errorMessage(
+                query.error,
+                "Could not load your domain settings.",
+              )}
             </span>
             <button
               type="button"
               onClick={() => query.refetch()}
-              className="rounded-full bg-white px-4 py-1.5 text-xs font-medium text-neutral-700 shadow-sm hover:bg-neutral-50"
+              className="rounded-full bg-card px-4 py-1.5 text-xs font-medium text-foreground shadow-sm hover:bg-muted"
             >
               Try again
             </button>
@@ -305,12 +311,12 @@ export function CustomDomainPanel() {
                 autoCorrect="off"
                 spellCheck={false}
                 inputMode="url"
-                className="h-11 min-w-0 flex-1 rounded-full border border-neutral-200 bg-white px-4 text-sm outline-none transition focus:border-neutral-900 disabled:cursor-not-allowed disabled:bg-neutral-100"
+                className="h-11 min-w-0 flex-1 rounded-full border border-border bg-card px-4 text-sm outline-none transition focus:border-neutral-900 disabled:cursor-not-allowed disabled:bg-muted"
               />
               <button
                 type="submit"
                 disabled={!cleaned || busy || locked}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-emerald-700 px-5 text-sm font-medium text-white shadow-sm transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-500"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-white shadow-sm transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
               >
                 {setMutation.isPending && (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -318,7 +324,7 @@ export function CustomDomainPanel() {
                 Add domain
               </button>
             </div>
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-muted-foreground">
               You must own the domain and be able to edit its DNS records.
             </p>
           </form>
@@ -326,7 +332,7 @@ export function CustomDomainPanel() {
 
         {data && hasDomain && (
           <>
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-neutral-50 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-muted/50 p-4">
               <div className="min-w-0">
                 <p className="break-all text-base font-medium">{data.domain}</p>
                 <div className="mt-1.5 flex flex-wrap items-center gap-2">
@@ -337,7 +343,7 @@ export function CustomDomainPanel() {
                     </span>
                   )}
                   {formatWhen(data.lastCheckedAt) && (
-                    <span className="text-xs text-neutral-500">
+                    <span className="text-xs text-muted-foreground">
                       Checked {formatWhen(data.lastCheckedAt)}
                     </span>
                   )}
@@ -349,7 +355,7 @@ export function CustomDomainPanel() {
                     href={data.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-neutral-100"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-muted"
                   >
                     Visit <ExternalLink className="h-3.5 w-3.5" />
                   </a>
@@ -361,7 +367,7 @@ export function CustomDomainPanel() {
                     verifyMutation.mutate();
                   }}
                   disabled={busy || locked}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {verifyMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -395,7 +401,7 @@ export function CustomDomainPanel() {
                   <button
                     type="button"
                     onClick={() => setConfirmRemove(false)}
-                    className="rounded-full bg-white px-4 py-1.5 text-xs font-medium text-neutral-700 shadow-sm hover:bg-neutral-50"
+                    className="rounded-full bg-card px-4 py-1.5 text-xs font-medium text-foreground shadow-sm hover:bg-muted"
                   >
                     Cancel
                   </button>
@@ -434,10 +440,10 @@ export function CustomDomainPanel() {
                       {ownership.length > 0 ? "2. " : ""}Point the domain to
                       your store
                     </h3>
-                    <p className="text-xs text-neutral-500">
+                    <p className="text-xs text-muted-foreground">
                       Add the CNAME record for a subdomain (like shop or www),
-                      or the A record(s) for a root domain (like
-                      yourbrand.com). You only need one kind.
+                      or the A record(s) for a root domain (like yourbrand.com).
+                      You only need one kind.
                     </p>
                     <ul className="space-y-2">
                       {routing.map((r, i) => (
@@ -447,7 +453,7 @@ export function CustomDomainPanel() {
                   </div>
                 )}
                 {!data.verified && (
-                  <p className="text-xs text-neutral-500">
+                  <p className="text-xs text-muted-foreground">
                     DNS changes can take from a few minutes up to 48 hours to
                     spread. Press Check DNS once you have added the records.
                   </p>

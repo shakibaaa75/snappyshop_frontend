@@ -32,7 +32,7 @@ export interface CategorySuggestion {
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
 const RING =
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700";
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 
 /* A product can have several categories. Selected ones show as chips; the
    "Add category" button opens a popup with search and suggestions. */
@@ -76,7 +76,7 @@ export function CategoryPicker({
         {selected.map((c) => (
           <span
             key={c.id}
-            className="inline-flex h-10 items-center gap-2 rounded-full bg-emerald-700 pl-2 pr-1.5 text-sm font-medium text-white"
+            className="inline-flex h-10 items-center gap-2 rounded-full bg-primary pl-2 pr-1.5 text-sm font-medium text-white"
           >
             <CategoryThumb
               name={c.name}
@@ -89,7 +89,7 @@ export function CategoryPicker({
               aria-label={`Remove ${c.name}`}
               onClick={() => remove(c.id)}
               className={cn(
-                "flex h-6 w-6 items-center justify-center rounded-full hover:bg-emerald-900",
+                "flex h-6 w-6 items-center justify-center rounded-full hover:bg-primary/90",
                 RING,
               )}
             >
@@ -102,7 +102,7 @@ export function CategoryPicker({
           type="button"
           onClick={() => setOpen(true)}
           className={cn(
-            "inline-flex h-10 items-center gap-2 rounded-full border border-dashed px-4 text-sm font-medium text-neutral-700 transition hover:border-emerald-700 hover:text-emerald-800",
+            "inline-flex h-10 items-center gap-2 rounded-full border border-dashed px-4 text-sm font-medium text-foreground transition hover:border-primary hover:text-primary",
             error ? "border-destructive" : "border-neutral-400",
             RING,
           )}
@@ -341,7 +341,7 @@ function CategoryPopup({
         role="dialog"
         aria-modal="true"
         aria-labelledby="cat-popup-title"
-        className="flex max-h-[85vh] w-full max-w-md flex-col rounded-t-[26px] bg-white shadow-[0_8px_32px_-8px_rgba(0,0,0,.35)] sm:rounded-[26px]"
+        className="flex max-h-[85vh] w-full max-w-md flex-col rounded-t-[26px] bg-card shadow-[0_8px_32px_-8px_rgba(0,0,0,.35)] sm:rounded-2xl"
       >
         {pending ? (
           <ImageStep
@@ -365,7 +365,7 @@ function CategoryPopup({
                 >
                   Add categories
                 </h2>
-                <p className="mt-1 text-sm text-neutral-600">
+                <p className="mt-1 text-sm text-muted-foreground">
                   Pick a few, or type your own. Up to {MAX_CATEGORIES} per
                   product.
                 </p>
@@ -375,7 +375,7 @@ function CategoryPopup({
                 onClick={onClose}
                 aria-label="Close"
                 className={cn(
-                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-neutral-600 transition hover:bg-neutral-100",
+                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted",
                   RING,
                 )}
               >
@@ -385,7 +385,7 @@ function CategoryPopup({
 
             <div className="px-6 pt-4">
               <div className="relative">
-                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
+                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
                   ref={inputRef}
                   value={query}
@@ -401,7 +401,7 @@ function CategoryPopup({
                   }}
                   maxLength={40}
                   placeholder="Search or type a category"
-                  className="h-11 w-full rounded-xl border border-neutral-300 bg-white pl-10 pr-4 text-sm outline-none transition placeholder:text-neutral-500 focus:ring-2 focus:ring-emerald-600/40"
+                  className="h-11 w-full rounded-xl border border-border bg-card pl-10 pr-4 text-sm outline-none transition placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/40"
                 />
               </div>
               {atLimit && (
@@ -420,7 +420,7 @@ function CategoryPopup({
             <div className="mt-3 min-h-0 flex-1 overflow-y-auto px-4 pb-2">
               {own.length > 0 && (
                 <>
-                  <p className="px-2 pb-1 pt-2 text-xs font-medium text-neutral-500">
+                  <p className="px-2 pb-1 pt-2 text-xs font-medium text-muted-foreground">
                     Your categories
                   </p>
                   <ul>
@@ -441,7 +441,7 @@ function CategoryPopup({
                                   onClick={() => setConfirmId(null)}
                                   disabled={deletingId === c.id}
                                   className={cn(
-                                    "h-8 rounded-full px-3 text-xs font-medium text-neutral-700 hover:bg-white disabled:opacity-40",
+                                    "h-8 rounded-full px-3 text-xs font-medium text-foreground hover:bg-card disabled:opacity-40",
                                     RING,
                                   )}
                                 >
@@ -478,7 +478,7 @@ function CategoryPopup({
                               "flex min-w-0 flex-1 items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm transition disabled:opacity-40",
                               on
                                 ? "bg-emerald-50 text-emerald-900"
-                                : "hover:bg-neutral-100",
+                                : "hover:bg-muted",
                               RING,
                             )}
                           >
@@ -501,7 +501,7 @@ function CategoryPopup({
                               setEditing(c);
                             }}
                             className={cn(
-                              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-neutral-500 transition hover:bg-neutral-100 hover:text-emerald-800",
+                              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-primary",
                               RING,
                             )}
                           >
@@ -515,7 +515,7 @@ function CategoryPopup({
                               setConfirmId(c.id);
                             }}
                             className={cn(
-                              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-neutral-500 transition hover:bg-red-50 hover:text-red-700",
+                              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition hover:bg-red-50 hover:text-red-700",
                               RING,
                             )}
                           >
@@ -530,7 +530,7 @@ function CategoryPopup({
 
               {suggestions.length > 0 && (
                 <>
-                  <p className="px-2 pb-1 pt-3 text-xs font-medium text-neutral-500">
+                  <p className="px-2 pb-1 pt-3 text-xs font-medium text-muted-foreground">
                     {q ? "Suggestions" : relatedLabel}
                   </p>
                   <ul>
@@ -541,7 +541,7 @@ function CategoryPopup({
                           onClick={() => create(s.name)}
                           disabled={atLimit || !!busy}
                           className={cn(
-                            "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm transition hover:bg-neutral-100 disabled:opacity-40",
+                            "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm transition hover:bg-muted disabled:opacity-40",
                             RING,
                           )}
                         >
@@ -551,14 +551,14 @@ function CategoryPopup({
                           </span>
                           <span className="flex items-center gap-2">
                             {s.hint && (
-                              <span className="text-xs text-neutral-500">
+                              <span className="text-xs text-muted-foreground">
                                 {s.hint}
                               </span>
                             )}
                             {busy === s.name ? (
-                              <Loader2 className="h-4 w-4 animate-spin text-neutral-500" />
+                              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                             ) : (
-                              <Plus className="h-4 w-4 text-neutral-500" />
+                              <Plus className="h-4 w-4 text-muted-foreground" />
                             )}
                           </span>
                         </button>
@@ -574,7 +574,7 @@ function CategoryPopup({
                   onClick={() => create(typed)}
                   disabled={atLimit || !!busy}
                   className={cn(
-                    "mt-2 flex w-full items-center gap-2 rounded-xl border border-dashed border-emerald-700/50 px-3 py-2.5 text-left text-sm font-medium text-emerald-800 transition hover:bg-emerald-50 disabled:opacity-40",
+                    "mt-2 flex w-full items-center gap-2 rounded-xl border border-dashed border-primary/50 px-3 py-2.5 text-left text-sm font-medium text-primary transition hover:bg-muted disabled:opacity-40",
                     RING,
                   )}
                 >
@@ -588,21 +588,21 @@ function CategoryPopup({
               )}
 
               {empty && (
-                <p className="px-3 py-6 text-center text-sm text-neutral-600">
+                <p className="px-3 py-6 text-center text-sm text-muted-foreground">
                   Type a name to find or create a category.
                 </p>
               )}
             </div>
 
             <div className="flex items-center justify-between gap-3 border-t px-6 py-4">
-              <span className="text-xs text-neutral-600">
+              <span className="text-xs text-muted-foreground">
                 You can add an image when you create a category.
               </span>
               <button
                 type="button"
                 onClick={onClose}
                 className={cn(
-                  "h-11 rounded-full bg-emerald-700 px-6 text-sm font-medium text-white transition hover:bg-emerald-800",
+                  "h-11 rounded-full bg-primary px-6 text-sm font-medium text-white transition hover:bg-primary/90",
                   RING,
                 )}
               >
@@ -676,13 +676,13 @@ function ImageStep({
       <h2 id="cat-popup-title" className="text-xl font-semibold tracking-tight">
         Add a category image
       </h2>
-      <p className="mt-1 text-sm text-neutral-600">
+      <p className="mt-1 text-sm text-muted-foreground">
         Shown with “{name}”. You can skip this.
       </p>
 
       <div className="mt-5">
         {preview ? (
-          <div className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100">
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-muted">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={preview}
@@ -694,7 +694,7 @@ function ImageStep({
               onClick={() => setFile(null)}
               disabled={saving}
               className={cn(
-                "absolute right-2 top-2 inline-flex h-9 items-center gap-1.5 rounded-full bg-white px-3.5 text-xs font-medium text-neutral-900 shadow-sm transition hover:bg-neutral-100 disabled:opacity-40",
+                "absolute right-2 top-2 inline-flex h-9 items-center gap-1.5 rounded-full bg-card px-3.5 text-xs font-medium text-foreground shadow-sm transition hover:bg-muted disabled:opacity-40",
                 RING,
               )}
             >
@@ -703,12 +703,12 @@ function ImageStep({
             </button>
           </div>
         ) : (
-          <label className="flex aspect-[4/3] w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-neutral-300 bg-neutral-50 text-center transition hover:border-emerald-600 hover:bg-emerald-50/50 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-emerald-700">
-            <ImagePlus className="h-6 w-6 text-neutral-600" />
-            <span className="text-sm font-medium text-neutral-800">
+          <label className="flex aspect-[4/3] w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-muted/50 text-center transition hover:border-primary hover:bg-muted focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary">
+            <ImagePlus className="h-6 w-6 text-muted-foreground" />
+            <span className="text-sm font-medium text-foreground">
               Choose an image
             </span>
-            <span className="text-xs text-neutral-600">
+            <span className="text-xs text-muted-foreground">
               JPG, PNG or WebP, up to {MAX_IMAGE_MB} MB
             </span>
             <input
@@ -736,7 +736,7 @@ function ImageStep({
           onClick={onBack}
           disabled={saving}
           className={cn(
-            "h-11 rounded-full px-5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 disabled:opacity-40",
+            "h-11 rounded-full px-5 text-sm font-medium text-foreground transition hover:bg-muted disabled:opacity-40",
             RING,
           )}
         >
@@ -747,7 +747,7 @@ function ImageStep({
           onClick={() => onSave(file)}
           disabled={saving}
           className={cn(
-            "inline-flex h-11 items-center gap-2 rounded-full bg-emerald-700 px-6 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:opacity-60",
+            "inline-flex h-11 items-center gap-2 rounded-full bg-primary px-6 text-sm font-medium text-white transition hover:bg-primary/90 disabled:opacity-60",
             RING,
           )}
         >
@@ -765,9 +765,7 @@ function Box({ on }: { on: boolean }) {
       aria-hidden
       className={cn(
         "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition",
-        on
-          ? "border-emerald-700 bg-emerald-700 text-white"
-          : "border-neutral-300 bg-white",
+        on ? "border-primary bg-primary text-white" : "border-border bg-card",
       )}
     >
       {on && <Check className="h-3.5 w-3.5" />}
