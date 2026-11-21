@@ -1,63 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { Check, ShoppingCart } from "lucide-react";
-import type { Product } from "@/types";
+import { Check, Plus } from "lucide-react";
 import { addToSellerCart, useCartQty } from "@/lib/cart/marketplace-cart";
-import { cn } from "@/lib/utils";
+import { marketplaceProductHref } from "@/lib/query/marketplace-links";
+import type { CardProduct } from "./TopSellingCard";
 
-/**
- * Add-to-cart for marketplace product cards.
- *
- * - Sold out            -> disabled "Sold out"
- * - Has size/colour     -> "Select options" link to the product page
- *                          (the cart needs to know which variant)
- * - Otherwise           -> adds 1 to that seller's cart right here
- *
- * Sits above the card's stretched link (relative + z-10), so clicking it
- * never opens the product page.
- */
-export function AddToCartButton({
-  product,
-  className,
-}: {
-  product: Product;
-  className?: string;
-}) {
-  // Once it is in the cart the button stays "Added" and does nothing.
-  // Quantity is changed in the cart or on the product page.
-  const inCart = useCartQty(product.store.slug, product.id);
-  const added = inCart > 0;
-  const productHref = `/store/${product.store.slug}/products/${product.id}`;
+const addBtn =
+  "inline-grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[#bcbcbc] bg-white text-neutral-900 hover:bg-[#ededed] disabled:bg-[#efefef] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-neutral-900";
 
-  const base =
-    "relative z-10 inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-full px-3 text-xs font-semibold outline-none transition active:scale-95 focus-visible:ring-2 focus-visible:ring-[#FF6845] focus-visible:ring-offset-2 motion-reduce:transition-none";
+export function AddToCartButton({ product }: { product: CardProduct }) {
+  const { id, title, price, compareAtPrice, images, store } = product;
+  const added = useCartQty(store.slug, id) > 0;
 
-  if (product.inStock === false) {
-    return (
-      <span
-        className={cn(
-          base,
-          "cursor-not-allowed bg-muted text-muted-foreground",
-          className,
-        )}
-      >
-        Sold out
-      </span>
-    );
-  }
+  if (product.inStock === false)
+    return <span className="text-xs text-[#696969]">Sold out</span>;
 
   if (product.hasVariants) {
     return (
       <Link
-        href={productHref}
-        className={cn(
-          base,
-          "border border-[#17645F] text-[#17645F] hover:bg-[#17645F]/10 dark:border-[#D93A2B] dark:text-[#FF6B4A] dark:hover:bg-[#D93A2B]/10",
-          className,
-        )}
+        href={marketplaceProductHref(store.slug, id)}
+        className={addBtn}
+        aria-label={`Select options for ${title}`}
       >
-        Select options
+        <Plus size={18} />
       </Link>
     );
   }
@@ -65,42 +31,22 @@ export function AddToCartButton({
   return (
     <button
       type="button"
-      aria-label={
-        added
-          ? `${product.title} is in your cart`
-          : `Add ${product.title} to cart`
-      }
-      aria-pressed={added}
-      onClick={() => {
-        if (added) return;
+      className={addBtn}
+      disabled={added}
+      aria-label={added ? `${title} is in your cart` : `Add ${title} to cart`}
+      onClick={() =>
         addToSellerCart({
-          id: product.id,
-          title: product.title,
-          price: product.price,
-          compareAtPrice: product.compareAtPrice,
-          image: product.images[0],
-          storeSlug: product.store.slug,
-          storeName: product.store.name,
-        });
-      }}
-      className={cn(
-        base,
-        added
-          ? "cursor-default bg-emerald-600 text-white"
-          : "bg-[#17645F] text-white hover:bg-[#17645F]/90 dark:bg-[#D93A2B] dark:hover:bg-[#D93A2B]/90",
-        className,
-      )}
+          id,
+          title,
+          price,
+          compareAtPrice,
+          image: images[0],
+          storeSlug: store.slug,
+          storeName: store.name,
+        })
+      }
     >
-      {added ? (
-        <>
-          <Check className="h-3.5 w-3.5" aria-hidden /> Added
-        </>
-      ) : (
-        <>
-          <ShoppingCart className="h-3.5 w-3.5" aria-hidden />
-          Add
-        </>
-      )}
+      {added ? <Check size={18} /> : <Plus size={18} />}
     </button>
   );
 }

@@ -35,33 +35,44 @@ function ForgotForm() {
 
   if (sent) {
     return (
-      <div className="mx-auto max-w-md space-y-4 p-6 text-center">
+      <div className="recovery-card space-y-4 text-center">
         <h1 className="text-xl font-semibold">Check your email</h1>
         <p className="text-sm text-muted-foreground">
           If an account exists for {email}, we sent a 6-digit reset code. It can
           take a minute to arrive.
         </p>
-        <Link href={`/reset-password?email=${encodeURIComponent(email)}`}>
-          <Button className="w-full">Enter reset code</Button>
-        </Link>
+        <Button asChild className="w-full">
+          <Link href={`/reset-password?email=${encodeURIComponent(email)}`}>
+            Enter reset code
+          </Link>
+        </Button>
       </div>
     );
   }
 
   return (
-    <form onSubmit={submit} className="mx-auto max-w-md space-y-4 p-6">
+    <form onSubmit={submit} className="recovery-card space-y-4">
       <h1 className="text-xl font-semibold">Forgot password?</h1>
       <p className="text-sm text-muted-foreground">
         Enter your email and we&apos;ll send you a reset code.
       </p>
-      {error && <p className="text-sm text-destructive">{error}</p>}
-      <Input
-        type="email"
-        placeholder="you@example.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
+      {error && (
+        <p role="alert" className="text-sm text-destructive">
+          {error}
+        </p>
+      )}
+      <div>
+        <label htmlFor="email">Email address</label>
+        <Input
+          id="email"
+          autoComplete="email"
+          type="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+      </div>
       <Button type="submit" disabled={loading} className="w-full">
         {loading ? "Sending…" : "Send reset code"}
       </Button>

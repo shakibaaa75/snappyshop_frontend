@@ -1,15 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { createPortal } from "react-dom";
+import { useRef, type ReactNode } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const ring =
-  "outline-none focus-visible:ring-2 focus-visible:ring-[#FF6845] focus-visible:ring-offset-2";
-
-const FOCUSABLE =
-  'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 type OffcanvasProps = {
   open: boolean;
@@ -26,13 +20,6 @@ type OffcanvasProps = {
   children: ReactNode;
 };
 
-/**
- * Slide-in side panel.
- * - Rendered in a portal: the sticky header uses backdrop-blur, which would
- *   otherwise trap a `fixed` panel inside the header's box.
- * - Locks page scroll, closes on Escape / backdrop tap, keeps focus inside
- *   and gives it back to the trigger on close.
- */
 export function Offcanvas({
   open,
   onClose,
@@ -43,118 +30,65 @@ export function Offcanvas({
   id,
   children,
 }: OffcanvasProps) {
-  const [mounted, setMounted] = useState(false);
-  const panel = useRef<HTMLDivElement>(null);
-  const closeBtn = useRef<HTMLButtonElement>(null);
-  const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+  const origin = useRef<HTMLSpanElement>(null);
+  const opener = useRef<HTMLElement | null>(null);
+  const closeButton = useRef<HTMLButtonElement>(null);
+  const container = origin.current?.closest<HTMLElement>(".marketplace-public");
 
-  useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const focusTimer = window.setTimeout(() => closeBtn.current?.focus(), 60);
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.stopPropagation();
-        onCloseRef.current();
-        return;
-      }
-      if (e.key !== "Tab" || !panel.current) return;
-      const nodes = panel.current.querySelectorAll<HTMLElement>(FOCUSABLE);
-      if (!nodes.length) return;
-      const first = nodes[0];
-      const last = nodes[nodes.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener("keydown", onKey);
-
-    return () => {
-      window.clearTimeout(focusTimer);
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
-      previouslyFocused?.focus?.();
-    };
-  }, [open]);
-
-  if (!mounted) return null;
-
-  return createPortal(
-    <div
-      className={cn(
-        "fixed inset-0 z-[100] transition-[visibility] duration-300 motion-reduce:transition-none",
-        open ? "visible delay-0" : "pointer-events-none invisible delay-300",
-      )}
-      inert={!open}
+  return (
+    <Dialog.Root
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
     >
-      {/* Backdrop */}
-      <div
-        aria-hidden
-        onClick={onClose}
-        className={cn(
-          "absolute inset-0 bg-[#0F2E2B]/50 backdrop-blur-[2px] transition-opacity duration-300 motion-reduce:transition-none",
-          open ? "opacity-100" : "opacity-0",
-        )}
-      />
-
-      {/* Panel */}
-      <div
-        ref={panel}
-        id={id}
-        role="dialog"
-        aria-modal="true"
-        aria-label={label}
-        className={cn(
-          "absolute inset-y-0 flex w-[88vw] max-w-sm flex-col bg-background shadow-2xl transition-transform duration-300 ease-out motion-reduce:transition-none",
-          side === "right" ? "right-0" : "left-0",
-          open
-            ? "translate-x-0"
-            : side === "right"
-              ? "translate-x-full"
-              : "-translate-x-full",
-        )}
-      >
-        <div className="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-[#E6DDD0] dark:border-border px-4 pt-[env(safe-area-inset-top)] box-content">
-          <div className="min-w-0 text-base font-semibold text-[#17645F] dark:text-white">
-            {heading}
+      <span ref={origin} hidden />
+      <Dialog.Portal container={container ?? undefined}>
+        <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/40 data-[state=open]:animate-in data-[state=open]:fade-in-0 motion-reduce:animate-none" />
+        <Dialog.Content
+          id={id}
+          aria-describedby={undefined}
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            opener.current =
+              document.activeElement instanceof HTMLElement
+                ? document.activeElement
+                : null;
+            closeButton.current?.focus({ preventScroll: true });
+          }}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            if (opener.current?.isConnected)
+              opener.current.focus({ preventScroll: true });
+          }}
+          className={cn(
+            "fixed top-0 z-[101] flex h-dvh w-[min(88vw,24rem)] flex-col overflow-hidden bg-background text-foreground shadow-xl outline-none duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out motion-reduce:animate-none",
+            side === "left"
+              ? "left-0 data-[state=open]:slide-in-from-left data-[state=closed]:slide-out-to-left"
+              : "right-0 data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right",
+          )}
+        >
+          <Dialog.Title className="sr-only">{label}</Dialog.Title>
+          <div className="flex shrink-0 items-center justify-between gap-3 border-b px-4 pb-3 pt-[calc(.75rem+env(safe-area-inset-top))]">
+            <div className="min-w-0 font-semibold">{heading}</div>
+            <Dialog.Close
+              ref={closeButton}
+              aria-label="Close"
+              className="grid size-11 shrink-0 place-items-center rounded-full border hover:bg-muted"
+            >
+              <X size={20} />
+            </Dialog.Close>
           </div>
-          <button
-            ref={closeBtn}
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className={cn(
-              "grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[#E6DDD0] bg-white text-[#17645F] transition-colors hover:bg-[#EAE2D7] dark:border-border dark:bg-card dark:text-white dark:hover:bg-muted",
-              ring,
-            )}
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          {children}
-        </div>
-
-        {footer && (
-          <div className="shrink-0 border-t border-[#E6DDD0] dark:border-border bg-background p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
-            {footer}
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            {children}
           </div>
-        )}
-      </div>
-    </div>,
-    document.body,
+          {footer && (
+            <div className="shrink-0 border-t p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+              {footer}
+            </div>
+          )}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

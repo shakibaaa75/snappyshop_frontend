@@ -17,7 +17,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { AuthBrand, AuthShell } from "@/components/features/auth/AuthShell";
+import { AuthShell } from "@/components/features/auth/AuthShell";
 import {
   AuthField,
   OrDivider,
@@ -34,15 +34,15 @@ type Step = "details" | "verify";
 
 const strengthLabels = ["Too short", "Weak", "Fair", "Good", "Strong"];
 const strengthColors = [
-  "bg-[#E6DDD0]",
+  "bg-[#dce2eb]",
   "bg-destructive",
   "bg-amber-500",
   "bg-[#5FA8A2]",
-  "bg-[#17645F]",
+  "bg-[#0C68F6]",
 ];
 
 const textLink =
-  "rounded-sm font-semibold text-[#17645F] underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[#FF6845] focus-visible:ring-offset-2";
+  "rounded-sm font-semibold text-[#0C68F6] underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[#0C68F6] focus-visible:ring-offset-2";
 
 function passwordScore(password: string) {
   if (password.length < 8) return 0;
@@ -64,7 +64,7 @@ function PasswordStrength({ password }: { password: string }) {
             key={i}
             className={cn(
               "h-1 flex-1 rounded-full transition-colors duration-300 motion-reduce:transition-none",
-              i <= score ? strengthColors[score] : "bg-[#E6DDD0]",
+              i <= score ? strengthColors[score] : "bg-[#dce2eb]",
             )}
           />
         ))}
@@ -175,10 +175,7 @@ export function RegisterForm() {
     <AuthShell>
       {step === "details" ? (
         <div className="auth-swap">
-          <div className="mb-7">
-            <AuthBrand />
-          </div>
-          <h1 className="text-3xl font-semibold tracking-tight text-[#15343c]">
+          <h1 className="text-3xl font-semibold tracking-tight text-[#17233a]">
             Create your account
           </h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -189,7 +186,7 @@ export function RegisterForm() {
           <div
             role="radiogroup"
             aria-label="Account type"
-            className="mt-8 grid grid-cols-2 rounded-full bg-[#F3EEE8] p-1"
+            className="mt-8 grid grid-cols-2 rounded-full bg-[#f2f5fa] p-1"
           >
             {roles.map(({ value, label, icon: Icon }) => (
               <button
@@ -202,10 +199,10 @@ export function RegisterForm() {
                   else form.setValue("role", value, { shouldValidate: true });
                 }}
                 className={cn(
-                  "flex h-10 items-center justify-center gap-2 rounded-full text-sm font-semibold outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#FF6845] focus-visible:ring-offset-2 motion-reduce:transition-none",
+                  "flex h-10 items-center justify-center gap-2 rounded-full text-sm font-semibold outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#0C68F6] focus-visible:ring-offset-2 motion-reduce:transition-none",
                   role === value
-                    ? "bg-[#17645F] text-white shadow-sm"
-                    : "text-[#17645F]/70 hover:text-[#17645F]",
+                    ? "bg-[#0C68F6] text-white shadow-sm"
+                    : "text-[#0C68F6]/70 hover:text-[#0C68F6]",
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -286,7 +283,7 @@ export function RegisterForm() {
                           type="checkbox"
                           checked={!!field.value}
                           onChange={field.onChange}
-                          className="mt-0.5 h-4 w-4 accent-[#17645F]"
+                          className="mt-0.5 h-4 w-4 accent-[#0C68F6]"
                         />
                       </FormControl>
                       <span className="text-sm leading-snug text-muted-foreground">

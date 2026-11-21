@@ -1,8 +1,89 @@
-/* Shared marketplace structure; seller storefronts keep their own layout. */
-.marketplace-public { --market-radius: 16px; }
-.market-home { align-items:start; }
+/*
+  Leftover rules that still style components outside this folder
+  (Header, Footer, category sidebar, home sections). Everything else on the
+  public pages is now Tailwind. Delete each block once its component is
+  converted to Tailwind classes.
+*/
+
+/* ---- Home sidebar / sections ---- */
 .market-sidebar { position:sticky; top:calc(var(--market-header-height, 120px) + 20px); align-self:start; max-height:calc(100dvh - var(--market-header-height, 120px) - 40px); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; padding-bottom:2px; }
-.market-anchor { scroll-margin-top:calc(var(--market-header-height, 120px) + 24px); }
 .market-category-heading h1 { letter-spacing:-.035em; }
-.marketplace-public main { min-width:0; }
 @media(prefers-reduced-motion:reduce) { .marketplace-public .home-swap { animation:none; } }
+/* :where() keeps specificity low so Tailwind classes on a heading still win */
+:where(.market-sections) h2, .marketplace-public .market-category-heading h1, .marketplace-public main h1.text-primary { color: hsl(var(--foreground)); font-weight: 700; letter-spacing: -.035em; }
+.market-sections section > .rounded-2xl.border.bg-card { border: none; padding: 0; background: transparent; }
+.market-sections section > .rounded-2xl.border.bg-card [role="group"] { margin-inline: 0; padding-inline: 0; }
+.market-sections [aria-roledescription="slide"] h2 { color: white; }
+
+/* ---- Old brand colors remapped to the theme (components still hard-code them) ---- */
+.marketplace-public [class~="bg-[#17645F]"],
+.marketplace-public [class~="bg-[#FF6845]"],
+.marketplace-public [class~="bg-[#D93A2B]"] { background-color: hsl(var(--primary)); }
+.marketplace-public [class~="bg-[#EDE6DC]"],
+.marketplace-public [class~="bg-[#EAE2D7]"] { background-color: hsl(var(--muted)); }
+.marketplace-public [class~="text-[#17645F]"],
+.marketplace-public [class~="text-[#C93B17]"],
+.marketplace-public [class~="text-[#FF4D3D]"] { color: hsl(var(--foreground)); }
+.marketplace-public [class~="border-[#E6DDD0]"] { border-color: hsl(var(--border)); }
+.marketplace-public [class~="border-[#17645F]"] { border-color: hsl(var(--primary)); }
+
+/* ---- Footer ---- */
+.market-footer { background: hsl(var(--muted)); margin-top: 28px; border-top: 1px solid hsl(var(--border)); }
+.market-footer > div { display: grid; grid-template-columns: 1.2fr repeat(3,1fr); gap: 24px; padding-block: 38px 20px; }
+.market-footer h2, .market-wordmark { font-weight: 700; }
+.market-wordmark { font-size: 1.4rem; align-self: start; }
+.market-footer h2 { margin-bottom: 8px; }
+.market-footer div > div > a { display: block; width: fit-content; padding-block: 3px; font-size: .85rem; }
+.market-footer a:hover, .market-footer button:hover { text-decoration: underline; }
+.market-legal { grid-column: 1/-1; display: flex; gap: 20px; flex-wrap: wrap; border-top: 1px solid hsl(var(--border)); padding-top: 16px; font-size: .8rem; }
+@media(max-width: 740px) { .market-footer > div { grid-template-columns: 1fr 1fr; } }
+
+/* ---- Header + search ---- */
+.marketplace-public > header { background: hsl(var(--background)); border-color: hsl(var(--border)); box-shadow: none; }
+.marketplace-public > header > div:first-child { padding-inline: var(--gutter); }
+.market-search { display: flex; align-items: center; gap: 8px; position: relative; }
+.market-search input { min-width: 0; flex: 1; border: 1.5px solid hsl(var(--foreground)); background: hsl(var(--background)); }
+.market-search button[aria-label="Clear search"] { right: 92px; }
+.market-search-submit { background: #0C68F6; color: #fff; font-weight: 650; border-radius: 999px; min-width: 78px; height: 44px; padding-inline: 14px; font-size: .875rem; }
+.market-search-submit:hover { background: #0e43bb; }
+.sn-header { position: relative; }
+.sn-utility, .sn-sell, .sn-wishlist { display: none; }
+.sn-guest { font-size: .8125rem; white-space: nowrap; }
+.sn-guest a { color: #0c68f6; text-decoration: underline; text-underline-offset: 2px; }
+.market-search .sn-search-outline { display: flex; align-items: center; flex: 1; min-width: 0; border: 2px solid hsl(var(--foreground)); border-radius: 999px; background: hsl(var(--background)); }
+.market-search .sn-search-outline:focus-within { border-color: #747982; }
+.sn-search-input { position: relative; flex: 1; min-width: 0; }
+.market-search .sn-search-input input { width: 100%; border: none; height: 40px; background: transparent; box-shadow: none; outline: none; }
+.market-search .sn-search-input button[aria-label="Clear search"] { right: 8px; }
+.sn-search-scope { display: none; }
+.market-search .sn-search-scope:focus-visible { outline: 1px solid currentColor; outline-offset: -2px; }
+.shop-actions > a[aria-label^="Cart"], .shop-actions button[aria-label*="otification"] { color: hsl(var(--foreground)); background: transparent; border-color: transparent; }
+@media (min-width: 1024px) {
+  .marketplace-public > header { background: linear-gradient(to bottom, transparent 39px, hsl(var(--border)) 39px 40px, transparent 40px), hsl(var(--background)); }
+  .shop-masthead.sn-header { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: 40px 80px; column-gap: clamp(18px, 2vw, 34px); row-gap: 0; height: auto; }
+  .sn-utility, .shop-actions { grid-column: 1/-1; grid-row: 1; }
+  .sn-utility { display: flex; justify-self: start; align-items: center; gap: 24px; font-size: .8rem; font-weight: 550; }
+  .shop-actions { justify-self: end; gap: 14px; }
+  .sn-sell { display: inline; font-size: .8rem; }
+  .sn-utility a:hover, .sn-sell:hover, .sn-wishlist:hover { text-decoration: underline; }
+  .shop-actions > a[aria-label^="Cart"], .shop-actions button[aria-label] { height: 32px; }
+  .shop-actions [aria-label="Open account menu"] { border: none; background: transparent; padding: 0; color: hsl(var(--foreground)); }
+  .shop-actions [aria-label="Open account menu"] > :first-child { max-height: 28px; max-width: 28px; }
+  .shop-actions span.absolute { top: -1px; height: 16px; min-width: 16px; font-size: 9px; }
+  .sn-logo { grid-column: 1; grid-row: 2; }
+  .sn-logo img { height: 42px; width: auto; }
+  .sn-search-box { grid-column: 2; grid-row: 2; width: 100%; }
+  .market-search { gap: 12px; }
+  .market-search .sn-search-input input { height: 46px; font-size: 1rem; }
+  .sn-search-scope { display: block; width: clamp(130px, 13vw, 190px); margin-right: 16px; padding: 5px 10px; border-left: 1px solid hsl(var(--border)); font-size: .8125rem; background: hsl(var(--background)); }
+  .market-search-submit { height: 50px; min-width: clamp(110px, 11vw, 168px); }
+  .sn-wishlist { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; font-size: .8125rem; }
+}
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .sn-wishlist span { display: none; }
+  .sn-search-scope { width: 112px; }
+}
+@media (max-width: 480px) {
+  .sn-guest > span, .sn-guest a:last-child { display: none; }
+  .sn-guest { padding-inline: 4px; }
+}

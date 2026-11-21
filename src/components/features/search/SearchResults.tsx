@@ -161,7 +161,6 @@ export function SearchResults() {
                       onClick={() => go({ category: c.slug, page: 1 })}
                       className={chipClass(category === c.slug)}
                     >
-                      {c.icon ? `${c.icon} ` : ""}
                       {c.name}
                     </button>
                   ))}

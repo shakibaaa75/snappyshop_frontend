@@ -86,11 +86,13 @@ export default function ProductClient({
   productId,
   initialStore,
   initialProduct,
+  marketplace = false,
 }: {
   slug: string;
   productId: string;
   initialStore: PublicStoreData;
   initialProduct: Product;
+  marketplace?: boolean;
 }) {
   const router = useRouter();
   const cart = useCart();
@@ -399,21 +401,27 @@ export default function ProductClient({
         className="min-h-screen"
         style={{ background: pageBg, color: "var(--s-text)" }}
       >
-        {design.announcementEnabled && design.announcementText && (
-          <div
-            className="px-4 py-2 text-center text-xs font-semibold"
-            style={{
-              background: "var(--s-primary)",
-              color: "var(--s-on-primary)",
-            }}
-          >
-            {design.announcementText}
-          </div>
-        )}
+        {!marketplace &&
+          design.announcementEnabled &&
+          design.announcementText && (
+            <div
+              className="px-4 py-2 text-center text-xs font-semibold"
+              style={{
+                background: "var(--s-primary)",
+                color: "var(--s-on-primary)",
+              }}
+            >
+              {design.announcementText}
+            </div>
+          )}
 
         {/* Desktop only: store profile header */}
         <header
-          className="sticky top-0 z-30 hidden border-b lg:block"
+          className={
+            marketplace
+              ? "hidden"
+              : "sticky top-0 z-30 hidden border-b lg:block"
+          }
           style={{
             background: pageBg,
             borderColor: "var(--s-border)",
@@ -501,6 +509,18 @@ export default function ProductClient({
           </div>
         </header>
 
+        {marketplace && (
+          <nav
+            aria-label="Product navigation"
+            className="mx-auto flex max-w-[1200px] justify-between gap-4 px-5 py-4 text-sm"
+          >
+            <Link href="/products" className="inline-flex items-center gap-1">
+              <ArrowLeft className="h-4 w-4" /> All products
+            </Link>
+            <Link href={storeHref}>Sold by {design.storeName}</Link>
+          </nav>
+        )}
+
         <main
           className={cn(
             "mx-auto w-full max-w-[1200px] pb-28 lg:grid lg:items-start lg:gap-14 lg:px-8 lg:py-10 lg:pb-16",
@@ -565,8 +585,12 @@ export default function ProductClient({
               style={{ paddingTop: "max(0.75rem, env(safe-area-inset-top))" }}
             >
               <Link
-                href={storeHref}
-                aria-label={`Back to ${design.storeName}`}
+                href={marketplace ? "/products" : storeHref}
+                aria-label={
+                  marketplace
+                    ? "Back to all products"
+                    : `Back to ${design.storeName}`
+                }
                 className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--pp-btn)] transition active:scale-90"
                 style={roundBtn}
               >
@@ -833,7 +857,7 @@ export default function ProductClient({
                 )}
               </div>
 
-              {design.showRatings && (
+              {(marketplace || design.showRatings) && (
                 <div className="flex shrink-0 flex-col items-end gap-0.5 text-sm">
                   <span className="flex items-center gap-1 font-semibold">
                     <Star
@@ -1110,7 +1134,7 @@ export default function ProductClient({
           </section>
         </main>
 
-        {design.showProductRelated && related.length > 0 && (
+        {!marketplace && design.showProductRelated && related.length > 0 && (
           <section className="mx-auto w-full max-w-[1200px] px-4 pb-28 lg:px-8 lg:pb-16 lg:pt-6">
             <div className="mb-4 flex items-baseline justify-between lg:mb-6">
               <h2 className="text-xl font-bold tracking-tight lg:text-2xl">
@@ -1128,7 +1152,7 @@ export default function ProductClient({
           </section>
         )}
 
-        {design.showFooter && (
+        {!marketplace && design.showFooter && (
           <footer
             className="px-6 py-7 pb-28 text-center text-xs lg:pb-7"
             style={{ color: "var(--s-muted)" }}

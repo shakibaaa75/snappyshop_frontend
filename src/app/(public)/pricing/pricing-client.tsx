@@ -134,13 +134,14 @@ export function PricingClient() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-      <header className="mx-auto mb-10 max-w-2xl text-center">
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+    <div className="mx-auto w-full max-w-[var(--market-width)] px-[var(--gutter)] py-10 sm:py-16 [&_.bg-card]:shadow-none [&_.border-accent]:border-primary">
+      <header className="mx-auto mb-[42px] max-w-3xl text-center">
+        <h1 className="text-[clamp(2rem,4.5vw,3.5rem)] font-bold tracking-[-.035em]">
           Simple pricing for every seller
         </h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
-          Start free and upgrade whenever you outgrow it. Pick a plan to become a seller. You can change it any time.
+          Start free and upgrade whenever you outgrow it. Pick a plan to become
+          a seller. You can change it any time.
         </p>
       </header>
 
@@ -162,10 +163,7 @@ export function PricingClient() {
       />
 
       {askAccount && (
-        <Overlay
-          onClose={() => setAskAccount(null)}
-          label="Sell on ShopBD"
-        >
+        <Overlay onClose={() => setAskAccount(null)} label="Sell on ShopBD">
           <h2 className="text-lg font-semibold tracking-tight">
             Sell on ShopBD
           </h2>
@@ -207,7 +205,8 @@ export function PricingClient() {
       )}
 
       <p className="mx-auto mt-8 max-w-xl text-center text-xs text-muted-foreground">
-        Paying with bKash, Nagad or card. 6 and 12 month packs cost less per month, and your first purchase gets an extra discount at checkout.
+        Paying with bKash, Nagad or card. 6 and 12 month packs cost less per
+        month, and your first purchase gets an extra discount at checkout.
       </p>
     </div>
   );
@@ -351,9 +350,7 @@ function BuyDialog({
         )}
         {q.firstPurchasePct > 0 && (
           <div className="flex justify-between text-emerald-700">
-            <span>
-              {`${q.firstPurchasePct}% first purchase discount`}
-            </span>
+            <span>{`${q.firstPurchasePct}% first purchase discount`}</span>
             <span className="tabular-nums">
               −
               {formatBDT(

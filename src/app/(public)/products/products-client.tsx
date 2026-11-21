@@ -34,6 +34,7 @@ export function ProductsClient() {
   const sp = useSearchParams();
 
   const q = (sp.get("q") ?? "").trim();
+  const deals = sp.get("deals") === "1";
   const category = sp.get("category") ?? "";
   const page = Math.max(1, Number(sp.get("page")) || 1);
   const rawSort = sp.get("sort") as ProductSort | null;
@@ -47,6 +48,7 @@ export function ProductsClient() {
     const merged: Record<string, string | number | undefined> = {
       q,
       category,
+      deals: deals ? "1" : undefined,
       sort: sp.get("sort") ?? undefined,
       page: undefined,
       ...next,
@@ -65,6 +67,8 @@ export function ProductsClient() {
     category: category || undefined,
     page,
     limit: LIMIT,
+    minDiscount: deals ? 1 : undefined,
+    maxDiscount: deals ? 40 : undefined,
     minReviews: sort === "best_rated" ? BEST_RATED_MIN_REVIEWS : undefined,
   });
   const categories = useMarketplaceCategories();
@@ -84,7 +88,9 @@ export function ProductsClient() {
     ? `Results for “${q}”`
     : activeCategory
       ? activeCategory.name
-      : "All products";
+      : deals
+        ? "Today’s deals"
+        : "All products";
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-5">
@@ -156,7 +162,7 @@ export function ProductsClient() {
                     : "hover:border-accent/50",
                 )}
               >
-                {c.icon} {c.name}
+                {c.name}
               </button>
             ),
           )}

@@ -7,7 +7,7 @@ import { useAllCarts } from "@/lib/cart/marketplace-cart";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowRight,
-  ChevronDown,
+  Heart,
   ChevronRight,
   FileText,
   Cookie,
@@ -26,16 +26,17 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/format";
-import { useMarketplaceProducts } from "@/lib/query/marketplace";
+import { useMainTypes, useMarketplaceProducts } from "@/lib/query/marketplace";
 import { AuthSlot } from "@/components/shared/ProfileMenu";
 import { Offcanvas } from "@/components/shared/Offcanvas";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const links = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/categories", label: "Categories", icon: LayoutGrid },
+  { href: "/?view=categories", label: "Categories", icon: LayoutGrid },
   { href: "/sellers", label: "Sellers", icon: Store },
-  { href: "/deals", label: "Deals", icon: Tag },
+  { href: "/products?deals=1", label: "Deals", icon: Tag },
+  { href: "/wishlist", label: "Wishlist", icon: Heart },
   { href: "/pricing", label: "Pricing", icon: Wallet },
 ];
 
@@ -48,7 +49,7 @@ const policyLinks = [
 ];
 
 const ring =
-  "outline-none focus-visible:ring-2 focus-visible:ring-[#FF6845] focus-visible:ring-offset-2";
+  "outline-none focus-visible:ring-2 focus-visible:ring-[#0C68F6] focus-visible:ring-offset-2";
 
 /* ------------------------------------------------------------------ */
 /* Search                                                              */
@@ -78,7 +79,7 @@ function SearchBoxFallback({ className }: { className?: string }) {
     <div className={cn("relative", className)} aria-hidden>
       <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
       <div className={cn(inputClass, "flex items-center text-slate-500")}>
-        Search products, stores, categories
+        Search ShopBD
       </div>
     </div>
   );
@@ -99,6 +100,13 @@ function SearchBox({
   const pathname = usePathname();
   const params = useSearchParams();
   const listId = useId();
+  const { mains } = useMainTypes();
+  const urlCategory =
+    pathname === "/search" || pathname === "/products"
+      ? params.get("category") || ""
+      : "";
+  const [scope, setScope] = useState(urlCategory);
+  useEffect(() => setScope(urlCategory), [urlCategory]);
 
   // On the results page the box shows the current search.
   const fromUrl = pathname === "/search" ? (params.get("q") ?? "") : "";
@@ -117,8 +125,13 @@ function SearchBox({
   const enabled = suggest && open && (!searching || debounced.length >= 2);
   const q = useMarketplaceProducts(
     searching
-      ? { q: debounced, sort: "relevance", limit: 5 }
-      : { sort: "top_selling", limit: 5 },
+      ? {
+          q: debounced,
+          category: scope || undefined,
+          sort: "relevance",
+          limit: 5,
+        }
+      : { category: scope || undefined, sort: "top_selling", limit: 5 },
     { enabled },
   );
   const items = enabled && q.data ? q.data.items : [];
@@ -140,10 +153,13 @@ function SearchBox({
   }, []);
 
   const goSearch = () => {
-    if (!term) return;
+    if (!term && !scope) return;
     setOpen(false);
     input.current?.blur();
-    router.push(`/search?q=${encodeURIComponent(term)}`);
+    const search = new URLSearchParams();
+    if (term) search.set("q", term);
+    if (scope) search.set("category", scope);
+    router.push(`${term ? "/search" : "/products"}?${search}`);
     onDone?.();
   };
 
@@ -183,6 +199,7 @@ function SearchBox({
   return (
     <div ref={wrap} className={cn("relative", className)}>
       <form
+        className="market-search"
         action="/search"
         role="search"
         onSubmit={(e) => {
@@ -190,49 +207,80 @@ function SearchBox({
           goSearch();
         }}
       >
-        <Search
-          aria-hidden
-          className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
-        />
-        <input
-          ref={input}
-          name="q"
-          type="search"
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-            setOpen(true);
-            setActive(-1);
-          }}
-          onFocus={() => setOpen(true)}
-          onKeyDown={onKeyDown}
-          autoComplete="off"
-          role={suggest ? "combobox" : undefined}
-          aria-expanded={suggest ? showPanel : undefined}
-          aria-controls={suggest ? listId : undefined}
-          aria-activedescendant={
-            showPanel && active >= 0 ? `${listId}-${active}` : undefined
-          }
-          aria-label="Search products, stores or categories"
-          placeholder="Search products, stores, categories"
-          className={cn(inputClass, "[&::-webkit-search-cancel-button]:hidden")}
-        />
-        {value && (
-          <button
-            type="button"
-            aria-label="Clear search"
-            onClick={() => {
-              setValue("");
-              input.current?.focus();
-            }}
-            className={cn(
-              "absolute right-3 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-slate-500 hover:bg-[#EAE2D7] dark:hover:bg-muted hover:text-[#17645F] dark:hover:text-white",
-              ring,
+        <div className="sn-search-outline">
+          <div className="sn-search-input">
+            <Search
+              aria-hidden
+              className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+            />
+            <input
+              ref={input}
+              name="q"
+              type="search"
+              value={value}
+              onChange={(e) => {
+                setValue(e.target.value);
+                setOpen(true);
+                setActive(-1);
+              }}
+              onFocus={() => setOpen(true)}
+              onKeyDown={onKeyDown}
+              autoComplete="off"
+              role={suggest ? "combobox" : undefined}
+              aria-expanded={suggest ? showPanel : undefined}
+              aria-controls={suggest ? listId : undefined}
+              aria-activedescendant={
+                showPanel && active >= 0 ? `${listId}-${active}` : undefined
+              }
+              aria-label="Search products, stores or categories"
+              placeholder="Search ShopBD"
+              className={cn(
+                inputClass,
+                "[&::-webkit-search-cancel-button]:hidden",
+              )}
+            />
+            {value && (
+              <button
+                type="button"
+                aria-label="Clear search"
+                onClick={() => {
+                  setValue("");
+                  input.current?.focus();
+                }}
+                className={cn(
+                  "absolute right-3 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-slate-500 hover:bg-[#EAE2D7] dark:hover:bg-muted hover:text-[#17645F] dark:hover:text-white",
+                  ring,
+                )}
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
             )}
+          </div>
+          <select
+            name="category"
+            aria-label="Search category"
+            className="sn-search-scope"
+            value={scope}
+            onChange={(event) => {
+              setScope(event.target.value);
+              setOpen(false);
+              setActive(-1);
+            }}
           >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        )}
+            <option value="">All categories</option>
+            {scope && !mains.some((m) => m.id === scope) && (
+              <option value={scope}>{scope}</option>
+            )}
+            {mains.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button type="submit" className="market-search-submit">
+          Search
+        </button>
       </form>
 
       {showPanel && (
@@ -319,7 +367,7 @@ function SearchBox({
                           <span className="truncate">{p.store.name}</span>
                           {p.category?.name && (
                             <>
-                              <span className="text-slate-300">·</span>
+                              <span className="sr-only">Category</span>
                               <span className="shrink-0 text-[#17645F] dark:text-[#FF6845]">
                                 {p.category.name}
                               </span>
@@ -375,7 +423,26 @@ function SearchBox({
 /* Header                                                              */
 /* ------------------------------------------------------------------ */
 
-export function Navbar({ cartCount: cartCountProp }: { cartCount?: number }) {
+export function Navbar(props: { cartCount?: number }) {
+  return (
+    <Suspense
+      fallback={
+        <header
+          aria-label="Loading navigation"
+          className="h-28 border-b bg-background md:h-16 lg:h-28"
+        />
+      }
+    >
+      <MarketplaceHeader {...props} />
+    </Suspense>
+  );
+}
+
+function MarketplaceHeader({
+  cartCount: cartCountProp,
+}: {
+  cartCount?: number;
+}) {
   const headerRef = useRef<HTMLElement>(null);
   useEffect(() => {
     const header = headerRef.current;
@@ -397,8 +464,18 @@ export function Navbar({ cartCount: cartCountProp }: { cartCount?: number }) {
   const live = useAllCarts();
   const cartCount = cartCountProp ?? (live.ready ? live.count : 0);
   const pathname = usePathname();
+  const query = useSearchParams();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const closeOnDesktop = () => {
+      if (desktop.matches) setOpen(false);
+    };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, []);
 
   // Close the menu panel whenever the page changes.
   useEffect(() => setOpen(false), [pathname]);
@@ -410,9 +487,16 @@ export function Navbar({ cartCount: cartCountProp }: { cartCount?: number }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
-  const policyActive = policyLinks.some((l) => isActive(l.href));
+  const isActive = (href: string) => {
+    const categories =
+      pathname === "/" &&
+      (query.get("view") === "categories" || query.has("category"));
+    if (href === "/") return pathname === "/" && !categories;
+    if (href === "/?view=categories") return categories;
+    if (href === "/products?deals=1")
+      return pathname === "/products" && query.get("deals") === "1";
+    return pathname === href || pathname.startsWith(href + "/");
+  };
 
   const iconBtn = cn(
     "grid h-10 w-10 place-items-center rounded-full border border-[#E6DDD0] dark:border-border bg-white dark:bg-card text-[#17645F] dark:text-white transition-colors hover:bg-[#EAE2D7] dark:hover:bg-muted sm:h-11 sm:w-11",
@@ -440,7 +524,13 @@ export function Navbar({ cartCount: cartCountProp }: { cartCount?: number }) {
           : "border-transparent",
       )}
     >
-      <div className="mx-auto flex h-16 max-w-[1400px] items-center gap-2 px-4 sm:h-[68px] sm:gap-3 sm:px-6 lg:gap-6 lg:px-8">
+      <div className="sn-header shop-masthead mx-auto flex h-16 max-w-[1400px] items-center gap-2 px-4 sm:h-[68px] sm:gap-3 sm:px-6 lg:gap-6 lg:px-8">
+        <nav aria-label="Marketplace services" className="sn-utility">
+          <Link href="/products?deals=1">Deals</Link>
+          <Link href="/sellers">Explore sellers</Link>
+          <Link href="/pricing">Pricing</Link>
+          <Link href="/refund-policy">Returns</Link>
+        </nav>
         {/* Menu button (phones and tablets) — opens the left panel */}
         <button
           type="button"
@@ -457,7 +547,10 @@ export function Navbar({ cartCount: cartCountProp }: { cartCount?: number }) {
         {/* Logo */}
         <Link
           href="/"
-          className={cn("flex shrink-0 items-center rounded-full", ring)}
+          className={cn(
+            "sn-logo flex shrink-0 items-center rounded-full",
+            ring,
+          )}
         >
           {logo}
         </Link>
@@ -465,88 +558,25 @@ export function Navbar({ cartCount: cartCountProp }: { cartCount?: number }) {
         {/* Search (tablet and up) */}
         <Suspense
           fallback={
-            <SearchBoxFallback className="ml-2 hidden max-w-md flex-1 md:block" />
+            <SearchBoxFallback className="sn-search-box hidden min-w-0 flex-1 md:block" />
           }
         >
-          <SearchBox className="ml-2 hidden max-w-md flex-1 md:block" />
+          <SearchBox className="sn-search-box hidden min-w-0 flex-1 md:block" />
         </Suspense>
 
-        {/* Desktop links */}
-        <nav
-          aria-label="Main"
-          className="ml-auto hidden items-center gap-1 lg:flex"
-        >
-          {links.map((l) => {
-            const active = isActive(l.href);
-            return (
-              <Link
-                key={l.href}
-                href={l.href}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "rounded-full px-4 py-2 text-sm font-medium transition-colors",
-                  ring,
-                  active
-                    ? "bg-[#17645F] dark:bg-[#D93A2B] text-white"
-                    : "text-[#17645F]/75 dark:text-white/75 hover:bg-[#EAE2D7] dark:hover:bg-muted hover:text-[#17645F] dark:hover:text-white",
-                )}
-              >
-                {l.label}
-              </Link>
-            );
-          })}
-
-          {/* Policies dropdown (opens on hover or keyboard focus) */}
-          <div className="group relative">
-            <button
-              type="button"
-              aria-haspopup="menu"
-              className={cn(
-                "flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors",
-                ring,
-                policyActive
-                  ? "bg-[#17645F] dark:bg-[#D93A2B] text-white"
-                  : "text-[#17645F]/75 dark:text-white/75 hover:bg-[#EAE2D7] dark:hover:bg-muted hover:text-[#17645F] dark:hover:text-white",
-              )}
-            >
-              Policies
-              <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
-            </button>
-            <div className="invisible absolute right-0 top-full z-50 pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-              <ul
-                role="menu"
-                className="w-64 overflow-hidden rounded-2xl border border-[#E6DDD0] dark:border-border bg-white dark:bg-card p-1.5 shadow-lg"
-              >
-                {policyLinks.map((l) => {
-                  const Icon = l.icon;
-                  const active = isActive(l.href);
-                  return (
-                    <li key={l.href} role="none">
-                      <Link
-                        href={l.href}
-                        role="menuitem"
-                        aria-current={active ? "page" : undefined}
-                        className={cn(
-                          "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                          ring,
-                          active
-                            ? "bg-[#17645F] dark:bg-[#D93A2B] text-white"
-                            : "text-foreground hover:bg-[#EAE2D7] dark:hover:bg-muted",
-                        )}
-                      >
-                        <Icon className="h-4 w-4 shrink-0" />
-                        {l.label}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </div>
-        </nav>
-
         {/* Actions */}
-        <div className="ml-auto flex items-center gap-2 lg:ml-2">
+        <div className="shop-actions ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
+          <Link
+            href="/wishlist"
+            aria-label="View wishlist"
+            className="sn-wishlist"
+          >
+            <Heart size={19} />
+            <span>Wishlist</span>
+          </Link>
+          <Link className="sn-sell" href="/seller/setup">
+            Sell
+          </Link>
           {/* Bell: signed-in sellers (unread count) and admins only */}
           <NotificationBell className={iconBtn} />
 

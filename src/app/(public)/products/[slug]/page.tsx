@@ -1,14 +1,8 @@
+import { productHref } from "@/lib/query/marketplace-links";
 import { notFound, redirect } from "next/navigation";
 import { toProduct } from "@/lib/api/marketplace";
 
-/**
- * Legacy /products/<slug> URL. Product slugs are only unique per seller, so
- * the real product page lives at /store/<seller-slug>/products/<id>. This
- * route looks the product up in the marketplace API and redirects there, so
- * old links keep working. It no longer uses sample data.
- */
-// This page runs on the server, so it reaches the API through the private
-// API_INTERNAL_URL (the same variable the rest of the server code uses).
+// Resolve older slug-only links to the marketplace product page.
 const API_BASE = `${(process.env.API_INTERNAL_URL ?? "http://localhost:8080").replace(/\/+$/, "")}/api/v1`;
 
 export default async function ProductRedirectPage({
@@ -30,7 +24,7 @@ export default async function ProductRedirectPage({
       for (const raw of data.products ?? []) {
         const p = toProduct(raw as Parameters<typeof toProduct>[0]);
         if (p.slug === slug) {
-          target = `/store/${p.store.slug}/products/${p.id}`;
+          target = productHref(p);
           break;
         }
       }

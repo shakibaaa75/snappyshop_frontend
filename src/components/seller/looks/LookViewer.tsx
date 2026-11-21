@@ -1,5 +1,6 @@
 "use client";
 
+import { marketplaceProductHref } from "@/lib/query/marketplace-links";
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
@@ -48,7 +49,11 @@ function Price({ item }: { item: PublicLookItem }) {
  * products as a swipeable row of cards.
  */
 export function LookViewer({ id }: { id: string }) {
-  const { data: look, isLoading, error } = useQuery({
+  const {
+    data: look,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: publicLooksKey.one(id),
     queryFn: () => publicLooks.get(id),
     retry: (n, e) => !(e instanceof ApiError && e.status === 404) && n < 2,
@@ -70,13 +75,17 @@ export function LookViewer({ id }: { id: string }) {
         <p className="mt-2 text-sm text-neutral-500">
           This look doesn&apos;t exist or is no longer available.
         </p>
-        <Link href="/looks" className="mt-5 inline-block text-sm font-medium underline">
+        <Link
+          href="/looks"
+          className="mt-5 inline-block text-sm font-medium underline"
+        >
           Browse all looks
         </Link>
       </div>
     );
 
-  const href = (it: PublicLookItem) => `/store/${look.storeSlug}/products/${it.productId}`;
+  const href = (it: PublicLookItem) =>
+    marketplaceProductHref(look.storeSlug, it.productId);
   const onScroll = () => {
     const el = track.current;
     const card = el?.firstElementChild as HTMLElement | null;
@@ -87,10 +96,15 @@ export function LookViewer({ id }: { id: string }) {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
       <header className="mb-6 lg:mb-8">
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Try the Look.</h1>
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+          Try the Look.
+        </h1>
         <p className="mt-1.5 text-sm text-neutral-500">
           {look.title} ·{" "}
-          <Link href={`/store/${look.storeSlug}`} className="underline underline-offset-2">
+          <Link
+            href={`/store/${look.storeSlug}`}
+            className="underline underline-offset-2"
+          >
             Shop this store
           </Link>
         </p>
@@ -138,13 +152,18 @@ export function LookViewer({ id }: { id: string }) {
                     <img
                       src={it.imageUrl}
                       alt={it.name}
-                      className={cn("h-full w-full object-cover", !it.inStock && "opacity-60")}
+                      className={cn(
+                        "h-full w-full object-cover",
+                        !it.inStock && "opacity-60",
+                      )}
                     />
                     <div className="absolute left-2 top-2">
                       <StockBadge item={it} />
                     </div>
                   </div>
-                  <p className="mt-2 line-clamp-2 text-sm font-medium">{it.name}</p>
+                  <p className="mt-2 line-clamp-2 text-sm font-medium">
+                    {it.name}
+                  </p>
                   <Price item={it} />
                 </Link>
               ))}
@@ -168,7 +187,10 @@ export function LookViewer({ id }: { id: string }) {
           <ul className="hidden divide-y divide-neutral-200 lg:block">
             {look.items.map((it) => (
               <li key={it.productId}>
-                <Link href={href(it)} className="group flex items-center gap-5 py-5">
+                <Link
+                  href={href(it)}
+                  className="group flex items-center gap-5 py-5"
+                >
                   <div className="h-28 w-28 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -182,7 +204,9 @@ export function LookViewer({ id }: { id: string }) {
                   </div>
                   <div className="min-w-0 flex-1 space-y-1.5">
                     <StockBadge item={it} />
-                    <p className="line-clamp-2 text-[15px] font-medium leading-snug">{it.name}</p>
+                    <p className="line-clamp-2 text-[15px] font-medium leading-snug">
+                      {it.name}
+                    </p>
                     <Price item={it} />
                   </div>
                   <ArrowUpRight className="h-4 w-4 shrink-0 text-neutral-300 transition group-hover:text-neutral-900" />

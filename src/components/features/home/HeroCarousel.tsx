@@ -3,7 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Pause,
+  Play,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -19,8 +25,6 @@ export interface HeroSlide {
    * path in /public. MP4 (H.264), no audio, ~1280x560, 5 to 10 s.
    */
   video?: string;
-  /** Small pill above the title. */
-  badge: string;
   /** One string per line of the big title. */
   title: string[];
   text: string;
@@ -51,7 +55,8 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
 
   // Autoplay: a fresh timer starts after every slide change, so tapping a
   // dot or swiping never causes a double jump.
-  const running = count > 1;
+  const [paused, setPaused] = useState(false);
+  const running = count > 1 && !paused && !reducedMotion && !tabHidden;
   useEffect(() => {
     if (!running) return;
     const t = setTimeout(() => setIndex((i) => (i + 1) % count), AUTOPLAY_MS);
@@ -92,7 +97,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
     lastIndex.current = index;
     videoRefs.current.forEach((v, i) => {
       if (!v) return;
-      if (i === index && !reducedMotion && !tabHidden) {
+      if (i === index && !paused && !reducedMotion && !tabHidden) {
         // Restart from the beginning each time the slide comes back.
         if (changed) v.currentTime = 0;
         v.play().catch(() => {
@@ -102,7 +107,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
         v.pause();
       }
     });
-  }, [index, reducedMotion, tabHidden]);
+  }, [index, paused, reducedMotion, tabHidden]);
 
   if (count === 0) return null;
 
@@ -117,7 +122,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
     <section
       aria-roledescription="carousel"
       aria-label="Featured offers"
-      className="relative overflow-hidden rounded-3xl bg-[#17645F] dark:bg-[#0B0B0B]"
+      className="relative overflow-hidden rounded-3xl bg-[#102950] dark:bg-[#0B0B0B]"
       onKeyDown={(e) => {
         if (e.key === "ArrowLeft") go(index - 1);
         if (e.key === "ArrowRight") go(index + 1);
@@ -126,7 +131,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
       {/* Sliding track */}
       <div
         aria-live={running ? "off" : "polite"}
-        className="flex touch-pan-y transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
+        className="flex touch-pan-y motion-reduce:transition-none transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
         style={{ transform: `translateX(-${index * 100}%)` }}
         onPointerDown={(e) => {
           swipeStart.current = e.clientX;
@@ -194,8 +199,8 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                 className={cn(
                   "absolute inset-0 -z-10",
                   s.video && !failed[i] && !reducedMotion
-                    ? "bg-gradient-to-t from-[#17645F]/95 dark:from-[#0B0B0B]/95 via-[#17645F]/60 dark:via-[#0B0B0B]/60 to-[#17645F]/20 dark:to-[#0B0B0B]/20 md:bg-gradient-to-r md:from-[#17645F]/90 dark:md:from-[#0B0B0B]/90 md:via-[#17645F]/55 dark:md:via-[#0B0B0B]/55 md:to-transparent"
-                    : "bg-[#17645F]/80 dark:bg-[#0B0B0B]/80 md:bg-gradient-to-r md:from-[#17645F] dark:md:from-[#0B0B0B] md:via-[#17645F]/80 dark:md:via-[#0B0B0B]/80 md:to-[#17645F]/10 dark:md:to-[#0B0B0B]/10",
+                    ? "bg-gradient-to-t from-[#102950]/95 dark:from-[#0B0B0B]/95 via-[#102950]/60 dark:via-[#0B0B0B]/60 to-[#102950]/20 dark:to-[#0B0B0B]/20 md:bg-gradient-to-r md:from-[#102950]/90 dark:md:from-[#0B0B0B]/90 md:via-[#102950]/55 dark:md:via-[#0B0B0B]/55 md:to-transparent"
+                    : "bg-[#102950]/80 dark:bg-[#0B0B0B]/80 md:bg-gradient-to-r md:from-[#102950] dark:md:from-[#0B0B0B] md:via-[#102950]/80 dark:md:via-[#0B0B0B]/80 md:to-[#102950]/10 dark:md:to-[#0B0B0B]/10",
                 )}
               />
               {/* Soft vignette: keeps the corners calm and focuses the eye */}
@@ -206,7 +211,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                 />
               )}
 
-              <div className="w-full px-5 pb-14 pt-10 sm:px-8 md:px-12 md:pb-12">
+              <div className="w-full px-5 pb-20 pt-10 sm:px-8 md:px-12 md:pb-16">
                 <div
                   className={cn(
                     "max-w-xl space-y-5 text-left transition-all duration-700 delay-150 motion-reduce:transition-none lg:max-w-2xl",
@@ -215,15 +220,6 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                       : "translate-y-3 opacity-0",
                   )}
                 >
-                  {/* Badge: quiet glass chip with a brand dot */}
-                  <span className="inline-flex items-center gap-2 rounded-full bg-black/25 py-1.5 pl-2.5 pr-3.5 text-xs font-medium tracking-wide text-white ring-1 ring-white/20 backdrop-blur-md">
-                    <span
-                      aria-hidden
-                      className="h-1.5 w-1.5 rounded-full bg-[#FF6845]"
-                    />
-                    {s.badge}
-                  </span>
-
                   {/* Title: tight tracking, big and left aligned */}
                   <h2 className="text-balance text-[1.9rem] font-extrabold leading-[1.08] tracking-[-0.025em] text-white drop-shadow-[0_2px_14px_rgba(0,0,0,0.45)] sm:text-4xl lg:text-5xl xl:text-[3.5rem]">
                     {s.title.map((line, n) => (
@@ -240,7 +236,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                   <div className="flex flex-wrap items-center gap-3 pt-1">
                     <Button
                       asChild
-                      className="group h-11 rounded-full bg-[#FF6845] px-6 text-sm font-semibold text-white shadow-lg shadow-black/25 hover:bg-[#FF6845]/90"
+                      className="group h-11 rounded-full bg-[#0C68F6] px-6 text-sm font-semibold text-white shadow-lg shadow-black/25 hover:bg-[#0C68F6]/90"
                     >
                       <Link href={s.primary.href}>
                         {s.primary.label}
@@ -265,30 +261,37 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
       </div>
 
       {count > 1 && (
-        <>
-          {/* Dots */}
-          <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1">
-            {slides.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                aria-label={`Go to slide ${i + 1}`}
-                aria-current={i === index}
-                onClick={() => go(i)}
-                className="group grid h-6 place-items-center px-0.5 outline-none"
-              >
-                <span
-                  className={cn(
-                    "h-2.5 rounded-full transition-all duration-300 group-focus-visible:ring-2 group-focus-visible:ring-[#FF6845]",
-                    i === index
-                      ? "w-7 bg-[#FF6845]"
-                      : "w-2.5 bg-white/50 group-hover:bg-white/80",
-                  )}
-                />
-              </button>
-            ))}
-          </div>
-        </>
+        <div className="absolute bottom-3 right-4 flex items-center gap-1 rounded-full bg-black/60 p-1 text-white">
+          <button
+            type="button"
+            aria-label="Previous slide"
+            onClick={() => go(index - 1)}
+            className="grid size-10 place-items-center rounded-full hover:bg-white/20"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <span className="px-1 text-xs tabular-nums">
+            {index + 1} / {count}
+          </span>
+          <button
+            type="button"
+            aria-label="Next slide"
+            onClick={() => go(index + 1)}
+            className="grid size-10 place-items-center rounded-full hover:bg-white/20"
+          >
+            <ChevronRight size={18} />
+          </button>
+          {!reducedMotion && (
+            <button
+              type="button"
+              aria-label={paused ? "Play slideshow" : "Pause slideshow"}
+              onClick={() => setPaused((value) => !value)}
+              className="grid size-10 place-items-center rounded-full hover:bg-white/20"
+            >
+              {paused ? <Play size={16} /> : <Pause size={16} />}
+            </button>
+          )}
+        </div>
       )}
     </section>
   );

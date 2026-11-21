@@ -256,20 +256,11 @@ export function ProfileMenu({ onLoggedOut }: { onLoggedOut?: () => void }) {
 
   if (!me) {
     return (
-      <Link
-        href="/login"
-        className={cn(
-          "inline-flex h-10 items-center gap-2 rounded-full bg-[#17645F] px-4 text-sm font-medium text-white transition-colors hover:bg-[#17645F]/90 sm:h-11 sm:px-5",
-          ring,
-        )}
-      >
-        <UserIcon
-          className="hidden h-4 w-4 text-[#FF6845] sm:block"
-          strokeWidth={1.9}
-        />
-        <span className="sm:hidden">Login</span>
-        <span className="hidden sm:inline">Login / Sign Up</span>
-      </Link>
+      <div className="sn-guest">
+        <Link href="/login">Sign in</Link>
+        <span> or </span>
+        <Link href="/register">register</Link>
+      </div>
     );
   }
 

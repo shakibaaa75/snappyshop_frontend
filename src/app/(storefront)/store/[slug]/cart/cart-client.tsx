@@ -363,7 +363,9 @@ export default function CartClient({
                     style={{ borderColor: "var(--s-border)" }}
                   >
                     <span className="font-semibold">
-                      {range.ready && sameCharge ? "Total" : "Total before delivery"}
+                      {range.ready && sameCharge
+                        ? "Total"
+                        : "Total before delivery"}
                     </span>
                     <span className="font-bold">{formatPrice(total)}</span>
                   </div>

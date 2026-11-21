@@ -22,7 +22,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, Lock, Mail } from "lucide-react";
 
 const textLink =
-  "rounded-sm font-semibold text-[#17645F] underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[#FF6845] focus-visible:ring-offset-2";
+  "rounded-sm font-semibold text-[#0C68F6] underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[#0C68F6] focus-visible:ring-offset-2";
 
 const socialErrors: Record<string, string> = {
   social_cancelled: "Sign-in was cancelled. You can try again.",
@@ -106,8 +106,8 @@ export function LoginForm() {
 
   return (
     <AuthShell>
-      <h1 className="text-center text-2xl font-extrabold tracking-tight text-[#17645F]">
-        Login
+      <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+        Sign in to ShopBD
       </h1>
 
       <Form {...form}>

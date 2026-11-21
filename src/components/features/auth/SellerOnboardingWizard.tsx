@@ -144,7 +144,7 @@ export function SellerOnboardingWizard() {
       storeDescription: "",
       tradeLicenseNumber: "",
       agreeTerms: undefined,
-      brandColor: "#15343c",
+      brandColor: "#17233a",
       productLayout: "grid",
     },
     mode: "onChange",
@@ -287,7 +287,7 @@ export function SellerOnboardingWizard() {
           className="flex min-h-[540px] flex-col"
         >
           <div className="mb-8 border-b pb-6">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#17645F]">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#0C68F6]">
               Step {currentStep} of {steps.length}
             </p>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight">
@@ -450,10 +450,10 @@ export function SellerOnboardingWizard() {
                             aria-pressed={field.value === category.id}
                             onClick={() => field.onChange(category.id)}
                             className={cn(
-                              "relative rounded-xl border p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#17645F]",
+                              "relative rounded-xl border p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0C68F6]",
                               field.value === category.id
-                                ? "border-[#17645F] bg-[#17645F]/5 ring-1 ring-[#17645F]"
-                                : "hover:border-[#17645F]/50",
+                                ? "border-[#0C68F6] bg-[#0C68F6]/5 ring-1 ring-[#0C68F6]"
+                                : "hover:border-[#0C68F6]/50",
                             )}
                           >
                             <span className="block pr-5 text-sm font-semibold">
@@ -465,7 +465,7 @@ export function SellerOnboardingWizard() {
                             {field.value === category.id && (
                               <Check
                                 aria-hidden
-                                className="absolute right-3 top-4 h-4 w-4 text-[#17645F]"
+                                className="absolute right-3 top-4 h-4 w-4 text-[#0C68F6]"
                               />
                             )}
                           </button>

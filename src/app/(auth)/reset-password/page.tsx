@@ -36,32 +36,53 @@ function ResetForm() {
   };
 
   return (
-    <form onSubmit={submit} className="mx-auto max-w-md space-y-4 p-6">
+    <form onSubmit={submit} className="recovery-card space-y-4">
       <h1 className="text-xl font-semibold">Enter reset code</h1>
-      {error && <p className="text-sm text-destructive">{error}</p>}
-      <Input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <Input
-        placeholder="6-digit code"
-        value={code}
-        onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-        inputMode="numeric"
-        maxLength={6}
-        required
-      />
-      <Input
-        type="password"
-        placeholder="New password (min 8 chars)"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        minLength={8}
-        required
-      />
+      {error && (
+        <p role="alert" className="text-sm text-destructive">
+          {error}
+        </p>
+      )}
+      <div>
+        <label htmlFor="email">Email address</label>
+        <Input
+          id="email"
+          autoComplete="email"
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <label htmlFor="one-time-code">Reset code</label>
+        <Input
+          id="one-time-code"
+          autoComplete="one-time-code"
+          placeholder="6-digit code"
+          value={code}
+          onChange={(e) =>
+            setCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+          }
+          inputMode="numeric"
+          maxLength={6}
+          required
+        />
+      </div>
+      <div>
+        <label htmlFor="new-password">New password</label>
+        <Input
+          id="new-password"
+          autoComplete="new-password"
+          type="password"
+          placeholder="New password (min 8 chars)"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          minLength={8}
+          required
+        />
+      </div>
       <Button type="submit" disabled={loading} className="w-full">
         {loading ? "Resetting…" : "Reset password"}
       </Button>

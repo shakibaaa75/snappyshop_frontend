@@ -2,14 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BadgePercent,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-  Tag,
-} from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { TopSellingCard } from "@/components/features/TopSellingCard";
 import { DealCard } from "@/components/features/DealCard";
 import { SellerCard } from "@/components/features/SellerCard";
@@ -179,13 +172,10 @@ interface CategoryPick {
 function CategoryFilter({
   value,
   onChange,
-  showIcons = false,
   bleed = PILLS_BLEED_PANEL,
 }: {
   value: CategoryPick | null;
   onChange: (c: CategoryPick | null) => void;
-  /** Shows a small tag icon on pills whose category has no emoji. */
-  showIcons?: boolean;
   /** Negative margin + matching padding. Must equal the parent's padding. */
   bleed?: string;
 }) {
@@ -219,11 +209,6 @@ function CategoryFilter({
           onClick={() => onChange({ slug: c.slug, name: c.name })}
           className={`${base} ${value?.slug === c.slug ? on : off}`}
         >
-          {c.icon ? (
-            <span aria-hidden>{c.icon}</span>
-          ) : showIcons ? (
-            <Tag className="h-3.5 w-3.5" aria-hidden />
-          ) : null}
           {c.name}
         </button>
       ))}
@@ -365,7 +350,9 @@ export function BigDealsSection() {
       q.data ? byBiggestDiscount(q.data.items.filter(isDeal)).slice(0, 12) : [],
     [q.data],
   );
-  const viewAll = picked ? `/deals?category=${picked.slug}` : "/deals";
+  const viewAll = picked
+    ? `/products?deals=1&category=${encodeURIComponent(picked.slug)}`
+    : "/products?deals=1";
 
   return (
     // No extra side padding here: the page already provides it.
@@ -374,23 +361,13 @@ export function BigDealsSection() {
         {/* Title left, View All right. Subtitle can wrap on phones. */}
         <div className="mb-3 flex items-start justify-between gap-3 sm:mb-5 sm:items-center">
           <div className="flex min-w-0 items-start gap-2.5 sm:items-center sm:gap-3">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#FF6845]/15 text-[#C93B17] sm:h-11 sm:w-11 sm:rounded-2xl">
-              <BadgePercent
-                className="h-5 w-5 sm:h-6 sm:w-6"
-                strokeWidth={2.2}
-                aria-hidden
-              />
-            </span>
             <div className="min-w-0">
               <h2
                 id="sec-big-deals"
                 className="text-lg font-extrabold leading-tight tracking-tight text-[#C93B17] sm:text-2xl lg:text-3xl"
               >
-                Best Big Deals
+                Today’s deals
               </h2>
-              <p className="line-clamp-2 text-xs text-slate-500 sm:truncate sm:text-sm">
-                Top picks. Crazy discounts. Don’t miss out!
-              </p>
             </div>
           </div>
 
@@ -403,7 +380,7 @@ export function BigDealsSection() {
           </Link>
         </div>
 
-        <CategoryFilter showIcons value={picked} onChange={setPicked} />
+        <CategoryFilter value={picked} onChange={setPicked} />
 
         {q.isPending ? (
           <ProductGridSkeleton count={8} />
@@ -641,10 +618,7 @@ export function FeaturedSellersSection({
   });
 
   return (
-    <section
-      aria-label="Featured sellers"
-      className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
-    >
+    <section aria-label="Featured sellers" className="min-w-0">
       {!paged && (
         <SectionHeader
           title="Featured Sellers"

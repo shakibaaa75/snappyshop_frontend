@@ -13,10 +13,10 @@ import { cn } from "@/lib/utils";
 
 /** Main teal pill button. Use with <Button className={authPrimaryBtn}>. */
 export const authPrimaryBtn =
-  "group h-12 w-full gap-2 rounded-full bg-[#17645F] text-base font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#17645F]/90 active:translate-y-0 motion-reduce:transition-none motion-reduce:hover:translate-y-0";
+  "group h-12 w-full gap-2 rounded-full bg-[#0C68F6] text-base font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0C68F6]/90 active:translate-y-0 motion-reduce:transition-none motion-reduce:hover:translate-y-0";
 
 const focusRing =
-  "outline-none focus-visible:ring-2 focus-visible:ring-[#FF6845] focus-visible:ring-offset-2";
+  "outline-none focus-visible:ring-2 focus-visible:ring-[#0C68F6] focus-visible:ring-offset-2";
 
 /** Pill input with a left icon, and a show/hide eye for passwords. */
 export function AuthField<T extends FieldValues>({
@@ -46,7 +46,7 @@ export function AuthField<T extends FieldValues>({
           <div className="relative">
             <Icon
               aria-hidden
-              className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[#17645F]/55"
+              className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[#0C68F6]/55"
             />
             <FormControl>
               <input
@@ -57,7 +57,7 @@ export function AuthField<T extends FieldValues>({
                 aria-label={placeholder}
                 autoComplete={autoComplete}
                 className={cn(
-                  "h-12 w-full rounded-full border border-[#E6DDD0] bg-white pl-11 text-sm text-foreground outline-none transition-colors duration-200 placeholder:text-slate-400 focus:border-[#17645F] focus:ring-2 focus:ring-[#17645F]/15",
+                  "h-12 w-full rounded-full border border-[#dce2eb] bg-white pl-11 text-sm text-foreground outline-none transition-colors duration-200 placeholder:text-slate-400 focus:border-[#0C68F6] focus:ring-2 focus:ring-[#0C68F6]/15",
                   isPassword ? "pr-12" : "pr-4",
                   fieldState.error &&
                     "border-destructive focus:border-destructive focus:ring-destructive/15",
@@ -71,7 +71,7 @@ export function AuthField<T extends FieldValues>({
                 aria-label={show ? "Hide password" : "Show password"}
                 aria-pressed={show}
                 className={cn(
-                  "absolute right-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-[#17645F]/55 transition-colors hover:bg-[#F3EEE8] hover:text-[#17645F]",
+                  "absolute right-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-[#0C68F6]/55 transition-colors hover:bg-[#f2f5fa] hover:text-[#0C68F6]",
                   focusRing,
                 )}
               >
@@ -97,9 +97,9 @@ export function OrDivider({ children = "or" }: { children?: React.ReactNode }) {
       role="separator"
       className="flex items-center gap-4 text-xs text-muted-foreground"
     >
-      <span className="h-px flex-1 bg-[#E6DDD0]" />
+      <span className="h-px flex-1 bg-[#dce2eb]" />
       {children}
-      <span className="h-px flex-1 bg-[#E6DDD0]" />
+      <span className="h-px flex-1 bg-[#dce2eb]" />
     </div>
   );
 }
@@ -170,7 +170,7 @@ export function SocialButtons({ next }: { next?: string | null }) {
         href={oauthHref("google", next)}
         className={cn(
           socialBase,
-          "bg-[#F3EEE8] text-[#17645F] hover:bg-[#EAE2D7]",
+          "bg-[#f2f5fa] text-[#0C68F6] hover:bg-[#e5edfb]",
         )}
       >
         <GoogleG />
@@ -180,7 +180,7 @@ export function SocialButtons({ next }: { next?: string | null }) {
         href={oauthHref("apple", next)}
         className={cn(
           socialBase,
-          "bg-[#FF6845] text-white hover:bg-[#FF6845]/90",
+          "bg-[#0C68F6] text-white hover:bg-[#0C68F6]/90",
         )}
       >
         <AppleLogo />

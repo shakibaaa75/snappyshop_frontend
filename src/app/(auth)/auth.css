@@ -1,0 +1,27 @@
+.account-entry {
+  --primary: 216.4102564 92.8571429% 50.5882353%;
+  --accent: var(--primary);
+  --ring: var(--primary);
+  --background: 0 0% 100%;
+  --foreground: 221 30% 14%;
+  --muted: 216 25% 96%;
+  --muted-foreground: 217 13% 40%;
+  --border: 218 21% 87%;
+  --input: var(--border);
+  min-height: 100dvh;
+  color: hsl(var(--foreground));
+  background: linear-gradient(165deg, #edf4ff, #fafbfe 48%, #fff);
+}
+.account-entry > header { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px clamp(18px,5vw,80px); background:white; border-bottom:1px solid #e4e8ef; }
+.entry-logo { font-size:1.45rem; font-weight:750; letter-spacing:-.06em; color:#0C68F6; }
+.account-entry > header a:last-child { font-size:.875rem; font-weight:550; }
+.account-entry > main { display:grid; justify-items:center; align-content:start; padding:clamp(26px,6vw,78px) 16px; }
+.account-entry .auth-card, .account-entry .recovery-card { border:1px solid #dee4ed; border-radius:20px; background:white; box-shadow:0 12px 48px #2539570c; }
+.account-entry .auth-card > div:last-child, .account-entry .recovery-card { padding:clamp(22px,4vw,40px); }
+.account-entry .recovery-card { width:100%; max-width:28rem; }
+.account-entry .recovery-card h1 { font-size:clamp(1.5rem,4vw,2rem); line-height:1.15; letter-spacing:-.04em; }
+.account-entry input:not([type=checkbox]):not([type=radio]) { border-radius:10px; }
+.account-entry button[type=submit], .account-entry .recovery-card a.bg-primary { border-radius:10px; min-height:46px; }
+.account-entry .recovery-card label { display:block; margin-bottom:6px; font-size:.875rem; font-weight:550; }
+.account-entry .recovery-card input { height:46px; }
+.account-entry [aria-invalid=true] { border-color:hsl(var(--destructive)); }

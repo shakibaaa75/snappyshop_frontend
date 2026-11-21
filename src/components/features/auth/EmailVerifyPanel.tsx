@@ -55,10 +55,10 @@ export function EmailVerifyPanel({
   return (
     <div className="space-y-6">
       <div className="space-y-3 text-center">
-        <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-[#F3EEE8] text-[#17645F]">
+        <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-[#f2f5fa] text-[#0C68F6]">
           <MailCheck className="h-5 w-5" />
         </span>
-        <h2 className="text-2xl font-extrabold tracking-tight text-[#17645F]">
+        <h2 className="text-2xl font-extrabold tracking-tight text-[#0C68F6]">
           Check your inbox
         </h2>
         <p className="text-sm text-muted-foreground">
@@ -113,7 +113,7 @@ export function EmailVerifyPanel({
         <button
           type="button"
           onClick={onChangeEmail}
-          className="group inline-flex items-center gap-1.5 rounded-sm text-muted-foreground outline-none transition-colors hover:text-[#17645F] focus-visible:ring-2 focus-visible:ring-[#FF6845] focus-visible:ring-offset-2"
+          className="group inline-flex items-center gap-1.5 rounded-sm text-muted-foreground outline-none transition-colors hover:text-[#0C68F6] focus-visible:ring-2 focus-visible:ring-[#0C68F6] focus-visible:ring-offset-2"
         >
           <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-0.5 motion-reduce:transition-none" />
           Change email
@@ -127,7 +127,7 @@ export function EmailVerifyPanel({
             type="button"
             onClick={() => resend(email)}
             disabled={sending}
-            className="rounded-sm font-semibold text-[#17645F] underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[#FF6845] focus-visible:ring-offset-2 disabled:opacity-50"
+            className="rounded-sm font-semibold text-[#0C68F6] underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[#0C68F6] focus-visible:ring-offset-2 disabled:opacity-50"
           >
             {sending ? "Sending…" : "Resend code"}
           </button>

@@ -80,3 +80,23 @@ export function useSavedIds(slug: string): Set<string> {
   );
 }
 const EMPTY: Set<string> = new Set();
+
+function savedStoreSnapshot(): string {
+  try {
+    const slugs: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key?.startsWith("wishlist:")) continue;
+      const slug = key.slice("wishlist:".length);
+      if (slug && read(slug).size) slugs.push(slug);
+    }
+    return JSON.stringify(slugs.sort());
+  } catch {
+    return "[]";
+  }
+}
+
+export function useSavedStores(): string[] {
+  const snapshot = useSyncExternalStore(subscribe, savedStoreSnapshot, () => "[]");
+  return JSON.parse(snapshot) as string[];
+}

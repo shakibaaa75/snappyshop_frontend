@@ -15,11 +15,11 @@ export function AuthBrand() {
     <Link
       href="/"
       className={cn(
-        "inline-flex items-center gap-2.5 rounded-full text-[#17645F] outline-none",
-        "focus-visible:ring-2 focus-visible:ring-[#FF6845] focus-visible:ring-offset-2",
+        "inline-flex items-center gap-2.5 rounded-full text-[#0C68F6] outline-none",
+        "focus-visible:ring-2 focus-visible:ring-[#0C68F6] focus-visible:ring-offset-2",
       )}
     >
-      <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#17645F] text-[#FF6845]">
+      <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#0C68F6] text-white">
         <ShoppingBag className="h-5 w-5" strokeWidth={1.9} />
       </span>
       <span className="text-xl font-extrabold tracking-tight">ShopBD</span>
@@ -40,7 +40,7 @@ export function AuthShell({
   return (
     <div
       className={cn(
-        "auth-card w-full overflow-hidden rounded-3xl border border-[#E6DDD0] bg-white shadow-sm",
+        "auth-card w-full overflow-hidden rounded-3xl border border-[#dce2eb] bg-white shadow-sm",
         sidebar
           ? "grid max-w-5xl md:grid-cols-[300px_minmax(0,1fr)]"
           : "max-w-md",
@@ -48,7 +48,7 @@ export function AuthShell({
     >
       <style>{AUTH_CSS}</style>
       {sidebar && (
-        <aside className="border-b border-[#E6DDD0] bg-[#F4F7F4] p-6 md:border-b-0 md:border-r md:p-8">
+        <aside className="border-b border-[#dce2eb] bg-[#eff5ff] p-6 md:border-b-0 md:border-r md:p-8">
           {sidebar}
         </aside>
       )}
@@ -64,7 +64,7 @@ export function AuthPromo(_props: { title: string; text: string }) {
 
 export function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-[11px] font-semibold uppercase tracking-wider text-[#17645F]">
+    <h3 className="text-[11px] font-semibold uppercase tracking-wider text-[#0C68F6]">
       {children}
     </h3>
   );
@@ -95,27 +95,27 @@ export function ChoiceCard({
       onClick={onClick}
       className={cn(
         "flex items-start gap-3 rounded-2xl border p-4 text-left outline-none transition-all duration-200",
-        "focus-visible:ring-2 focus-visible:ring-[#FF6845] focus-visible:ring-offset-2",
+        "focus-visible:ring-2 focus-visible:ring-[#0C68F6] focus-visible:ring-offset-2",
         "motion-reduce:transition-none",
         active
-          ? "border-[#17645F] bg-[#17645F]/5 ring-1 ring-[#17645F]"
-          : "border-[#E6DDD0] bg-white hover:border-[#17645F]/50",
+          ? "border-[#0C68F6] bg-[#0C68F6]/5 ring-1 ring-[#0C68F6]"
+          : "border-[#dce2eb] bg-white hover:border-[#0C68F6]/50",
       )}
     >
       <span
         className={cn(
           "grid h-9 w-9 shrink-0 place-items-center rounded-xl",
-          active ? "bg-[#17645F] text-white" : "bg-[#F4EEE4] text-[#17645F]",
+          active ? "bg-[#0C68F6] text-white" : "bg-[#F4EEE4] text-[#0C68F6]",
         )}
       >
         <Icon className="h-[18px] w-[18px]" strokeWidth={1.9} />
       </span>
       <span className="min-w-0">
-        <span className="block text-sm font-semibold text-[#17645F]">
+        <span className="block text-sm font-semibold text-[#0C68F6]">
           {title}
         </span>
         {text && (
-          <span className="mt-0.5 block text-xs text-[#17645F]/70">{text}</span>
+          <span className="mt-0.5 block text-xs text-[#0C68F6]/70">{text}</span>
         )}
       </span>
     </button>

@@ -1,0 +1,11 @@
+.footer { margin-top: clamp(32px,5vw,72px); background: #f7f7f7; border-top: 1px solid #e3e3e3; color: #202020; }
+.inner { max-width: var(--market-width,1400px); margin-inline: auto; padding: clamp(32px,4vw,58px) var(--gutter,24px) 28px; }
+.columns { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 28px; }
+.columns h2 { font-size: .93rem; line-height: 1.4; font-weight: 700; margin: 0 0 12px; }
+.columns ul { list-style: none; padding: 0; margin: 0; }
+.columns li a { display: inline-block; padding-block: 5px; color: #545454; font-size: .875rem; line-height: 1.5; }
+.columns a:hover { color: #121212; text-decoration: underline; }
+.legal { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 18px; margin-top: clamp(30px,5vw,72px); padding-top: 18px; border-top: 1px solid #dedede; font-size: .78rem; }
+.legal a,.settings { color: #174a9c; text-decoration: underline; text-underline-offset: 2px; }
+@media(max-width: 900px) { .columns { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media(max-width: 600px) { .columns { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px 18px; } .legal span { width: 100%; } }

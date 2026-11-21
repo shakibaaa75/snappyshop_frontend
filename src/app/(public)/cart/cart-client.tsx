@@ -1,5 +1,6 @@
 "use client";
 
+import { marketplaceProductHref } from "@/lib/query/marketplace-links";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueries } from "@tanstack/react-query";
@@ -158,7 +159,9 @@ export default function CartClient() {
                     <span>{formatPrice(subtotal)}</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Each seller sets its own delivery charge, shown at checkout once you choose your district (Inside Dhaka or Outside Dhaka).
+                    Each seller sets its own delivery charge, shown at checkout
+                    once you choose your district (Inside Dhaka or Outside
+                    Dhaka).
                   </p>
                   {carts.length > 1 &&
                     (anyBlocked ? (
@@ -248,7 +251,7 @@ function SellerGroup({
             <CartItem
               key={k}
               line={line}
-              href={`${storeHref}/products/${line.productId}`}
+              href={marketplaceProductHref(cart.slug, line.productId)}
               notice={notice}
               maxQty={maxQty}
               onQty={(q) => setSellerLineQty(cart.slug, k, q)}
