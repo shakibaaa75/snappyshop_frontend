@@ -47,6 +47,7 @@ import {
   type SaveStatus,
 } from "@/lib/store-design/use-store-design";
 import type { Category, Product } from "@/lib/store-design/types";
+import { HomepageReviewsPanel } from "@/components/store-design/editor-panels/review-settings";
 import { IconButton } from "@/components/store-design/controls";
 import {
   LiveStorePreview,
@@ -82,6 +83,7 @@ type TabId =
   | "theme"
   | "productCards"
   | "homepage"
+  | "reviews"
   | "arrange"
   | "products"
   | "productPage"
@@ -127,6 +129,13 @@ const tabs: {
     title: "Homepage",
     description: "Choose, reorder and edit sections",
     icon: Home,
+  },
+  {
+    id: "reviews",
+    label: "Reviews",
+    title: "Homepage reviews",
+    description: "Choose reviews and their layout",
+    icon: MessageCircle,
   },
   {
     id: "arrange",
@@ -338,6 +347,7 @@ export default function StoreDesignPage() {
     [renameShop],
   );
 
+  const [reviewPreview, setReviewPreview] = useState(false);
   const [active, setActive] = useState<TabId>("identity");
   const [device, setDevice] = useState<PreviewDevice>("desktop");
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -537,6 +547,7 @@ export default function StoreDesignPage() {
     theme: ThemePanel,
     productCards: ProductCardsPanel,
     homepage: HomepagePanel,
+    reviews: HomepageReviewsPanel,
     arrange: SectionArrangementPanel,
     products: ProductsPanel,
     productPage: ProductPagePanel,
@@ -550,6 +561,8 @@ export default function StoreDesignPage() {
   }[active];
 
   const previewProps = {
+    reviewPreview: active === "productPage" && reviewPreview,
+    onReviewPreviewChange: setReviewPreview,
     design: previewTemplate ? applyTemplate(design, previewTemplate) : design,
     products,
     categories,
@@ -741,7 +754,11 @@ export default function StoreDesignPage() {
           </div>
 
           <div key={active} className="animate-in fade-in duration-200">
-            <ActivePanel {...panelProps} />
+            <ActivePanel
+              {...panelProps}
+              reviewPreview={reviewPreview}
+              setReviewPreview={setReviewPreview}
+            />
           </div>
 
           <div className="mt-8 flex items-center justify-between gap-3 border-t pt-5">

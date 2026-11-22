@@ -22,6 +22,7 @@ import {
   CATEGORY_STYLE_CHOICES,
   CategoryLookEditor,
 } from "./category-look-editor";
+import { ReviewSettings } from "./review-settings";
 import { GallerySettings } from "./gallery-settings";
 import { MainBannerDesign } from "./main-banner-design";
 import { PromoEditor } from "./promo-editor";
@@ -49,6 +50,8 @@ export function SectionSettings({
   );
 
   switch (meta.kind) {
+    case "reviews":
+      return <ReviewSettings {...panel} />;
     case "hero":
       return (
         <div className="space-y-4">

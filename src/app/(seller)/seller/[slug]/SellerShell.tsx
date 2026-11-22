@@ -23,12 +23,7 @@ import {
   Truck,
   type LucideIcon,
 } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { authApi, type AuthUser } from "@/lib/api/auth";
 import { sellerProducts } from "@/lib/api/products";
 import { sellerOrders } from "@/lib/api/orders";
@@ -347,7 +342,7 @@ function Rail({
           <RailButton
             key={l.href}
             item={l}
-            active={isActive(pathname, l.href, slug)}
+            active={!notifOpen && isActive(pathname, l.href, slug)}
             onHover={onHover}
           />
         ))}
@@ -358,7 +353,9 @@ function Rail({
             key={l.href}
             item={l}
             active={
-              isNotifications(l) ? notifOpen : isActive(pathname, l.href, slug)
+              isNotifications(l)
+                ? notifOpen
+                : !notifOpen && isActive(pathname, l.href, slug)
             }
             onClick={isNotifications(l) ? onOpenNotifications : undefined}
             badge={isNotifications(l) ? unread : 0}
@@ -401,6 +398,7 @@ function MobileMenu({
   pathname,
   unread,
   onOpenNotifications,
+  onMenuOpen,
   onHover,
   onLogout,
 }: {
@@ -410,14 +408,23 @@ function MobileMenu({
   pathname: string;
   unread: number;
   onOpenNotifications: () => void;
+  onMenuOpen?: () => void;
   onHover: (href: string) => void;
   onLogout: () => void;
 }) {
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    const openMenu = () => setOpen(true);
+    const openMenu = () => {
+      setOpen(true);
+      onMenuOpen?.();
+    };
+    const closeMenu = () => setOpen(false);
     window.addEventListener("seller:open-menu", openMenu);
-    return () => window.removeEventListener("seller:open-menu", openMenu);
+    window.addEventListener("seller:close-menu", closeMenu);
+    return () => {
+      window.removeEventListener("seller:open-menu", openMenu);
+      window.removeEventListener("seller:close-menu", closeMenu);
+    };
   }, []);
 
   // Safety net: close whenever the route changes (back button, redirects…).
@@ -428,8 +435,15 @@ function MobileMenu({
   const close = () => setOpen(false);
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
+    <DialogPrimitive.Root
+      modal={false}
+      open={open}
+      onOpenChange={(v) => {
+        setOpen(v);
+        if (v) onMenuOpen?.();
+      }}
+    >
+      <DialogPrimitive.Trigger asChild>
         <button
           type="button"
           aria-label="Open menu"
@@ -440,97 +454,106 @@ function MobileMenu({
           </span>
           Menu
         </button>
-      </SheetTrigger>
-      <SheetContent
-        side="left"
-        aria-describedby={undefined}
-        onCloseAutoFocus={(event) => {
-          const trigger = document.querySelector<HTMLButtonElement>(
-            "[data-seller-menu-trigger]",
-          );
-          if (trigger && trigger.getClientRects().length) {
-            event.preventDefault();
-            trigger.focus();
-          }
-        }}
-        className="w-[min(85vw,320px)] p-0"
-      >
-        <div className="flex h-full flex-col">
-          <div className="border-b p-4">
-            <SheetTitle className="flex items-center gap-2 text-lg font-bold text-foreground">
-              <Store className="h-5 w-5" /> Seller Hub
-            </SheetTitle>
-            <p className="mt-2 truncate text-xs text-muted-foreground">
-              {name || email} · /store/{slug}
-            </p>
-          </div>
-          <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-            {[...mainLinks(slug), ...moreLinks(slug)]
-              .filter((l) => !isNotifications(l))
-              .map((l) => {
-                const active = isActive(pathname, l.href, slug);
-                const itemClass = cn(
-                  "flex w-full items-center gap-3 rounded-full px-4 py-3 text-left text-sm font-medium transition-colors duration-200",
-                  active
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted",
-                );
-                const badge = isNotifications(l) && unread > 0 && (
-                  <span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
-                    {unread > 9 ? "9+" : unread}
-                  </span>
-                );
-                // Notifications: close this menu, then slide the drawer in.
-                if (isNotifications(l)) {
+      </DialogPrimitive.Trigger>
+      <DialogPrimitive.Portal>
+        {/* Backdrop stops above the bottom bar so the bar stays tappable. */}
+        {open && (
+          <div
+            aria-hidden="true"
+            onClick={close}
+            className="fixed inset-x-0 top-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-50 bg-black/50"
+          />
+        )}
+        <DialogPrimitive.Content
+          aria-describedby={undefined}
+          onOpenAutoFocus={(e) => e.preventDefault()}
+          onCloseAutoFocus={(e) => e.preventDefault()}
+          onInteractOutside={(e) => {
+            // Bottom-bar taps are navigation, not "outside".
+            const t = e.target as HTMLElement | null;
+            if (t?.closest('[aria-label="Seller navigation"]')) {
+              e.preventDefault();
+            }
+          }}
+          className="fixed left-0 top-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-50 w-[min(85vw,320px)] border-r bg-background p-0 shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left data-[state=open]:duration-300 data-[state=closed]:duration-200 motion-reduce:animate-none"
+        >
+          <div className="flex h-full flex-col">
+            <div className="border-b p-4">
+              <DialogPrimitive.Title className="flex items-center gap-2 text-lg font-bold text-foreground">
+                <Store className="h-5 w-5" /> Seller Hub
+              </DialogPrimitive.Title>
+              <p className="mt-2 truncate text-xs text-muted-foreground">
+                {name || email} · /store/{slug}
+              </p>
+            </div>
+            <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+              {[...mainLinks(slug), ...moreLinks(slug)]
+                .filter((l) => !isNotifications(l))
+                .map((l) => {
+                  const active = isActive(pathname, l.href, slug);
+                  const itemClass = cn(
+                    "flex w-full items-center gap-3 rounded-full px-4 py-3 text-left text-sm font-medium transition-colors duration-200",
+                    active
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted",
+                  );
+                  const badge = isNotifications(l) && unread > 0 && (
+                    <span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
+                      {unread > 9 ? "9+" : unread}
+                    </span>
+                  );
+                  // Notifications: close this menu, then slide the drawer in.
+                  if (isNotifications(l)) {
+                    return (
+                      <button
+                        key={l.href}
+                        type="button"
+                        onClick={() => {
+                          close();
+                          window.setTimeout(onOpenNotifications, 200);
+                        }}
+                        className={cn(
+                          itemClass,
+                          "bg-transparent text-muted-foreground hover:bg-muted",
+                        )}
+                      >
+                        <l.icon className="h-4 w-4" />
+                        {l.label}
+                        {badge}
+                      </button>
+                    );
+                  }
                   return (
-                    <button
+                    <Link
                       key={l.href}
-                      type="button"
-                      onClick={() => {
-                        close();
-                        window.setTimeout(onOpenNotifications, 200);
-                      }}
-                      className={cn(
-                        itemClass,
-                        "bg-transparent text-muted-foreground hover:bg-muted",
-                      )}
+                      href={l.href}
+                      aria-current={active ? "page" : undefined}
+                      onClick={close}
+                      onMouseEnter={() => onHover(l.href)}
+                      className={itemClass}
                     >
                       <l.icon className="h-4 w-4" />
                       {l.label}
-                      {badge}
-                    </button>
+                    </Link>
                   );
-                }
-                return (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    aria-current={active ? "page" : undefined}
-                    onClick={close}
-                    onMouseEnter={() => onHover(l.href)}
-                    className={itemClass}
-                  >
-                    <l.icon className="h-4 w-4" />
-                    {l.label}
-                  </Link>
-                );
-              })}
-          </nav>
-          <div className="border-t p-3">
-            <button
-              type="button"
-              onClick={() => {
-                close();
-                onLogout();
-              }}
-              className="flex w-full items-center gap-3 rounded-full px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted"
-            >
-              <LogOut className="h-4 w-4" /> Log Out
-            </button>
+                })}
+            </nav>
+            <div className="border-t p-3">
+              <button
+                type="button"
+                onClick={() => {
+                  close();
+                  onLogout();
+                }}
+                className="flex w-full items-center gap-3 rounded-full px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted"
+              >
+                <LogOut className="h-4 w-4" /> Log Out
+              </button>
+            </div>
           </div>
-        </div>
-      </SheetContent>
-    </Sheet>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }
 
@@ -619,6 +642,11 @@ export function SellerShell({
     !!me.storeSlug &&
     urlSlug === me.storeSlug;
 
+  // Close the drawer when a bottom-bar tab (or any link) changes the page.
+  useEffect(() => {
+    setNotifOpen(false);
+  }, [pathname]);
+
   // Any seller page (e.g. a dashboard banner) can ask for the drawer.
   useEffect(() => {
     const open = () => setNotifOpen(true);
@@ -706,7 +734,11 @@ export function SellerShell({
 
   return (
     <div
-      className={cn("min-h-screen bg-muted text-foreground", MARKETPLACE_THEME)}
+      className={cn(
+        "min-h-screen text-foreground",
+        pathname === `/seller/${storeSlug}/reviews` ? "bg-white" : "bg-muted",
+        MARKETPLACE_THEME,
+      )}
     >
       <style>{ANIMATION_CSS}</style>
 
@@ -733,7 +765,7 @@ export function SellerShell({
       >
         {(["Dashboard", "Products", "Orders"] as const).map((label) => {
           const link = mainLinks(storeSlug).find((l) => l.label === label)!;
-          const active = isActive(pathname, link.href, storeSlug);
+          const active = !notifOpen && isActive(pathname, link.href, storeSlug);
           return (
             <Link
               key={link.href}
@@ -756,7 +788,10 @@ export function SellerShell({
           type="button"
           aria-haspopup="dialog"
           aria-expanded={notifOpen}
-          onClick={() => setNotifOpen(true)}
+          onClick={() => {
+            window.dispatchEvent(new Event("seller:close-menu"));
+            setNotifOpen((v) => !v);
+          }}
           className={cn(
             "flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 rounded-xl text-[10px] font-medium transition-colors duration-200",
             notifOpen
@@ -777,6 +812,7 @@ export function SellerShell({
           pathname={pathname}
           unread={unread}
           onOpenNotifications={() => setNotifOpen(true)}
+          onMenuOpen={() => setNotifOpen(false)}
           onHover={prefetch}
           onLogout={handleLogout}
         />

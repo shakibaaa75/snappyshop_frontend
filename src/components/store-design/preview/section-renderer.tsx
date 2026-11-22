@@ -1,6 +1,7 @@
 "use client";
 
 import { type HomeSection, usesYokaiLayout } from "@/lib/store-design/types";
+import { FeaturedReviews } from "@/components/reviews/Reviews";
 import { AllProducts } from "./all-products";
 import { Categories } from "./category-section";
 import { Countdown } from "./countdown";
@@ -13,8 +14,16 @@ import { Story } from "./story";
 import { TrustBar } from "./trust-bar";
 import { type Ctx } from "./types";
 
-export function SectionRenderer({ section, ctx }: { section: HomeSection; ctx: Ctx }) {
+export function SectionRenderer({
+  section,
+  ctx,
+}: {
+  section: HomeSection;
+  ctx: Ctx;
+}) {
   switch (section.id) {
+    case "reviews":
+      return <FeaturedReviews design={ctx.d} />;
     case "hero":
       return usesYokaiLayout(ctx.d) ? (
         <YokaiHero ctx={ctx} />

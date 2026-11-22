@@ -1,5 +1,6 @@
 "use client";
 
+import { ProductReviews } from "@/components/reviews/Reviews";
 import { type Product, type StoreDesign } from "@/lib/store-design/types";
 import { type CSSProperties, useEffect } from "react";
 import {
@@ -103,7 +104,18 @@ export function ProductPagePreview({
   const sideThumbs = galleryLeft || galleryRight;
   const phone = PRODUCT_PHONE[layout];
   const wide = !mobile;
-
+  const reviewsAfterProducts = design.productReviewPosition === "after";
+  const reviewSection = !loading && design.showProductReviews !== false && (
+    <div data-product-reviews className="pointer-events-auto">
+      <ProductReviews
+        key={sample.id}
+        preview
+        product={products[0]?.id ?? ""}
+        layout={design.productReviewLayout}
+        heading={design.productReviewHeading}
+      />
+    </div>
+  );
   return (
     <div
       style={
@@ -365,21 +377,22 @@ export function ProductPagePreview({
                       )}
                     </div>
                   </div>
-                  {design.showRatings && (
-                    <div className="shrink-0 text-right text-sm">
-                      <span className="flex items-center justify-end gap-1 font-semibold">
-                        <Star
-                          className="h-4 w-4"
-                          style={{ color: "#f59e0b" }}
-                          fill="currentColor"
-                        />
-                        {sample.rating.toFixed(1)}
-                      </span>
-                      <span className="text-xs" style={muted}>
-                        {sample.reviews} reviews
-                      </span>
-                    </div>
-                  )}
+                  {design.showProductReviews !== false &&
+                    design.showRatings && (
+                      <div className="shrink-0 text-right text-sm">
+                        <span className="flex items-center justify-end gap-1 font-semibold">
+                          <Star
+                            className="h-4 w-4"
+                            style={{ color: "#f59e0b" }}
+                            fill="currentColor"
+                          />
+                          {sample.rating.toFixed(1)}
+                        </span>
+                        <span className="text-xs" style={muted}>
+                          {sample.reviews} reviews
+                        </span>
+                      </div>
+                    )}
                 </div>
 
                 {sample.description && (
@@ -527,6 +540,7 @@ export function ProductPagePreview({
             </>
           )}
         </main>
+        {!reviewsAfterProducts && reviewSection}
         {design.showProductRelated && !loading && (
           <section className="mx-auto w-full max-w-[1100px] px-5 pb-10 lg:px-8">
             <h2 className="mb-4 text-xl font-bold tracking-tight">
@@ -540,6 +554,7 @@ export function ProductPagePreview({
             />
           </section>
         )}
+        {reviewsAfterProducts && reviewSection}
       </div>
     </div>
   );

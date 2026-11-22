@@ -259,7 +259,8 @@ export type HomeSectionId =
   | "allProducts"
   | "story"
   | "countdown"
-  | "gallery";
+  | "gallery"
+  | "reviews";
 
 export type SectionKind =
   | "hero"
@@ -271,7 +272,8 @@ export type SectionKind =
   | "all"
   | "story"
   | "countdown"
-  | "gallery";
+  | "gallery"
+  | "reviews";
 
 /* ------------------------------------------------------------------ */
 /* Card customization (seller overrides applied on top of any card)    */
@@ -619,10 +621,17 @@ export interface StoreDesign {
   /* Product cards */
   productsPerRow: number;
   imageAspectRatio: AspectRatio;
+  reviewPickedIds?: string[];
+  showProductReviews?: boolean;
+  productReviewPosition?: "before" | "after";
+  productReviewLayout?: "grid" | "carousel" | "testimonial";
+  productReviewHeading?: string;
+  reviewPickedOnly?: boolean;
   reviewIds?: string[];
   reviewSection?: boolean;
   reviewHeading?: string;
   reviewLayout?: "grid"|"carousel"|"testimonial";
+  reviewPosition?: string;
   reviewPadding?: number;
   reviewColor?: string;
   showRatings: boolean;
@@ -983,6 +992,7 @@ export const sectionMeta: Record<
   HomeSectionId,
   { label: string; description: string; kind: SectionKind; autoHint?: string }
 > = {
+  reviews: { label: "Reviews", description: "Customer reviews and seller replies", kind: "reviews" },
   hero: {
     label: "Hero banner",
     description: "The big opening banner",
@@ -1136,6 +1146,7 @@ export const defaultDesign: StoreDesign = {
     section("newArrivals", "Just arrived"),
     section("allProducts", "All products", { limit: 8 }),
     section("story", "A little about our store"),
+    section("reviews", "Customer reviews", {enabled:false}),
   ],
   promoBanners: [],
   storyText:
@@ -1507,12 +1518,17 @@ export function normalizeDesign(raw: unknown): StoreDesign {
   ) as Partial<StoreDesign>;
   const merged: StoreDesign = { ...defaultDesign, ...input };
 
+  merged.showProductReviews = input.showProductReviews !== false;
+  merged.productReviewPosition = input.productReviewPosition === "after" ? "after" : "before";
+  merged.productReviewLayout = pick(input.productReviewLayout, ["grid", "carousel", "testimonial"] as const, "carousel");
+  merged.productReviewHeading = typeof input.productReviewHeading === "string" ? input.productReviewHeading.slice(0,80) : "";
   merged.reviewSection = input.reviewSection === true;
   merged.reviewHeading = typeof input.reviewHeading === "string" ? input.reviewHeading.slice(0,80) : "";
   merged.reviewLayout = pick(input.reviewLayout, ["grid", "carousel", "testimonial"] as const, "grid");
   merged.reviewPadding = typeof input.reviewPadding === "number" && Number.isFinite(input.reviewPadding) ? Math.max(0, Math.min(64, input.reviewPadding)) : 20;
   merged.reviewColor = typeof input.reviewColor === "string" && /^#[a-f0-9]{6}$/i.test(input.reviewColor) ? input.reviewColor : undefined;
   merged.reviewIds = Array.isArray(input.reviewIds) ? input.reviewIds.filter(id=>typeof id==="string" && /^[a-f0-9]{64}$/.test(id)).slice(0,10) : [];
+  merged.reviewPickedIds = Array.isArray(input.reviewPickedIds) ? input.reviewPickedIds.filter(id => typeof id === "string" && /^[a-f0-9]{64}$/.test(id)).slice(0,10) : [];
   merged.sellingCategory = normalizeSellingCategory(input.sellingCategory);
 
   const arrays = [
@@ -1672,5 +1688,12 @@ export function normalizeDesign(raw: unknown): StoreDesign {
     ...s,
   }));
 
+  if (!seen.has("reviews")) {
+    const index = merged.sections.findIndex(s => s.id === "reviews");
+    const [reviews] = merged.sections.splice(index, 1);
+    reviews.enabled = input.reviewSection === true;
+    const before = input.reviewPosition === "top" ? 0 : merged.sections.findIndex(s => s.id === input.reviewPosition);
+    merged.sections.splice(before < 0 ? merged.sections.length : Math.max(merged.sections[0]?.id === "hero" ? 1 : 0,before), 0, reviews);
+  }
   return merged;
 }

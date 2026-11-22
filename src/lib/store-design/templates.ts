@@ -599,7 +599,7 @@ export function applyTemplate(design: StoreDesign, id: TemplateId): StoreDesign 
     showAddToCart: true,
     template: id,
     cardCustom: { ...defaultCardCustom, ...t.cardColors },
-    sections: [...shown, ...hidden],
+    sections: [...shown, ...hidden, pick("reviews")],
   };
 }
 

@@ -271,6 +271,15 @@ export default function ProductClient({
   const accentOn = design.productAccentColor
     ? readableOn(design.productAccentColor)
     : "var(--s-on-primary)";
+  const showReviews = marketplace || design.showProductReviews !== false;
+  const reviewsAfterProducts = design.productReviewPosition === "after";
+  const reviewSection = showReviews && (
+    <ProductReviews
+      product={product.id}
+      layout={design.productReviewLayout}
+      heading={design.productReviewHeading}
+    />
+  );
   const layout = design.productLayout;
   const editorial = layout === "editorial";
   const galleryLeft = layout === "gallery-left";
@@ -385,6 +394,8 @@ export default function ProductClient({
     router.push(`${storeHref}/checkout`);
   };
 
+  const hasRelated =
+    !marketplace && design.showProductRelated && related.length > 0;
   return (
     <div
       style={
@@ -838,9 +849,11 @@ export default function ProductClient({
                 <h1 className="text-2xl font-bold leading-tight tracking-tight sm:text-3xl lg:text-4xl">
                   {product.name}
                 </h1>
-                <div className="mt-2">
-                  <AddReviewButton product={product.id} />
-                </div>
+                {showReviews && (
+                  <div className="mt-2">
+                    <AddReviewButton product={product.id} />
+                  </div>
+                )}
                 <div className="mt-2 flex flex-wrap items-baseline gap-2.5 lg:mt-3">
                   <span className="text-2xl font-bold tracking-tight lg:text-3xl">
                     {formatPrice(price)}
@@ -864,7 +877,7 @@ export default function ProductClient({
                 )}
               </div>
 
-              {(marketplace || design.showRatings) && (
+              {showReviews && (marketplace || design.showRatings) && (
                 <a href="#customer-reviews">
                   <ReviewScore product={product.id} />
                 </a>
@@ -1130,15 +1143,8 @@ export default function ProductClient({
             )}
           </section>
         </main>
-        <ProductReviews product={product.id} />
-        {/* Room for the fixed add-to-cart bar on phones. Related products and
-            the footer already reserve it; only add it when neither is shown. */}
-        {!(!marketplace && design.showProductRelated && related.length > 0) &&
-          !(!marketplace && design.showFooter) && (
-            <div className="h-24 lg:hidden" aria-hidden="true" />
-          )}
-
-        {!marketplace && design.showProductRelated && related.length > 0 && (
+        {!reviewsAfterProducts && reviewSection}
+        {hasRelated && (
           <section className="mx-auto w-full max-w-[1200px] px-4 pb-28 lg:px-8 lg:pb-16 lg:pt-6">
             <div className="mb-4 flex items-baseline justify-between lg:mb-6">
               <h2 className="text-xl font-bold tracking-tight lg:text-2xl">
@@ -1156,6 +1162,11 @@ export default function ProductClient({
           </section>
         )}
 
+        {reviewsAfterProducts && reviewSection}
+        {!(!marketplace && design.showFooter) &&
+          (!hasRelated || (reviewsAfterProducts && showReviews)) && (
+            <div className="h-24 lg:hidden" aria-hidden="true" />
+          )}
         {!marketplace && design.showFooter && (
           <footer
             className="px-6 py-7 pb-28 text-center text-xs lg:pb-7"

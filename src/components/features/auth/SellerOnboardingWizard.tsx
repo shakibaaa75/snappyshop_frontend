@@ -179,8 +179,9 @@ export function SellerOnboardingWizard() {
       qc.clear();
       qc.setQueryData(qk.auth.me, user);
 
-      // The shop name is chosen here; the setup step that creates the store
-      // picks it up so the seller doesn't have to type it twice.
+      // The store details typed in this wizard are kept for the next step, so
+      // the store can be created as soon as the seller picks a plan (the seller
+      // never has to type them twice).
       try {
         window.sessionStorage.setItem(
           ONBOARDING_STORE_KEY,
@@ -197,8 +198,8 @@ export function SellerOnboardingWizard() {
       } catch {
         // Storage blocked: the setup page simply asks again.
       }
-      // Next: choose a plan (free or paid), then create the store.
-      router.push("/seller/plan");
+      // Next: choose a plan (same design as the public Pricing page).
+      router.push("/register/plan");
       router.refresh();
     },
     onError: (error) => {

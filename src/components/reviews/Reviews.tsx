@@ -1,4 +1,5 @@
 "use client";
+import { SellerActions } from "./SellerReviewControls";
 import Link from "next/link";
 import { SocialButtons } from "@/components/features/auth/Authcontrols";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -34,6 +35,7 @@ type Review = {
   created: string;
   status: string;
   featured?: boolean;
+  homepageFeatured?: boolean;
   hiddenInShop?: boolean;
   reported?: boolean;
   revision: number;
@@ -698,7 +700,47 @@ export function AddReviewButton({
   );
 }
 
-export function ProductReviews({ product }: { product: string }) {
+const sampleReviews: Review[] = [
+  {
+    buyerName: "Maya",
+    rating: 5,
+    body: "The item matched the photos and arrived carefully packed.",
+    reply: "Thank you for sharing your experience!",
+  },
+  {
+    buyerName: "Arif",
+    rating: 4,
+    body: "The size guide helped me choose the right one.",
+  },
+  {
+    buyerName: "Nadia",
+    rating: 5,
+    body: "Exactly what I was looking for. The finish looks great in person.",
+  },
+].map((row, i) => ({
+  ...row,
+  id: String(i),
+  product: "",
+  order: "",
+  name: "",
+  title: "",
+  photos: [],
+  created: "2026-01-15",
+  status: "Published",
+  revision: 0,
+}));
+
+export function ProductReviews({
+  product,
+  layout = "carousel",
+  heading,
+  preview = false,
+}: {
+  product: string;
+  layout?: StoreDesign["productReviewLayout"];
+  heading?: string;
+  preview?: boolean;
+}) {
   const [page, setPage] = useState(0);
   const [all, setAll] = useState(false);
   const track = useRef<HTMLDivElement>(null);
@@ -707,11 +749,21 @@ export function ProductReviews({ product }: { product: string }) {
     "/reviews?product=" +
       encodeURIComponent(product) +
       (page ? "&page=" + page : ""),
+    "public",
+    !!product,
   );
-  const count = q.data?.rows?.length ?? 0;
+  const showSamples =
+    preview && (!product || q.isError || (q.isSuccess && !q.data?.count));
+  const rows = showSamples ? sampleReviews : (q.data?.rows ?? []);
+  const count = rows.length;
+  const total = showSamples ? sampleReviews.length : (q.data?.count ?? 0);
+  const average = showSamples
+    ? sampleReviews.reduce((sum, r) => sum + r.rating, 0) / total
+    : (q.data?.average ?? 0);
+  const carousel = layout === "carousel" && !all;
   const measure = useCallback(() => {
     const el = track.current;
-    if (!el) return;
+    if (!el || !el.clientWidth) return;
     setPos({
       page: Math.round(el.scrollLeft / el.clientWidth),
       pages: Math.max(1, Math.ceil(el.scrollWidth / el.clientWidth - 0.05)),
@@ -729,7 +781,7 @@ export function ProductReviews({ product }: { product: string }) {
       el.removeEventListener("scroll", measure);
       window.removeEventListener("resize", measure);
     };
-  }, [measure, count, all]);
+  }, [measure, count, carousel]);
   const go = (d: 1 | -1) =>
     track.current?.scrollBy({
       left: d * track.current.clientWidth,
@@ -766,44 +818,62 @@ export function ProductReviews({ product }: { product: string }) {
   );
   return (
     <section
-      id="customer-reviews"
-      className="mx-auto w-full max-w-5xl space-y-5 p-5"
+      id={preview ? undefined : "customer-reviews"}
+      className="@container mx-auto w-full max-w-5xl space-y-5 p-5"
     >
+      {showSamples && (
+        <p className="text-xs font-semibold" style={{ color: T.muted }}>
+          Preview with sample reviews
+        </p>
+      )}
       <div
         className="flex items-start justify-between gap-3 pb-3 sm:pb-4"
         style={{ borderBottom: `1px solid ${T.border}` }}
       >
         <div className="min-w-0">
           <h2 className="text-lg font-bold tracking-tight sm:text-2xl">
-            Customer reviews
+            {heading?.trim() || "Customer reviews"}
           </h2>
-          {!!q.data?.count && (
+          {!!total && (
             <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 sm:mt-2 sm:gap-3">
               <span className="text-2xl font-bold leading-none sm:text-4xl">
-                {q.data.average.toFixed(1)}
+                {average.toFixed(1)}
               </span>
               <span className="inline-flex [&_svg]:size-4 sm:[&_svg]:size-[22px]">
-                <Stars value={q.data.average} size={22} />
+                <Stars value={average} size={22} />
               </span>
               <span className="text-xs sm:text-base" style={{ color: T.muted }}>
-                ({q.data.count} {q.data.count === 1 ? "review" : "reviews"})
+                ({total} {total === 1 ? "review" : "reviews"})
               </span>
             </div>
           )}
         </div>
         <div className="shrink-0">
-          <AddReviewButton product={product} variant="solid" />
+          {preview ? (
+            <button type="button" disabled className={button}>
+              Write a review
+            </button>
+          ) : (
+            <AddReviewButton product={product} variant="solid" />
+          )}
         </div>
       </div>
-      {q.isSuccess && !q.data.rows?.length && (
+      {q.isLoading && <p role="status">Loading reviews…</p>}
+      {q.isSuccess && !rows.length && (
         <p className="text-sm" style={{ color: T.muted }}>
           No published reviews yet.
         </p>
       )}
       {count > 0 &&
-        (all ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {q.data?.rows?.map((r) => (
+        (!carousel ? (
+          <div
+            className={
+              layout === "testimonial"
+                ? "mx-auto grid max-w-xl gap-5 text-center"
+                : "grid gap-5 @lg:grid-cols-2 @3xl:grid-cols-3"
+            }
+          >
+            {rows.map((r) => (
               <ReviewCard key={r.id} r={r} />
             ))}
           </div>
@@ -812,16 +882,16 @@ export function ProductReviews({ product }: { product: string }) {
             {arrow("left")}
             <div
               ref={track}
-              className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>article]:w-[85%] [&>article]:shrink-0 [&>article]:snap-start sm:[&>article]:w-[calc((100%-1.25rem)/2)] lg:[&>article]:w-[calc((100%-2.5rem)/3)]"
+              className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>article]:w-[85%] [&>article]:shrink-0 [&>article]:snap-start @lg:[&>article]:w-[calc((100%-1.25rem)/2)] @3xl:[&>article]:w-[calc((100%-2.5rem)/3)]"
             >
-              {q.data?.rows?.map((r) => (
+              {rows.map((r) => (
                 <ReviewCard key={r.id} r={r} />
               ))}
             </div>
             {arrow("right")}
           </div>
         ))}
-      {count > 0 && (
+      {layout === "carousel" && count > 0 && (
         <div className="flex items-center justify-between gap-3">
           <span className="hidden w-40 sm:block" />
           {!all && pos.pages > 1 ? (
@@ -874,12 +944,12 @@ export function ProductReviews({ product }: { product: string }) {
           )}
         </div>
       )}
-      {q.error && (
+      {product && q.error && (
         <button className="text-sm underline" onClick={() => q.refetch()}>
           Retry loading reviews
         </button>
       )}
-      <Paging page={page} size={q.data?.rows?.length ?? 0} change={setPage} />
+      {!showSamples && <Paging page={page} size={count} change={setPage} />}
     </section>
   );
 }
@@ -940,16 +1010,27 @@ export function MarketplaceReviews() {
   );
 }
 export function FeaturedReviews({ design }: { design: StoreDesign }) {
+  const [page, setPage] = useState(0);
+  const hasSelection =
+    !design.reviewPickedOnly || !!design.reviewPickedIds?.length;
   const q = useList(
     "/reviews?" +
       new URLSearchParams({
+        selection: design.reviewPickedOnly ? "picked" : "legacy",
         store: design.storeSlug,
-        ids: (design.reviewIds ?? []).slice(0, 10).join(","),
+        page: String(page),
+        ids: (
+          (design.reviewPickedOnly
+            ? design.reviewPickedIds
+            : design.reviewIds) ?? []
+        )
+          .slice(0, 10)
+          .join(","),
       }),
     "public",
-    !!design.reviewSection && !!design.storeSlug,
+    hasSelection && !!design.storeSlug,
   );
-  if (!design.reviewSection || !q.data?.rows?.length) return null;
+  if (!hasSelection || (!page && !q.data?.rows?.length)) return null;
   return (
     <section
       style={{
@@ -957,22 +1038,41 @@ export function FeaturedReviews({ design }: { design: StoreDesign }) {
         backgroundColor: design.reviewColor ?? "transparent",
       }}
     >
-      <h2 className="text-xl font-semibold">
+      <h2 className="mb-4 text-xl font-semibold">
         {design.reviewHeading || "Customer reviews"}
       </h2>
       <div
         className={
           design.reviewLayout === "carousel"
-            ? "flex overflow-x-auto gap-4 snap-x [&>article]:min-w-64 [&>article]:snap-start"
+            ? "flex overflow-x-auto gap-4 snap-x pb-2 [&>article]:w-[min(85%,22rem)] [&>article]:shrink-0 [&>article]:snap-start"
             : design.reviewLayout === "testimonial"
-              ? "mx-auto max-w-xl italic"
+              ? "mx-auto grid max-w-2xl gap-4 [&>article]:text-center"
               : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
         }
       >
-        {q.data.rows.map((r) => (
+        {q.data?.rows?.map((r) => (
           <ReviewCard key={r.id} r={r} />
         ))}
       </div>
+      {(page > 0 || (q.data?.count ?? 0) > 10) && (
+        <div className="mt-4 flex items-center gap-3">
+          <button
+            className={button}
+            disabled={!page}
+            onClick={() => setPage(page - 1)}
+          >
+            Previous
+          </button>
+          <span>Page {page + 1}</span>
+          <button
+            className={button}
+            disabled={(page + 1) * 10 >= (q.data?.count ?? 0)}
+            onClick={() => setPage(page + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </section>
   );
 }
@@ -1076,10 +1176,21 @@ export function ReviewDashboard({
     }
   }
   return (
-    <main className="mx-auto max-w-4xl p-5 space-y-5">
+    <div
+      className={
+        scope === "seller"
+          ? "min-h-[90dvh] w-full space-y-5 bg-white py-4 text-slate-950"
+          : "mx-auto max-w-4xl space-y-5 p-5"
+      }
+    >
       <h1 className="text-2xl font-semibold">
         {scope === "buyer" ? "My reviews" : "Product reviews"}
       </h1>
+      {scope === "seller" && (
+        <p className="text-sm text-muted-foreground">
+          Read customer feedback, reply to buyers, or report a review.
+        </p>
+      )}
       {scope === "admin" && (
         <details>
           <summary>Record order verification</summary>
@@ -1128,176 +1239,143 @@ export function ReviewDashboard({
           </form>
         </details>
       )}
-      <div className="flex flex-wrap gap-3">
-        <select
-          className={field}
-          aria-label="Review status"
-          value={status}
-          onChange={(e) => {
-            setStatus(e.target.value);
-            setPage(0);
-          }}
+      <>
+        <div className="flex flex-wrap gap-3">
+          <select
+            className={field}
+            aria-label="Review status"
+            value={status}
+            onChange={(e) => {
+              setStatus(e.target.value);
+              setPage(0);
+            }}
+          >
+            <option value="">All statuses</option>
+            {[...states, ...(scope === "admin" ? ["Reported"] : [])].map(
+              (s) => (
+                <option key={s}>{s}</option>
+              ),
+            )}
+          </select>
+          <RatingFilter
+            value={rating}
+            change={(s) => {
+              setRating(s);
+              setPage(0);
+            }}
+          />
+          <input
+            className={field}
+            placeholder="Filter by product ID"
+            aria-label="Product ID"
+            value={product}
+            onChange={(e) => {
+              setProduct(e.target.value);
+              setPage(0);
+            }}
+          />
+        </div>
+        {notice && (
+          <p role="status" className="rounded-xl bg-muted p-3 text-sm">
+            {notice}
+          </p>
+        )}
+        {(error || q.error) && <p role="alert">{error || q.error?.message}</p>}
+        {q.data?.rows?.length === 0 && <p>No matching reviews.</p>}
+        <div
+          className={
+            scope === "seller"
+              ? "grid items-start gap-4 xl:grid-cols-2"
+              : "space-y-5"
+          }
         >
-          <option value="">All statuses</option>
-          {[...states, ...(scope === "admin" ? ["Reported"] : [])].map((s) => (
-            <option key={s}>{s}</option>
-          ))}
-        </select>
-        <RatingFilter
-          value={rating}
-          change={(s) => {
-            setRating(s);
-            setPage(0);
-          }}
-        />
-        <input
-          className={field}
-          placeholder="Filter by product ID"
-          aria-label="Product ID"
-          value={product}
-          onChange={(e) => {
-            setProduct(e.target.value);
-            setPage(0);
-          }}
-        />
-      </div>
-      {notice && (
-        <p role="status" className="rounded-xl bg-muted p-3 text-sm">
-          {notice}
-        </p>
-      )}
-      {(error || q.error) && <p role="alert">{error || q.error?.message}</p>}
-      {q.data?.rows?.length === 0 && <p>No matching reviews.</p>}
-      {q.data?.rows?.map((r) => (
-        <section
-          key={r.id}
-          className="min-w-0 rounded-2xl border border-border bg-card p-4 text-card-foreground sm:p-5"
-        >
-          <h2 className="font-bold">{r.name}</h2>
-          <small>
-            Product {r.product} · Order {r.order}
-          </small>
-          <Card r={r} />
-          {scope === "admin" && (
-            <p className="my-3 rounded-xl bg-muted p-3 text-sm">
-              <strong>{r.status}</strong> · {publicationMessage(r)}
-            </p>
-          )}
-          {scope === "buyer" ? (
-            <div className="flex gap-3">
-              <Link href={`/account/orders/${r.order}`}>View order</Link>
-              {r.slug && (
-                <Link
-                  href={`/store/${encodeURIComponent(r.slug)}/products/${encodeURIComponent(r.product)}#customer-reviews`}
-                >
-                  Open product to edit
-                </Link>
-              )}
-            </div>
-          ) : (
-            <form
-              className="mt-4 grid min-w-0 gap-2 rounded-xl bg-muted p-3 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
-              onSubmit={(e) => action(e, r)}
+          {q.data?.rows?.map((r) => (
+            <section
+              key={r.id}
+              className="min-w-0 rounded-2xl border border-border bg-card p-4 text-card-foreground sm:p-5"
             >
-              <select
-                className={field}
-                aria-label="Review action"
-                name="action"
-              >
-                {(scope === "seller"
-                  ? [
-                      "reply",
-                      ...(r.featured ? [] : ["feature"]),
-                      ...(r.hiddenInShop ? [] : ["unfeature"]),
-                      "report",
-                    ]
-                  : [
+              <h2 className="font-bold">{r.name}</h2>
+              {scope !== "seller" && (
+                <small className="break-all text-muted-foreground">
+                  Product {r.product} · Order {r.order}
+                </small>
+              )}
+              {scope === "seller" && (
+                <p className="mt-3 text-sm font-medium">
+                  {r.buyerName || "Customer"}
+                </p>
+              )}
+              <Card r={r} />
+              {scope === "admin" && (
+                <p className="my-3 rounded-xl bg-muted p-3 text-sm">
+                  <strong>{r.status}</strong> · {publicationMessage(r)}
+                </p>
+              )}
+              {scope === "buyer" ? (
+                <div className="flex gap-3">
+                  <Link href={`/account/orders/${r.order}`}>View order</Link>
+                  {r.slug && (
+                    <Link
+                      href={`/store/${encodeURIComponent(r.slug)}/products/${encodeURIComponent(r.product)}#customer-reviews`}
+                    >
+                      Open product to edit
+                    </Link>
+                  )}
+                </div>
+              ) : scope === "seller" ? (
+                <SellerActions review={r} />
+              ) : (
+                <form
+                  className="mt-4 grid min-w-0 gap-2 rounded-xl bg-muted p-3 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
+                  onSubmit={(e) => action(e, r)}
+                >
+                  <select
+                    className={field}
+                    aria-label="Review action"
+                    name="action"
+                  >
+                    {[
                       "approve",
                       "reject",
                       "remove",
                       "verify-payment",
                       "refund",
                       "return",
-                    ]
-                ).map((a) => (
-                  <option key={a} value={a}>
-                    {a === "feature"
-                      ? "Feature in my shop"
-                      : a === "unfeature"
-                        ? "Hide in my shop"
-                        : a.replace("-", " ")}
-                  </option>
-                ))}
-              </select>
-              <input
-                className={field}
-                name="text"
-                placeholder="Reply, reason or verification reference"
-                aria-label="Action details"
-                maxLength={1000}
-              />
-              <button className="min-h-11 rounded-full bg-[#0c68f6] px-5 font-semibold text-white">
-                Apply
-              </button>
-            </form>
-          )}
-          {scope === "admin" && (
-            <details className="mt-3">
-              <summary>Order verification and activity</summary>
-              <pre className="whitespace-pre-wrap break-words text-xs">
-                {JSON.stringify(
-                  { verification: r.verification, activity: r.audit },
-                  null,
-                  2,
-                )}
-              </pre>
-            </details>
-          )}
-        </section>
-      ))}
-      <Paging page={page} change={setPage} size={q.data?.rows?.length ?? 0} />
-    </main>
-  );
-}
-
-export function ReviewPicker({
-  selected,
-  change,
-}: {
-  selected: string[];
-  change: (ids: string[]) => void;
-}) {
-  const user = useUser();
-  const [page, setPage] = useState(0);
-  const q = useList(
-    "/seller/reviews?status=Published&page=" + page,
-    user.data?.id,
-    user.data?.role === "SELLER",
-  );
-  return (
-    <fieldset className="space-y-2">
-      <legend>Choose featured reviews (up to 10)</legend>
-      <small>
-        Leave empty to use reviews featured in the seller dashboard.
-      </small>
-      {q.data?.rows?.map((r) => (
-        <label key={r.id} className="block">
-          <input
-            type="checkbox"
-            checked={selected.includes(r.id)}
-            disabled={selected.length >= 10 && !selected.includes(r.id)}
-            onChange={(e) =>
-              change(
-                e.target.checked
-                  ? [...selected, r.id]
-                  : selected.filter((id) => id !== r.id),
-              )
-            }
-          />{" "}
-          {r.name} · {r.rating} ★ · {r.title}
-        </label>
-      ))}
-      <Paging page={page} change={setPage} size={q.data?.rows?.length ?? 0} />
-    </fieldset>
+                    ].map((a) => (
+                      <option key={a} value={a}>
+                        {a.replace("-", " ")}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    className={field}
+                    name="text"
+                    placeholder="Reply, reason or verification reference"
+                    aria-label="Action details"
+                    maxLength={1000}
+                  />
+                  <button className="min-h-11 rounded-full bg-[#0c68f6] px-5 font-semibold text-white">
+                    Apply
+                  </button>
+                </form>
+              )}
+              {scope === "admin" && (
+                <details className="mt-3">
+                  <summary>Order verification and activity</summary>
+                  <pre className="whitespace-pre-wrap break-words text-xs">
+                    {JSON.stringify(
+                      { verification: r.verification, activity: r.audit },
+                      null,
+                      2,
+                    )}
+                  </pre>
+                </details>
+              )}
+            </section>
+          ))}
+        </div>
+        <Paging page={page} change={setPage} size={q.data?.rows?.length ?? 0} />
+      </>
+    </div>
   );
 }

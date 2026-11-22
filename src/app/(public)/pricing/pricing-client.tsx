@@ -124,7 +124,7 @@ export function PricingClient() {
       // Free needs no payment.
       setPending(plan);
       router.push(
-        me.storeSlug ? `/seller/${me.storeSlug}/dashboard` : "/seller/plan",
+        me.storeSlug ? `/seller/${me.storeSlug}/dashboard` : "/register/plan",
       );
       return;
     }

@@ -1,11 +1,7 @@
 "use client";
 
-import {
-  AboutContent,
-} from "@/app/(storefront)/store/[slug]/_components/AboutContent";
-import {
-  ContactContent,
-} from "@/app/(storefront)/store/[slug]/_components/ContactContent";
+import { AboutContent } from "@/app/(storefront)/store/[slug]/_components/AboutContent";
+import { ContactContent } from "@/app/(storefront)/store/[slug]/_components/ContactContent";
 import {
   type ReactNode,
   useCallback,
@@ -141,12 +137,16 @@ function PhoneFit({ children }: { children: ReactNode }) {
 export function StorePreviewViewport({
   className,
   chrome = true,
+  reviewPreview = false,
+  onReviewPreviewChange,
   mode = "storefront",
   loading = false,
   ...props
 }: PreviewProps & {
   className?: string;
   chrome?: boolean;
+  reviewPreview?: boolean;
+  onReviewPreviewChange?: (value: boolean) => void;
   mode?: "storefront" | "product" | "about" | "contact";
 }) {
   const { design, device, products } = props;
@@ -180,8 +180,33 @@ export function StorePreviewViewport({
     setPreviewCategory("");
   }, [design.template, design.storeSlug, mode]);
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: 0 });
-  }, [previewPath, previewCategory]);
+    const frame = scrollRef.current;
+    if (!frame) return;
+    if (mode !== "product" || !reviewPreview) {
+      frame.scrollTo({ top: 0 });
+      return;
+    }
+    if (loading || design.showProductReviews === false) return;
+    const animation = requestAnimationFrame(() => {
+      const section = frame.querySelector("[data-product-reviews]");
+      if (!section) return;
+      const offset =
+        section.getBoundingClientRect().top - frame.getBoundingClientRect().top;
+      // Keep the preceding product details visible above the reviews.
+      frame.scrollTo({
+        top: Math.max(0, frame.scrollTop + offset - frame.clientHeight * 0.23),
+      });
+    });
+    return () => cancelAnimationFrame(animation);
+  }, [
+    previewPath,
+    previewCategory,
+    mode,
+    reviewPreview,
+    loading,
+    design.showProductReviews,
+    design.productReviewPosition,
+  ]);
   const previewBase = `/store/${design.storeSlug}`;
   const routeButton = (label: string, href: string) => (
     <button
@@ -270,6 +295,24 @@ export function StorePreviewViewport({
           color: design.textColor,
         }}
       >
+        {mode === "product" && onReviewPreviewChange && (
+          <nav
+            aria-label="Product preview"
+            className="flex shrink-0 gap-1 border-b bg-white p-2 text-sm text-slate-800"
+          >
+            {(["Product details", "Reviews"] as const).map((label) => (
+              <button
+                type="button"
+                key={label}
+                aria-pressed={reviewPreview === (label === "Reviews")}
+                className="rounded-lg px-3 py-1.5 font-medium aria-pressed:bg-slate-900 aria-pressed:text-white"
+                onClick={() => onReviewPreviewChange(label === "Reviews")}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+        )}
         <div
           ref={scrollRef}
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:thin] [-webkit-overflow-scrolling:touch]"
