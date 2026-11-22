@@ -15,6 +15,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  Headset,
   ScrollText,
   ShieldAlert,
   ShieldCheck,
@@ -52,6 +53,7 @@ const GROUPS: NavGroup[] = [
         icon: BadgeCheck,
       },
       { href: "/admin/reports", label: "User reports", icon: Flag },
+      { href: "/admin/support", label: "Support tickets", icon: Headset },
     ],
   },
   {
