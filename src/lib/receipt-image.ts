@@ -15,6 +15,7 @@ export interface ReceiptLine {
   emoji?: string;
 }
 
+import { img } from "@/lib/images";
 import {
   deliveryRow,
   deliveryRowText,
@@ -273,7 +274,7 @@ function draw(
 }
 
 export async function renderReceipt(d: ReceiptData): Promise<HTMLCanvasElement> {
-  const imgs = await Promise.all(d.lines.map((l) => loadImage(l.imageUrl)));
+  const imgs = await Promise.all(d.lines.map((l) => loadImage(img(l.imageUrl, { width: 200, height: 200 }))));
 
   // Pass 1 finds the height, pass 2 draws on a canvas of exactly that height.
   const probe = document.createElement("canvas");

@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 import { ApiError, apiFetch } from "@/lib/api/http";
 import { trackAnalyticsEvent } from "@/lib/api/analytics";
 import { fetchPublicStore } from "@/lib/store-design/api";
-import { useCart } from "@/lib/store-design/cart";
+import { lineKey, useCart } from "@/lib/store-design/cart";
 import {
   formatPrice,
   loadFont,
@@ -83,7 +83,6 @@ type CartVariant = {
   imageUrl?: string;
   selection: Selection;
 };
-type AddItem = (product: Product, qty: number, variant?: CartVariant) => void;
 
 export default function ProductClient({
   slug,
@@ -177,7 +176,6 @@ export default function ProductClient({
   const [selection, setSelection] = useState<Selection>({});
   const [needPick, setNeedPick] = useState(false);
   const [tab, setTab] = useState<string>("");
-  const [added, setAdded] = useState(false);
 
   /* ---------- Variant state ---------- */
 
@@ -296,7 +294,9 @@ export default function ProductClient({
     : 0;
   const soldOut = stock <= 0;
   const paused = design.vacationMode;
-  const canBuy = !soldOut && !paused;
+  const canBuy = cart.ready && !soldOut && !paused;
+  const selectedKey = lineKey({ productId: product.id, variantId: combo?.id });
+  const added = !needsSelection && cart.lines.some((line) => lineKey(line) === selectedKey);
   const shownMain = Math.min(mainImage, slides.length - 1);
 
   const storeHref = `/store/${slug}`;
@@ -360,6 +360,7 @@ export default function ProductClient({
       setNeedPick(true);
       return false;
     }
+    if (added) return true;
     const variant: CartVariant | undefined = combo
       ? {
           id: combo.id,
@@ -370,7 +371,7 @@ export default function ProductClient({
           selection: sel,
         }
       : undefined;
-    (cart.addItem as AddItem)(product, qty, variant);
+    cart.addItem(product, qty, variant, true);
 
     if (!isLoggedIn) {
       trackAnalyticsEvent({
@@ -380,12 +381,6 @@ export default function ProductClient({
       }).catch(() => {});
     }
     return true;
-  };
-
-  const handleAdd = () => {
-    if (!addToCart()) return;
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 1400);
   };
 
   // Adds the chosen variant/quantity, then goes straight to checkout.
@@ -1000,8 +995,8 @@ export default function ProductClient({
               <div className="mx-auto flex max-w-[1200px] items-center gap-2.5">
                 <button
                   type="button"
-                  disabled={!canBuy}
-                  onClick={handleAdd}
+                  disabled={!canBuy || added}
+                  onClick={addToCart}
                   className={cn(
                     "sf-press flex h-14 flex-1 items-center justify-center gap-2 text-base font-semibold",
                     design.productButtonStyle !== "outline" &&
@@ -1012,7 +1007,7 @@ export default function ProductClient({
                 >
                   {added ? (
                     <span className="sf-pop flex items-center gap-2">
-                      <Check className="h-5 w-5" /> Added to bag
+                      <Check className="h-5 w-5" /> Added
                     </span>
                   ) : (
                     <>

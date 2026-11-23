@@ -477,6 +477,38 @@ function Form({
     </form>
   );
 }
+function ReviewNotice({
+  icon,
+  title,
+  children,
+}: {
+  icon: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-4 text-center">
+      <div
+        className="mx-auto grid size-14 place-items-center rounded-2xl text-2xl"
+        style={{ background: T.soft, color: T.primary }}
+        aria-hidden="true"
+      >
+        {icon}
+      </div>
+      <div className="space-y-2">
+        <h3
+          className="text-base font-semibold"
+          style={{ color: "var(--s-text, #111827)" }}
+        >
+          {title}
+        </h3>
+        <div className="text-sm leading-6" style={{ color: T.muted }}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
 function Composer({
   product,
   close,
@@ -518,16 +550,20 @@ function Composer({
     const next = window.location.pathname + window.location.search;
     return (
       <div className="space-y-4">
-        <p className="text-sm">Sign in to review this product.</p>
+        <ReviewNotice icon="🔒" title="Sign in to write a review">
+          You need a buyer account to review a product you purchased.
+        </ReviewNotice>
         <SocialButtons next={next} />
         <Link
-          className="flex min-h-12 items-center justify-center rounded-full border px-4 text-sm font-semibold"
+          className="flex min-h-12 items-center justify-center rounded-xl border px-4 text-sm font-semibold"
+          style={{ borderColor: T.border, color: T.primary }}
           href="/register"
         >
           Create an account with email
         </Link>
         <Link
-          className="block text-center text-sm underline"
+          className="block text-center text-sm font-semibold underline"
+          style={{ color: T.primary }}
           href={"/login?next=" + encodeURIComponent(next)}
         >
           Log in with email
@@ -542,7 +578,11 @@ function Composer({
       </button>
     );
   if (!buyer)
-    return <p>Sign in with the buyer account used for this purchase.</p>;
+    return (
+      <ReviewNotice icon="👤" title="Buyer account required">
+        Sign in with the buyer account used to purchase this product.
+      </ReviewNotice>
+    );
   if (purchases.error || exact.error)
     return (
       <button
@@ -558,7 +598,10 @@ function Composer({
     return <p role="status">Opening your review…</p>;
   if (!p)
     return (
-      <p>You can review this product after ordering it with your account.</p>
+      <ReviewNotice icon="🛍️" title="Purchase required">
+        Only customers who purchased this product can leave a review. After your
+        order is delivered, come back to share your experience.
+      </ReviewNotice>
     );
   const existing = exact.data?.rows?.find((r) => r.order === p.order);
   return (
@@ -602,14 +645,21 @@ function Composer({
         </button>
       )}
       {message && <p role="alert">{message}</p>}
-      <Form
-        key={p.order + "/" + (p.variantId ?? "")}
-        p={p}
-        product={product}
-        existing={existing}
-        close={close}
-        saved={saved}
-      />
+      {p.status !== "delivered" ? (
+        <p role="status" className="rounded-lg border bg-muted p-4 text-sm">
+          You can write a review only after this order has been delivered.
+          Current order status: {p.status}.
+        </p>
+      ) : (
+        <Form
+          key={p.order + "/" + (p.variantId ?? "")}
+          p={p}
+          product={product}
+          existing={existing}
+          close={close}
+          saved={saved}
+        />
+      )}
     </div>
   );
 }
@@ -656,10 +706,11 @@ export function AddReviewButton({
           </Dialog.Trigger>
         )}
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/45" />
+          <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/55 backdrop-blur-[3px]" />
           <Dialog.Content
             aria-describedby={undefined}
-            className="fixed inset-x-0 bottom-0 z-[101] max-h-[92dvh] overflow-y-auto overscroll-contain rounded-t-3xl border border-border bg-background px-5 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-foreground shadow-xl sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-[min(32rem,92vw)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl sm:p-6"
+            className="fixed inset-x-0 bottom-0 z-[101] max-h-[92dvh] overflow-y-auto overscroll-contain rounded-t-2xl border bg-white px-5 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-gray-950 shadow-2xl sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-[min(32rem,92vw)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl sm:p-6"
+            style={{ borderColor: T.border }}
           >
             <div className="mb-4 flex items-center justify-between gap-3">
               <Dialog.Title className="text-lg font-semibold">
@@ -667,7 +718,8 @@ export function AddReviewButton({
               </Dialog.Title>
               <Dialog.Close
                 aria-label="Close review dialog"
-                className="grid size-11 place-items-center rounded-full bg-muted text-2xl"
+                className="grid size-10 place-items-center rounded-full text-xl transition hover:opacity-75"
+                style={{ background: T.soft, color: T.primary }}
               >
                 ×
               </Dialog.Close>

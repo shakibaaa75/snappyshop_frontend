@@ -57,7 +57,7 @@ export interface CartState {
 }
 
 interface CartCtx extends CartState {
-  addItem: (p: Product, qty?: number, variant?: CartVariantInput) => void;
+  addItem: (p: Product, qty?: number, variant?: CartVariantInput, onlyIfAbsent?: boolean) => void;
   /** `key` comes from lineKey(line). A plain product id still works for lines without a variant. */
   removeItem: (key: string) => void;
   updateQty: (key: string, qty: number) => void;
@@ -166,7 +166,7 @@ export function CartProvider({
   }, []);
 
   const addItem = useCallback(
-    (p: Product, qty = 1, variant?: CartVariantInput) => {
+    (p: Product, qty = 1, variant?: CartVariantInput, onlyIfAbsent = false) => {
       // Analytics: count one add_to_cart per device / product / 6 hours.
       // Kept outside the state updater so StrictMode can't double-fire it.
       if (shouldCountEvent("carted", slug, p.id)) {
@@ -194,6 +194,7 @@ export function CartProvider({
       setLinesState((prev) => {
         const i = prev.findIndex((l) => lineKey(l) === newKey);
         if (i >= 0) {
+          if (onlyIfAbsent) return prev;
           const copy = [...prev];
           copy[i] = { ...copy[i], qty: copy[i].qty + qty };
           return copy;

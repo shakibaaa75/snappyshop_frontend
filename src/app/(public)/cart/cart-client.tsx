@@ -271,7 +271,7 @@ function SellerGroup({
             {loading ? "Checking stock…" : "Remove unavailable items"}
           </Button>
         ) : (
-          <Link href={`${storeHref}/checkout`}>
+          <Link href="/checkout">
             <Button variant="accent" className="rounded-full">
               Checkout with {name} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

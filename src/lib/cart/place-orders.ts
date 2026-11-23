@@ -2,6 +2,8 @@ import { getApiErrorMessage } from "@/lib/api/form-errors";
 import { publicOrders, type PaymentMethod } from "@/lib/api/orders";
 import { clearSellerCart, type SellerCart } from "@/lib/cart/marketplace-cart";
 
+import type { ReceiptLine } from "@/lib/receipt-image";
+
 export interface CheckoutForm {
   customerName: string;
   customerPhone: string;
@@ -25,6 +27,9 @@ export interface PlacedOrder {
   deliveryBase?: number;
   deliveryWaived?: boolean;
   total: number;
+  items?: (ReceiptLine & { variantId?: string })[];
+  createdAt?: string;
+  recipient?: { name: string; phone: string; address: string; city: string; area?: string };
 }
 
 export interface FailedOrder {
@@ -79,6 +84,23 @@ export async function placeCombinedOrders(
         deliveryBase: order.deliveryBase ?? 0,
         deliveryWaived: order.deliveryWaived ?? false,
         total: order.total,
+        createdAt: order.createdAt,
+        recipient: {
+          name: order.customerName,
+          phone: order.customerPhone,
+          address: order.shippingAddress,
+          city: order.shippingCity,
+          area: order.shippingArea,
+        },
+        items: order.lines.map((line) => ({
+          name: line.name,
+          qty: line.qty,
+          price: line.price,
+          variantLabel: line.variant,
+          imageUrl: line.imageUrl,
+          emoji: line.emoji,
+          ...(line.variantId ? { variantId: line.variantId } : {}),
+        })),
       });
       clearSellerCart(cart.slug);
     } catch (err) {

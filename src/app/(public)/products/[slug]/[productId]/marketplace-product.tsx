@@ -96,7 +96,6 @@ export default function MarketplaceProduct({
   const [selection, setSelection] = useState<Selection>({});
   const [photo, setPhoto] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [message, setMessage] = useState("");
   const [tab, setTab] = useState("Description");
   const wished = useWishlisted(slug, product.id);
   const more = useMarketplaceProducts(
@@ -143,11 +142,10 @@ export default function MarketplaceProduct({
     );
     if (image >= 0) setPhoto(image);
     setQuantity(1);
-    setMessage("");
   }
 
   function add() {
-    if (!cart.ready || paused || !picked || available < qty) return;
+    if (!cart.ready || paused || !picked || inCart > 0 || available < qty) return;
     cart.addItem(
       product,
       qty,
@@ -160,8 +158,8 @@ export default function MarketplaceProduct({
             imageUrl: productImages(product, combo)[0],
           }
         : undefined,
+      true,
     );
-    setMessage("Added to your cart.");
   }
 
   const tabs = ["Description", "Additional information", "Reviews"];
@@ -308,8 +306,8 @@ export default function MarketplaceProduct({
                 type="number"
                 min={1}
                 max={available || 1}
-                value={qty}
-                disabled={!available || paused}
+                value={inCart || qty}
+                disabled={!available || paused || inCart > 0}
                 onChange={(e) =>
                   setQuantity(
                     Math.min(
@@ -323,9 +321,9 @@ export default function MarketplaceProduct({
             <button
               className="rounded-[10px] bg-[#0C68F6] px-5 py-[11px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
               onClick={add}
-              disabled={!cart.ready || paused || !picked || !available}
+              disabled={!cart.ready || paused || !picked || !available || inCart > 0}
             >
-              Add to cart
+              {inCart > 0 ? "Added" : "Add to cart"}
             </button>
             {cart.count > 0 && (
               <Link
@@ -345,9 +343,9 @@ export default function MarketplaceProduct({
             </button>
           </div>
           <div aria-live="polite" className="empty:-my-1.5">
-            {message && (
+            {inCart > 0 && (
               <p>
-                {message}{" "}
+                Added to your cart.{" "}
                 <Link href="/cart" className="underline">
                   View cart
                 </Link>

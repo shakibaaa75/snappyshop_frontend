@@ -2,7 +2,8 @@
 
 import { type CSSProperties, type MouseEvent, type ReactNode } from "react";
 import NextLink from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { marketplaceProductHref } from "@/lib/query/marketplace-links";
 import {
   variantOptions,
   type VariantProduct,
@@ -57,6 +58,8 @@ export function useCardData(p: Product, ctx: CardCtx) {
   const { d, interactive, categories } = ctx;
   const cart = useCart();
   const router = useRouter();
+  const pathname = usePathname();
+  const isMarketplace = !pathname?.startsWith("/store/");
   // "Added" is derived from the cart itself, so it survives re-renders and
   // page loads, and a second click never adds another unit.
   const added = cart.lines.some((l) => l.productId === p.id);
@@ -79,7 +82,11 @@ export function useCardData(p: Product, ctx: CardCtx) {
     // A product with sizes/colours can't be added blind: the buyer must pick
     // one first, so send them to the product page instead of adding a default.
     if (variantOptions(p as VariantProduct).length > 0) {
-      router.push(`/store/${d.storeSlug}/products/${p.id}`);
+      router.push(
+        isMarketplace
+          ? marketplaceProductHref(d.storeSlug, p.id)
+          : `/store/${d.storeSlug}/products/${p.id}`,
+      );
       return false;
     }
     return true;
@@ -93,13 +100,15 @@ export function useCardData(p: Product, ctx: CardCtx) {
     if (!ready(e)) return;
     // Buy now: put it in the cart (once) and go straight to checkout.
     if (!added) cart.addItem(p, 1);
-    router.push(`/store/${d.storeSlug}/checkout`);
+    router.push(isMarketplace ? "/checkout" : `/store/${d.storeSlug}/checkout`);
   };
   // Single-button cards use `add`: it follows the seller's choice.
   const add = buyOnly ? buy : addToCart;
 
   return {
-    href: `/store/${d.storeSlug}/products/${p.id}`,
+    href: isMarketplace
+      ? marketplaceProductHref(d.storeSlug, p.id)
+      : `/store/${d.storeSlug}/products/${p.id}`,
     sub: categories.find((c) => c.id === p.categoryId)?.name || d.storeName,
     onSale,
     off,

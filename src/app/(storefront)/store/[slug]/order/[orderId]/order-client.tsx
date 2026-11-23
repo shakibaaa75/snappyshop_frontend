@@ -29,7 +29,6 @@ import {
 import { receiptTheme } from "@/components/store-design/CartReceipt";
 import { downloadReceipt } from "@/lib/receipt-image";
 import { deliveryRow, discountRow } from "@/lib/delivery/breakdown";
-import { img } from "@/lib/images";
 import { ProductArt } from "@/components/store-design/productArt";
 import type { Product, StoreDesign } from "@/lib/store-design/types";
 import type { CartLine } from "@/lib/store-design/cart";
@@ -231,9 +230,7 @@ function ThankYouReceipt({
           qty: l.qty,
           price: l.price,
           emoji: l.emoji,
-          imageUrl: l.imageUrl
-            ? img(l.imageUrl, { width: 200, height: 200 })
-            : undefined,
+          imageUrl: l.imageUrl,
         })),
       });
     } catch {
