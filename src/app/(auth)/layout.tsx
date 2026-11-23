@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthBrand } from "@/components/features/auth/AuthShell";
 import "./auth.css";
 
 export default function AuthLayout({
@@ -9,9 +10,7 @@ export default function AuthLayout({
   return (
     <div className="account-entry">
       <header>
-        <Link href="/" className="entry-logo">
-          ShopBD
-        </Link>
+        <AuthBrand />
         <Link href="/products">Browse products</Link>
       </header>
       <main>{children}</main>

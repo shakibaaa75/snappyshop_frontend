@@ -28,11 +28,18 @@ import {
 } from "../controls";
 import { type PanelProps } from "./types";
 
+import { StoreLinkPicker } from "./store-link-picker";
+
 export function GallerySettings({
   titleNode,
+  products,
+  categories,
   design,
   update,
-}: { titleNode: ReactNode } & Pick<PanelProps, "design" | "update">) {
+}: { titleNode: ReactNode } & Pick<
+  PanelProps,
+  "design" | "update" | "products" | "categories"
+>) {
   const { entitlements } = useEntitlements();
   const premium = premiumDesignAllowed(entitlements);
   const items = design.galleryItems;
@@ -205,6 +212,14 @@ export function GallerySettings({
             value={g.imageUrl}
             onChange={(v) => patch(g.id, { imageUrl: v })}
           />
+          <StoreLinkPicker
+            label="Image link"
+            url={g.url}
+            slug={design.storeSlug}
+            products={products}
+            categories={categories}
+            onChange={(url) => patch(g.id, { url })}
+          />
           <label className="block space-y-1 text-xs font-medium">
             <span>Position in gallery</span>
             <select
@@ -329,12 +344,6 @@ export function GallerySettings({
                   placeholder="Shop now"
                 />
               </div>
-              <TextField
-                label="Link"
-                value={g.url}
-                onChange={(v) => patch(g.id, { url: v })}
-                placeholder="/store/your-shop/products?category=..."
-              />
               {g.imageUrl ? (
                 <div className="space-y-1.5">
                   <p className="text-sm font-medium">Text color on the photo</p>
@@ -384,12 +393,6 @@ export function GallerySettings({
                   onChange={(v) => patch(g.id, { price: v })}
                   maxLength={24}
                   placeholder="Tk 1,799"
-                />
-                <TextField
-                  label="Link (optional)"
-                  value={g.url}
-                  onChange={(v) => patch(g.id, { url: v })}
-                  placeholder="/store/your-shop/products/..."
                 />
               </div>
             </>

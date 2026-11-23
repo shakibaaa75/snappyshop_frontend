@@ -235,7 +235,7 @@ function SearchBox({
                 showPanel && active >= 0 ? `${listId}-${active}` : undefined
               }
               aria-label="Search products, stores or categories"
-              placeholder="Search ShopBD"
+              placeholder="Search "
               className={cn(
                 inputClass,
                 "[&::-webkit-search-cancel-button]:hidden",

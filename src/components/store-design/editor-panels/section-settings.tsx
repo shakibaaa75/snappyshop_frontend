@@ -1,5 +1,7 @@
 "use client";
 
+import { StoreLinkPicker } from "./store-link-picker";
+
 import {
   type HomeSection,
   sectionMeta,
@@ -75,11 +77,13 @@ export function SectionSettings({
               onChange={(v) => update({ heroButtonText: v })}
               maxLength={24}
             />
-            <TextField
-              label="Button link"
-              value={design.heroButtonUrl}
-              onChange={(v) => update({ heroButtonUrl: v })}
-              placeholder="/products"
+            <StoreLinkPicker
+              label="Banner link"
+              slug={design.storeSlug}
+              products={products}
+              categories={categories}
+              url={design.heroButtonUrl}
+              onChange={(url) => update({ heroButtonUrl: url })}
             />
           </div>
           <ImageField
@@ -91,7 +95,12 @@ export function SectionSettings({
           <MainBannerDesign design={design} update={update} />
 
           <div className="border-t pt-4">
-            <HeroSlidesEditor design={design} update={update} />
+            <HeroSlidesEditor
+              design={design}
+              update={update}
+              products={products}
+              categories={categories}
+            />
           </div>
 
           <div className="space-y-3 border-t pt-4">
@@ -269,7 +278,12 @@ export function SectionSettings({
       return (
         <div className="space-y-4">
           {titleField}
-          <PromoEditor design={design} update={update} />
+          <PromoEditor
+            design={design}
+            update={update}
+            products={products}
+            categories={categories}
+          />
         </div>
       );
 
@@ -300,6 +314,8 @@ export function SectionSettings({
     case "gallery":
       return (
         <GallerySettings
+          products={products}
+          categories={categories}
           titleNode={titleField}
           design={design}
           update={update}

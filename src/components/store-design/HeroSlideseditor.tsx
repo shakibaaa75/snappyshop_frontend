@@ -1,15 +1,13 @@
 "use client";
 
+import { StoreLinkPicker } from "./editor-panels/store-link-picker";
+
+import type { PanelProps } from "./editor-panels/types";
 import { useState } from "react";
 import { ArrowDown, ArrowUp, ChevronDown, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import {
-  uid,
-  type HeroSlide,
-  type HeroStyle,
-  type StoreDesign,
-} from "@/lib/store-design/types";
+import { uid, type HeroSlide, type HeroStyle } from "@/lib/store-design/types";
 import { ColorField, IconButton, ImageField, TextField } from "./controls";
 import { HeroStyleEditor } from "./HeroStyleEditor";
 
@@ -22,11 +20,10 @@ const MAX_SLIDES = 5;
  */
 export function HeroSlidesEditor({
   design,
+  products,
+  categories,
   update,
-}: {
-  design: StoreDesign;
-  update: (patch: Partial<StoreDesign>) => void;
-}) {
+}: Pick<PanelProps, "design" | "update" | "products" | "categories">) {
   const slides = design.heroSlides ?? [];
   const [designOpen, setDesignOpen] = useState<string | null>(null);
 
@@ -110,11 +107,13 @@ export function HeroSlidesEditor({
                 onChange={(v) => patch(s.id, { buttonText: v })}
                 maxLength={24}
               />
-              <TextField
-                label="Button link"
-                value={s.url}
-                onChange={(v) => patch(s.id, { url: v })}
-                placeholder="/products"
+              <StoreLinkPicker
+                label="Banner link"
+                slug={design.storeSlug}
+                products={products}
+                categories={categories}
+                url={s.url}
+                onChange={(url) => patch(s.id, { url })}
               />
             </div>
             <ImageField

@@ -84,7 +84,7 @@ export function SearchResults() {
           <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#36454F] text-[#F5A524]">
             <Search className="h-5 w-5" />
           </span>
-          <h1 className="text-xl font-bold text-[#36454F]">Search ShopBD</h1>
+          <h1 className="text-xl font-bold text-[#36454F]">Search </h1>
           <p className="max-w-sm text-sm text-muted-foreground">
             Type a product, store or category in the search box above.
           </p>

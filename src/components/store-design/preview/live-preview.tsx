@@ -312,13 +312,19 @@ function LiveStorePreviewInner({
           }}
         >
           {notices}
-          <div className="relative">
-            <MobileTop ctx={ctx} />
-            {tabContent || isListing ? (
-              <div className="h-20" />
-            ) : usesYokaiLayout(d) ? null : (
-              <StoreHero ctx={ctx} />
+          <div
+            className={cn(
+              "relative",
+              usesYokaiLayout(d) && "[&>header]:relative",
             )}
+          >
+            <MobileTop ctx={ctx} />
+            {!usesYokaiLayout(d) &&
+              (tabContent || isListing ? (
+                <div className="h-20" />
+              ) : (
+                <StoreHero ctx={ctx} />
+              ))}
           </div>
           {feed}
           {d.showFooter ? <Footer ctx={ctx} /> : <div className="h-24" />}

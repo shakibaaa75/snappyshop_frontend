@@ -1,0 +1,44 @@
+.sn-error {
+  margin: 0;
+  box-sizing: border-box;
+  position: relative;
+  padding-top: 5.5rem;
+  min-height: 100vh;
+  min-height: 100svh;
+  background: linear-gradient(#72bbec, #e6eefb 72%);
+  color: #142149;
+  text-align: center;
+  font-family: system-ui, sans-serif;
+}
+.sn-error__art {
+  width: calc(100% - 2rem);
+  margin-inline: auto;
+  height: min(49vw, 58vh);
+  height: min(49vw, 58svh);
+  background-image: url("https://pub-26505cd19886412c924eeb2ebb98afb2.r2.dev/err_image/Blue%20basket%20mascot%20with%20white%20404.png");
+  background-position: center bottom;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.sn-error__logo {
+  position: absolute;
+  top: 1rem;
+  left: clamp(1rem, 3vw, 3rem);
+}
+.sn-error__logo img { display: block; width: clamp(6rem, 12vw, 10rem); height: auto; }
+.sn-error__copy { padding: clamp(1rem, 3vw, 2.5rem) 1rem 3rem; }
+.sn-error h1 { margin: 0; font-size: clamp(1.7rem, 4vw, 3rem); line-height: 1.15; }
+.sn-error p { margin: .75rem auto 1.5rem; max-width: 40ch; line-height: 1.5; }
+.sn-error__actions { display: flex; justify-content: center; gap: .65rem; flex-wrap: wrap; }
+.sn-error__actions :is(a,button) {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: 0 1.25rem; border: 0; border-radius: 2rem;
+  font: inherit; font-weight: 600; text-decoration: none; cursor: pointer;
+  color: white; background: #075dda;
+}
+.sn-error__actions button + a { background: white; color: #174579; }
+.sn-error :focus-visible { outline: 3px solid #152651; outline-offset: 4px; }
+@media (max-width: 600px) {
+  .sn-error { padding-top: 3.75rem; }
+  .sn-error__logo { left: 50%; transform: translateX(-50%); }
+}

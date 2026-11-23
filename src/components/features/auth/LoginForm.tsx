@@ -107,7 +107,7 @@ export function LoginForm() {
   return (
     <AuthShell>
       <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-        Sign in to ShopBD
+        Sign in to <span className="text-[#0C68F6]">SnappyShops</span>
       </h1>
 
       <Form {...form}>

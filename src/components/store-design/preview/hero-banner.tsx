@@ -41,7 +41,8 @@ export function HeroBanner({ ctx }: { ctx: Ctx }) {
       const u = (url || "").trim();
       if (/^(https?:|mailto:|tel:)/.test(u) || u.startsWith("/store/"))
         return u;
-      if (INTERNAL.test(u)) return `${base}${u}`;
+      if (INTERNAL.test(u) || /^\/products(?:[/?#]|$)/.test(u))
+        return `${base}${u}`;
       return base;
     },
     [base],
@@ -456,6 +457,14 @@ export function HeroBanner({ ctx }: { ctx: Ctx }) {
                   >
                     {textBlock}
                   </div>
+                )}
+                {interactive && !!s.url?.trim() && (
+                  <a
+                    href={resolveUrl(s.url)}
+                    tabIndex={-1}
+                    aria-hidden="true"
+                    className="absolute inset-0 z-[1]"
+                  />
                 )}
               </div>
             );

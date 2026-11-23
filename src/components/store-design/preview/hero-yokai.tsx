@@ -44,7 +44,8 @@ export function YokaiHero({ ctx }: { ctx: Ctx }) {
       const u = (url || "").trim();
       if (/^(https?:|mailto:|tel:)/.test(u) || u.startsWith("/store/"))
         return u;
-      if (INTERNAL.test(u)) return `${base}${u}`;
+      if (INTERNAL.test(u) || /^\/products(?:[/?#]|$)/.test(u))
+        return `${base}${u}`;
       return `${base}/products`;
     },
     [base],
@@ -260,6 +261,14 @@ export function YokaiHero({ ctx }: { ctx: Ctx }) {
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
+                {interactive && !!s.url?.trim() && (
+                  <a
+                    href={resolveUrl(s.url)}
+                    tabIndex={-1}
+                    aria-hidden="true"
+                    className="absolute inset-0 z-[1]"
+                  />
+                )}
               </div>
             );
           })}
@@ -267,7 +276,7 @@ export function YokaiHero({ ctx }: { ctx: Ctx }) {
         {multi && (
           <div
             className={cn(
-              "pointer-events-none absolute flex items-center gap-4",
+              "pointer-events-none absolute z-10 flex items-center gap-4",
               mobile ? "bottom-4 right-5" : "bottom-8 right-10",
             )}
           >

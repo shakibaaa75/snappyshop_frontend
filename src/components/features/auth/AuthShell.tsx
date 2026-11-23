@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ShoppingBag, type LucideIcon } from "lucide-react";
+import Image from "next/image";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /** One quiet fade-up, same easing as the home hero. Off for "reduce motion". */
@@ -19,10 +20,14 @@ export function AuthBrand() {
         "focus-visible:ring-2 focus-visible:ring-[#0C68F6] focus-visible:ring-offset-2",
       )}
     >
-      <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#0C68F6] text-white">
-        <ShoppingBag className="h-5 w-5" strokeWidth={1.9} />
-      </span>
-      <span className="text-xl font-extrabold tracking-tight">ShopBD</span>
+      <Image
+        src="/Blue and coral snappy mascot logo.png"
+        alt="SnappyShop"
+        width={200}
+        height={85}
+        priority
+        className="h-12 w-auto max-w-full object-contain md:h-14 lg:h-16"
+      />
     </Link>
   );
 }

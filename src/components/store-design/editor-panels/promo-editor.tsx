@@ -1,5 +1,7 @@
 "use client";
 
+import { StoreLinkPicker } from "./store-link-picker";
+
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type StoreDesign, uid } from "@/lib/store-design/types";
@@ -8,8 +10,10 @@ import { type PanelProps } from "./types";
 
 export function PromoEditor({
   design,
+  products,
+  categories,
   update,
-}: Pick<PanelProps, "design" | "update">) {
+}: Pick<PanelProps, "design" | "update" | "products" | "categories">) {
   const patch = (id: string, p: Partial<StoreDesign["promoBanners"][number]>) =>
     update({
       promoBanners: design.promoBanners.map((b) =>
@@ -56,11 +60,13 @@ export function PromoEditor({
               onChange={(v) => patch(b.id, { buttonText: v })}
               maxLength={24}
             />
-            <TextField
-              label="Button link"
-              value={b.url}
-              onChange={(v) => patch(b.id, { url: v })}
-              placeholder="/sale"
+            <StoreLinkPicker
+              label="Banner link"
+              slug={design.storeSlug}
+              products={products}
+              categories={categories}
+              url={b.url}
+              onChange={(url) => patch(b.id, { url })}
             />
           </div>
           <ColorField
