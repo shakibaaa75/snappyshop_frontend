@@ -8,6 +8,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowRight,
   Heart,
+  LifeBuoy,
   ChevronRight,
   FileText,
   Cookie,
@@ -38,6 +39,7 @@ const links = [
   { href: "/products?deals=1", label: "Deals", icon: Tag },
   { href: "/wishlist", label: "Wishlist", icon: Heart },
   { href: "/pricing", label: "Pricing", icon: Wallet },
+  { href: "/help", label: "Help & Support", icon: LifeBuoy },
 ];
 
 /** Legal pages. Shown in a "Policies" dropdown (desktop) and a section (mobile menu). */
@@ -505,7 +507,7 @@ function MarketplaceHeader({
 
   const logo = (
     <Image
-      src="/Snappy basket mascot logo redesign.png"
+      src="/Blue and coral snappy mascot logo.png"
       alt="SnappyShop"
       width={200}
       height={85}
@@ -530,6 +532,7 @@ function MarketplaceHeader({
           <Link href="/sellers">Explore sellers</Link>
           <Link href="/pricing">Pricing</Link>
           <Link href="/refund-policy">Returns</Link>
+          <Link href="/help">Help &amp; Support</Link>
         </nav>
         {/* Menu button (phones and tablets) — opens the left panel */}
         <button

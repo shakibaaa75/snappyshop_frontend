@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { TopSellingCard } from "@/components/features/TopSellingCard";
 import {
@@ -13,7 +13,6 @@ import {
   productGridClass,
 } from "@/components/features/home/SectionState";
 import { AllCategories } from "@/components/features/home/AllCategories";
-import { mainIcon } from "@/components/features/home/Homesidebar";
 import { PRODUCT_SORTS, type ProductSort } from "@/lib/api/marketplace";
 import { useMainTypes, useMarketplaceProducts } from "@/lib/query/marketplace";
 import {
@@ -35,6 +34,9 @@ const SWAP_CSS = `
 `;
 
 const pagerBase = cn(chipClass(false), "gap-1 px-4");
+
+const categoryTab =
+  "inline-flex min-h-11 shrink-0 items-center border-b-2 border-transparent px-1 text-sm text-muted-foreground hover:text-foreground aria-[current=page]:border-current aria-[current=page]:font-semibold aria-[current=page]:text-foreground";
 
 const humanize = (slug: string) =>
   (slug.split(".").pop() ?? slug).replace(/^c-/, "").replace(/-/g, " ");
@@ -64,7 +66,7 @@ function CategoryView({ category }: { category: string }) {
     ? main?.categories.find((c) => c.slug === category)
     : undefined;
 
-  const Icon = mainIcon(mainId);
+  const router = useRouter();
   const mainTitle = main?.name ?? (mainsPending ? "" : humanize(mainId));
   const title = isCategoryId(category)
     ? (sub?.name ?? humanize(category))
@@ -104,7 +106,6 @@ function CategoryView({ category }: { category: string }) {
     });
   }, [category, main]);
 
-  const categoryCount = main?.categories.length;
   const href = (next: {
     category?: string;
     sort?: ProductSort;
@@ -117,58 +118,49 @@ function CategoryView({ category }: { category: string }) {
       className="market-category market-anchor space-y-6"
       aria-labelledby="cat-title"
     >
-      <header className="market-category-heading flex flex-wrap items-end justify-between gap-5 rounded-2xl border border-border bg-card p-5 sm:p-7">
-        <div className="flex items-center gap-3">
-          <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#17645F] dark:bg-[#D93A2B] text-[#FF6845] dark:text-white">
-            <Icon className="h-5 w-5" strokeWidth={1.75} />
-          </span>
-          <div>
-            {isCategoryId(category) && mainTitle && (
-              <p className="text-xs text-muted-foreground">
-                <Link
-                  href={homeHref({ category: mainId })}
-                  className="hover:text-primary hover:underline"
-                >
-                  {mainTitle}
-                </Link>
-              </p>
-            )}
-            <h1
-              id="cat-title"
-              className="text-2xl font-bold capitalize tracking-tight"
-            >
-              {title || "\u00a0"}
-            </h1>
-            <p className="text-sm text-muted-foreground" aria-live="polite">
-              {categoryCount !== undefined && (
-                <>
-                  {categoryCount}{" "}
-                  {categoryCount === 1 ? "category" : "categories"}
-                  {q.data && " · "}
-                </>
-              )}
-              {q.data && (
-                <>
-                  {total} {total === 1 ? "product" : "products"}
-                </>
-              )}
-            </p>
-          </div>
-        </div>
-
-        <div className="no-scrollbar flex max-w-full gap-2 overflow-x-auto py-1">
-          {PRODUCT_SORTS.map((s) => (
+      <header className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+        <div className="min-w-0">
+          {isCategoryId(category) && mainTitle && (
             <Link
-              key={s.value}
-              href={href({ sort: s.value, page: 1 })}
-              scroll={false}
-              aria-current={sort === s.value ? "true" : undefined}
-              className={chipClass(sort === s.value)}
+              href={homeHref({ category: mainId, sort })}
+              className="text-xs text-muted-foreground hover:underline"
             >
-              {s.label}
+              {mainTitle}
             </Link>
-          ))}
+          )}
+          <h1
+            id="cat-title"
+            className="break-words text-2xl font-semibold tracking-tight sm:text-3xl"
+          >
+            {title || "\u00a0"}
+          </h1>
+          {q.data && !q.isPlaceholderData && (
+            <p
+              aria-live="polite"
+              className="mt-1 text-sm text-muted-foreground"
+            >
+              {total} {total === 1 ? "product" : "products"}
+            </p>
+          )}
         </div>
+        <label className="flex max-w-full items-center gap-1 text-sm">
+          <span className="text-muted-foreground">Sort</span>
+          <select
+            value={sort}
+            onChange={(e) =>
+              router.push(href({ sort: e.target.value as ProductSort }), {
+                scroll: false,
+              })
+            }
+            className="h-11 min-w-0 max-w-full cursor-pointer rounded bg-background pl-1 font-medium text-foreground focus-visible:outline-2"
+          >
+            {PRODUCT_SORTS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
       </header>
 
       {/* Category tabs for the selected Main Type */}
@@ -178,13 +170,13 @@ function CategoryView({ category }: { category: string }) {
         <nav aria-label={`${main.name} categories`}>
           <div
             ref={strip}
-            className="no-scrollbar flex gap-2 overflow-x-auto py-1"
+            className="relative flex gap-4 overflow-x-auto border-b sm:gap-6"
           >
             <Link
               href={homeHref({ category: main.id, sort })}
               scroll={false}
               aria-current={category === main.id ? "page" : undefined}
-              className={chipClass(category === main.id)}
+              className={categoryTab}
             >
               All {main.name}
             </Link>
@@ -194,7 +186,7 @@ function CategoryView({ category }: { category: string }) {
                 href={homeHref({ category: c.slug, sort })}
                 scroll={false}
                 aria-current={category === c.slug ? "page" : undefined}
-                className={chipClass(category === c.slug)}
+                className={categoryTab}
               >
                 {c.name}
               </Link>
@@ -331,21 +323,7 @@ export function HomeShell({ children }: { children: ReactNode }) {
         {category ? (
           <CategoryView category={category} />
         ) : view === "categories" ? (
-          <div className="space-y-6">
-            <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Explore ShopBD
-              </p>
-              <h1 className="text-3xl font-bold tracking-tight">
-                Shop by category
-              </h1>
-              <p className="mt-3 text-sm text-muted-foreground">
-                Find your favourites, or discover something new. Browse every
-                collection below.
-              </p>
-            </div>
-            <AllCategories />
-          </div>
+          <AllCategories />
         ) : (
           children
         )}

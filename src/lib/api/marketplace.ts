@@ -53,6 +53,7 @@ export interface ProductQuery {
 }
 
 export interface SellerQuery {
+  sellingCategory?: string;
   sort?: "popular";
   category?: string;
   page?: number;
@@ -69,6 +70,7 @@ export interface Paged<T> {
 /* ---- wire shapes (what the Go API is expected to return) --------------- */
 
 interface WireSeller {
+  sellingCategory?: string;
   id?: string;
   slug?: string;
   name?: string;
@@ -135,6 +137,7 @@ export function toStore(s: WireSeller | undefined): Store {
     slug: s.slug as string,
     name: s.name as string,
     logo: str(s.logoUrl),
+    category: str(s.sellingCategory) || undefined,
     banner: str(s.bannerUrl) || undefined,
     description: str(s.description) || undefined,
     isVerified: s.isVerified === true,

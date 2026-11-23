@@ -2,32 +2,54 @@
 import { useEffect, useMemo, useState } from "react";
 import { authApi } from "@/lib/api/auth";
 import { supportApi, type SupportTicket } from "@/lib/api/support";
-import { Search, ArrowLeft, Send, LifeBuoy } from "lucide-react";
+import {
+  ArrowLeft,
+  CircleHelp,
+  CreditCard,
+  Flag,
+  Globe,
+  Handshake,
+  KeyRound,
+  MessageCircle,
+  Newspaper,
+  Package,
+  Receipt,
+  Route,
+  Scale,
+  Search,
+  Send,
+  Settings,
+  ShieldAlert,
+  ShoppingBag,
+  Store,
+  Truck,
+  Wrench,
+} from "lucide-react";
 
 const buyer = [
-  "Orders & Purchases",
-  "Payments & Refunds",
-  "Delivery Issues",
-  "Seller Problems",
-  "Fraud & Safety",
-  "Account & Security",
-  "Other Questions",
+  { label: "Orders & Purchases", icon: ShoppingBag },
+  { label: "Payments & Refunds", icon: CreditCard },
+  { label: "Delivery Issues", icon: Truck },
+  { label: "Seller Problems", icon: Store },
+  { label: "Fraud & Safety", icon: ShieldAlert },
+  { label: "Account & Security", icon: KeyRound },
+  { label: "Other Questions", icon: MessageCircle },
 ];
 const seller = [
-  "Store Setup & Management",
-  "Products & Orders",
-  "Billing & Subscriptions",
-  "Domains & Storefront",
-  "Delivery & Courier",
-  "Technical Support",
-  "Security & Reports",
-  "Other Questions",
+  { label: "Store Setup & Management", icon: Settings },
+  { label: "Products & Orders", icon: Package },
+  { label: "Billing & Subscriptions", icon: Receipt },
+  { label: "Domains & Storefront", icon: Globe },
+  { label: "Delivery & Courier", icon: Route },
+  { label: "Technical Support", icon: Wrench },
+  { label: "Security & Reports", icon: Flag },
+  { label: "Other Questions", icon: MessageCircle },
 ];
 const general = [
-  "Business Partnerships",
-  "Media & Press",
-  "Legal & Privacy",
-  "General Questions",
+  { label: "Business Partnerships", icon: Handshake },
+  { label: "Media & Press", icon: Newspaper },
+  { label: "Legal & Privacy", icon: Scale },
+  { label: "General Questions", icon: CircleHelp },
 ];
 const other = [
   "General Questions",
@@ -290,7 +312,7 @@ export default function HelpPage() {
       <section className="mt-12">
         <h2 className="text-2xl font-semibold">Browse support topics</h2>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map((c) => (
+          {categories.map(({ label: c, icon: Icon }) => (
             <button
               key={c}
               onClick={() => {
@@ -301,7 +323,7 @@ export default function HelpPage() {
               className={`flex items-center gap-4 rounded-xl border p-5 text-left transition hover:border-[#0C68F6] ${category === c ? "border-[#0C68F6] bg-blue-50" : "border-gray-200 bg-white"}`}
             >
               <span className="rounded-lg bg-gray-100 p-3 text-[#0C68F6]">
-                <LifeBuoy size={22} />
+                <Icon size={22} aria-hidden="true" />
               </span>
               <span>
                 <strong className="block text-sm">{c}</strong>

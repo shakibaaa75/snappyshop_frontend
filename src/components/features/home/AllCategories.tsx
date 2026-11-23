@@ -3,129 +3,180 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronRight, Search, X } from "lucide-react";
 import { mainIcon } from "@/components/features/home/Homesidebar";
 import {
   CategorySkeleton,
   SectionError,
 } from "@/components/features/home/SectionState";
-import { useMainTypes } from "@/lib/query/marketplace";
+import {
+  useMainTypes,
+  useMarketplaceCategories,
+} from "@/lib/query/marketplace";
 import { homeHref } from "@/lib/query/category-nav";
-import { cn } from "@/lib/utils";
-import type { LucideIcon } from "lucide-react";
 
-/** Picture chosen by the admin, or a calm icon tile when there is none yet. */
-function Thumb({
-  src,
-  Icon,
-  sizes,
-  className,
-}: {
-  src?: string;
-  Icon: LucideIcon;
-  sizes: string;
-  className?: string;
-}) {
-  return (
-    <span className={cn("relative block overflow-hidden bg-muted", className)}>
-      {src ? (
-        <Image src={src} alt="" fill sizes={sizes} className="object-cover" />
-      ) : (
-        <span className="absolute inset-0 grid place-items-center text-primary/45">
-          <Icon className="h-1/2 w-1/2" strokeWidth={1.5} />
-        </span>
-      )}
-    </span>
-  );
-}
-
-/**
- * "All categories" page: every Main Type (Fashion, Electronics, ...) as a card
- * with its picture, and under it the categories that have products, each with
- * its picture. Pictures are chosen by the admin in Category management.
- */
 export function AllCategories() {
   const { mains, isPending, isError, categoriesPending, refetch } =
     useMainTypes();
-
-  // Same hydration guard as the sidebar: the server renders "loading", so the
-  // first client render must too, even if the data is already cached.
+  // This subscription shares the live category request with useMainTypes.
+  const live = useMarketplaceCategories();
   const [hydrated, setHydrated] = useState(false);
+  const [search, setSearch] = useState("");
   useEffect(() => setHydrated(true), []);
 
-  if (!hydrated || isPending) return <CategorySkeleton />;
-  if (isError) {
-    return (
-      <SectionError
-        message="We couldn’t load categories."
-        onRetry={() => refetch()}
-      />
-    );
-  }
+  const query = search.trim().toLowerCase();
+  const available = mains.filter((main) => main.categories.length > 0);
+  const groups = available
+    .map((main) => ({
+      ...main,
+      matches: main.name.toLowerCase().includes(query)
+        ? main.categories
+        : main.categories.filter((c) => c.name.toLowerCase().includes(query)),
+    }))
+    .filter((main) => main.matches.length > 0);
+  const loading = !hydrated || isPending || categoriesPending;
 
   return (
-    <div className="space-y-4 sm:space-y-5">
-      {mains.map((m) => {
-        const MainIcon = mainIcon(m.id);
-        return (
-          <section
-            key={m.id}
-            className="rounded-2xl border border-border bg-card p-5 sm:p-7"
-          >
-            <div className="flex items-center gap-3 sm:gap-4">
-              <Thumb
-                src={m.image}
-                Icon={MainIcon}
-                sizes="64px"
-                className="h-14 w-14 shrink-0 rounded-2xl sm:h-16 sm:w-16"
-              />
-              <div className="min-w-0 flex-1">
-                <h2 className="truncate text-base font-semibold tracking-tight sm:text-lg">
-                  {m.name}
-                </h2>
-                <p className="text-xs text-muted-foreground">
-                  {categoriesPending
-                    ? "Loading…"
-                    : m.categories.length > 0
-                      ? `${m.categories.length} ${m.categories.length === 1 ? "category" : "categories"}`
-                      : "No products yet"}
-                </p>
-              </div>
-              <Link
-                href={homeHref({ category: m.id })}
-                className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-[#17645F] dark:bg-[#D93A2B] px-4 text-sm font-medium text-white transition-colors hover:bg-[#17645F]/90 dark:hover:bg-[#D93A2B]/90"
+    <section className="min-w-0 space-y-5 sm:space-y-7">
+      <header className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-end sm:justify-between sm:pb-6">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          Shop by category
+        </h1>
+        <div
+          role="search"
+          aria-label="Category directory"
+          className="relative w-full sm:max-w-xs"
+        >
+          <Search
+            aria-hidden
+            className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+          />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Find a category"
+            placeholder="Find a category"
+            className="h-11 w-full rounded-full border bg-background pl-10 pr-11 text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0C68F6]"
+          />
+          {search && (
+            <button
+              type="button"
+              aria-label="Clear category search"
+              onClick={() => setSearch("")}
+              className="absolute inset-y-0 right-1 grid w-10 place-items-center rounded-full"
+            >
+              <X aria-hidden className="size-4" />
+            </button>
+          )}
+        </div>
+      </header>
+      {hydrated && (isError || (live.isError && !live.data)) ? (
+        <SectionError
+          message="We couldn’t load the category directory."
+          onRetry={refetch}
+        />
+      ) : loading ? (
+        <CategorySkeleton />
+      ) : groups.length ? (
+        <div className="space-y-4">
+          <p className="sr-only" role="status">
+            {groups.reduce((count, main) => count + main.matches.length, 0)}{" "}
+            categories found
+          </p>
+          {groups.map((main) => {
+            const Icon = mainIcon(main.id);
+            return (
+              <section
+                key={main.id}
+                aria-label={main.name}
+                className="grid min-w-0 overflow-hidden rounded-2xl border bg-card md:grid-cols-[minmax(180px,24%)_minmax(0,1fr)]"
               >
-                <span className="hidden sm:inline">View all</span>
-                <span className="sm:hidden">View</span>
-                <ArrowRight className="h-4 w-4 text-[#FF6845]" />
-              </Link>
-            </div>
-
-            {m.categories.length > 0 && (
-              <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 xl:grid-cols-4">
-                {m.categories.map((c) => (
-                  <li key={c.id}>
-                    <Link
-                      href={homeHref({ category: c.slug })}
-                      className="group flex h-full flex-col items-center gap-2 rounded-2xl border border-transparent bg-muted/40 p-3 transition-colors hover:border-border hover:bg-muted sm:p-4"
-                    >
-                      <Thumb
-                        src={c.image}
-                        Icon={MainIcon}
-                        sizes="(min-width:1280px) 140px, (min-width:640px) 120px, 30vw"
-                        className="aspect-[4/3] w-full rounded-xl transition-transform duration-200 group-hover:scale-[1.03] motion-reduce:transition-none"
+                <div className="flex flex-wrap items-center gap-3 border-b bg-muted/50 px-4 py-4 sm:px-5 md:flex-col md:items-start md:justify-center md:border-b-0 md:border-r md:p-6">
+                  <span className="relative grid size-11 shrink-0 place-items-center overflow-hidden rounded-xl bg-blue-100 text-blue-700 md:size-14 dark:bg-blue-950 dark:text-blue-300">
+                    {main.image ? (
+                      <Image
+                        alt=""
+                        src={main.image}
+                        fill
+                        sizes="56px"
+                        className="object-cover"
                       />
-                      <span className="line-clamp-2 text-center text-xs font-medium leading-tight">
-                        {c.name}
-                      </span>
+                    ) : (
+                      <Icon aria-hidden className="size-6 md:size-7" />
+                    )}
+                  </span>
+                  <div className="min-w-0 flex-1 md:flex-none">
+                    <h2 className="break-words text-lg font-bold tracking-tight sm:text-xl">
+                      {main.name}
+                    </h2>
+                    <Link
+                      href={homeHref({ category: main.id })}
+                      aria-label={`Shop all ${main.name}`}
+                      className="inline-flex min-h-9 items-center gap-1.5 text-sm font-semibold text-blue-700 hover:underline dark:text-blue-300"
+                    >
+                      Shop all <ArrowRight aria-hidden className="size-4" />
                     </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        );
-      })}
-    </div>
+                  </div>
+                </div>
+                <ul className="grid min-w-0 content-start gap-1 p-2 sm:grid-cols-2 sm:gap-2 sm:p-4">
+                  {main.matches.map((c) => (
+                    <li key={c.id} className="min-w-0">
+                      <Link
+                        href={homeHref({ category: c.slug })}
+                        className="group flex h-full min-h-12 items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0C68F6]"
+                      >
+                        {c.image && (
+                          <span className="relative size-10 shrink-0 overflow-hidden rounded-md bg-muted">
+                            <Image
+                              alt=""
+                              src={c.image}
+                              fill
+                              sizes="40px"
+                              className="object-cover"
+                            />
+                          </span>
+                        )}
+                        <span className="min-w-0 flex-1 break-words text-sm font-medium">
+                          {c.name}
+                        </span>
+                        <ChevronRight
+                          aria-hidden
+                          className="size-4 shrink-0 text-muted-foreground group-hover:text-blue-600"
+                        />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="rounded-xl border px-4 py-9 text-center">
+          <p role="status" className="font-semibold">
+            {query
+              ? "No matching categories"
+              : "No categories with products yet"}
+          </p>
+          {query ? (
+            <button
+              type="button"
+              className="mt-2 min-h-11 px-3 text-sm font-medium underline"
+              onClick={() => setSearch("")}
+            >
+              Clear search
+            </button>
+          ) : (
+            <Link
+              className="mt-2 inline-flex min-h-11 items-center text-sm font-medium underline"
+              href="/products"
+            >
+              Browse products
+            </Link>
+          )}
+        </div>
+      )}
+    </section>
   );
 }
