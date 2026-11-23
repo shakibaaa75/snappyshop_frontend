@@ -505,12 +505,12 @@ function MarketplaceHeader({
 
   const logo = (
     <Image
-      src="/mainlogo.png"
-      alt="ShopBD"
-      width={170}
-      height={65}
+      src="/Snappy basket mascot logo redesign.png"
+      alt="SnappyShop"
+      width={200}
+      height={85}
       priority
-      className="h-9 w-auto object-contain sm:h-10"
+      className="h-12 w-auto max-w-full object-contain md:h-14 lg:!h-16"
     />
   );
 
@@ -524,7 +524,7 @@ function MarketplaceHeader({
           : "border-transparent",
       )}
     >
-      <div className="sn-header shop-masthead mx-auto flex h-16 max-w-[1400px] items-center gap-2 px-4 sm:h-[68px] sm:gap-3 sm:px-6 lg:gap-6 lg:px-8">
+      <div className="sn-header shop-masthead relative mx-auto flex h-16 max-md:grid max-md:grid-cols-[minmax(0,1fr)_clamp(100px,calc(100vw_-_220px),168px)_minmax(0,1fr)] max-md:gap-1 max-md:px-3 max-w-[1400px] items-center gap-2 px-4 sm:h-[68px] sm:gap-3 sm:px-6 lg:gap-6 lg:px-8">
         <nav aria-label="Marketplace services" className="sn-utility">
           <Link href="/products?deals=1">Deals</Link>
           <Link href="/sellers">Explore sellers</Link>
@@ -539,7 +539,10 @@ function MarketplaceHeader({
           aria-expanded={open}
           aria-controls="mobile-menu"
           aria-label="Open menu"
-          className={cn(iconBtn, "lg:hidden")}
+          className={cn(
+            iconBtn,
+            "max-md:col-start-1 max-md:row-start-1 max-md:justify-self-start lg:hidden",
+          )}
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -548,7 +551,7 @@ function MarketplaceHeader({
         <Link
           href="/"
           className={cn(
-            "sn-logo flex shrink-0 items-center rounded-full",
+            "sn-logo flex shrink-0 items-center rounded-full max-md:col-start-2 max-md:row-start-1 max-md:min-w-0 max-md:justify-center",
             ring,
           )}
         >
@@ -565,7 +568,7 @@ function MarketplaceHeader({
         </Suspense>
 
         {/* Actions */}
-        <div className="shop-actions ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
+        <div className="shop-actions ml-auto flex shrink-0 items-center gap-1 sm:gap-2 max-md:col-start-3 max-md:row-start-1 max-md:justify-self-end max-md:[&_.sn-guest]:grid max-md:[&_.sn-guest]:leading-tight max-md:[&_.sn-guest_span]:hidden">
           <Link
             href="/wishlist"
             aria-label="View wishlist"
@@ -578,7 +581,9 @@ function MarketplaceHeader({
             Sell
           </Link>
           {/* Bell: signed-in sellers (unread count) and admins only */}
-          <NotificationBell className={iconBtn} />
+          <div className="contents max-md:absolute max-md:left-[3.5rem] max-md:top-1/2 max-md:block max-md:-translate-y-1/2 sm:max-md:left-16">
+            <NotificationBell className={iconBtn} />
+          </div>
 
           <Link
             href="/cart"
