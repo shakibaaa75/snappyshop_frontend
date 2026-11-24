@@ -3,6 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { TopSellingCard } from "@/components/features/TopSellingCard";
 import {
@@ -13,7 +14,12 @@ import {
   productGridClass,
 } from "@/components/features/home/SectionState";
 import { AllCategories } from "@/components/features/home/AllCategories";
-import { PRODUCT_SORTS, type ProductSort } from "@/lib/api/marketplace";
+import {
+  PRODUCT_SORTS,
+  fetchMarketplaceProducts,
+  type ProductSort,
+} from "@/lib/api/marketplace";
+import { qk } from "@/lib/query/keys";
 import { useMainTypes, useMarketplaceProducts } from "@/lib/query/marketplace";
 import {
   homeHref,
@@ -82,6 +88,19 @@ function CategoryView({ category }: { category: string }) {
 
   const total = q.data?.total ?? 0;
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  // Start loading a tab's products as soon as the pointer, finger or keyboard
+  // reaches it, so the click usually finds them already in the cache. The key
+  // is the same one the query above uses, so the result is picked up as-is.
+  const queryClient = useQueryClient();
+  const warmTab = (next: string) => {
+    const query = { sort, category: next, page: 1, limit: PAGE_SIZE };
+    void queryClient.prefetchQuery({
+      queryKey: qk.marketplace.products({ ...query }),
+      queryFn: ({ signal }) => fetchMarketplaceProducts(query, signal),
+      staleTime: 60_000,
+    });
+  };
 
   // After paging, bring the top of the list back into view.
   const top = useRef<HTMLElement>(null);
@@ -177,6 +196,9 @@ function CategoryView({ category }: { category: string }) {
               scroll={false}
               aria-current={category === main.id ? "page" : undefined}
               className={categoryTab}
+              onPointerEnter={() => warmTab(main.id)}
+              onTouchStart={() => warmTab(main.id)}
+              onFocus={() => warmTab(main.id)}
             >
               All {main.name}
             </Link>
@@ -187,6 +209,9 @@ function CategoryView({ category }: { category: string }) {
                 scroll={false}
                 aria-current={category === c.slug ? "page" : undefined}
                 className={categoryTab}
+                onPointerEnter={() => warmTab(c.slug)}
+                onTouchStart={() => warmTab(c.slug)}
+                onFocus={() => warmTab(c.slug)}
               >
                 {c.name}
               </Link>
