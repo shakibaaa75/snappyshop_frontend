@@ -33,6 +33,14 @@ import {
   useMarketplaceProductsInfinite,
   useMarketplaceSellers,
 } from "@/lib/query/marketplace";
+import {
+  BIG_DEALS_QUERY,
+  FEATURED_SELLERS_LIMIT,
+  HOME_ROW_LIMIT,
+  MAX_DEAL_DISCOUNT,
+  RECOMMENDED_PAGE,
+  TOP_SELLING_QUERY,
+} from "@/lib/home-queries";
 import { productDiscount } from "@/lib/format";
 import { useViewedProducts } from "@/lib/viewed-products";
 import type { Product } from "@/types";
@@ -267,7 +275,7 @@ function ProductsSection({
   title,
   sort,
   href,
-  limit = 12,
+  limit = HOME_ROW_LIMIT,
   ranked,
   keep,
   arrange,
@@ -341,7 +349,6 @@ function ProductsSection({
 const hasSales = (p: Product) => (p.sold ?? 0) > 0;
 
 /** "Up to 40% off": change this one number to adjust the range. */
-const MAX_DEAL_DISCOUNT = 40;
 const isDeal = (p: Product) => {
   const d = productDiscount(p);
   return d > 0 && d <= MAX_DEAL_DISCOUNT;
@@ -355,12 +362,9 @@ const byBiggestDiscount = (items: Product[]) =>
 
 export function BigDealsSection() {
   const [picked, setPicked] = useState<CategoryPick | null>(null);
+  // Same query the server prefetches (lib/home-queries.ts).
   const q = useMarketplaceProducts({
-    sort: "newest",
-    // Fetch more than we show: the discount filter can drop many items.
-    limit: 40,
-    minDiscount: 1,
-    maxDiscount: MAX_DEAL_DISCOUNT,
+    ...BIG_DEALS_QUERY,
     category: picked?.slug,
   });
 
@@ -437,7 +441,6 @@ export function BigDealsSection() {
 /* ---- other exported sections --------------------------------------------- */
 
 /** Recommended shows 30 per page. 30 divides evenly by 2, 3 and 5 columns. */
-const RECOMMENDED_PAGE = 30;
 const RECOMMENDED_GRID =
   "grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-5";
 
@@ -582,7 +585,7 @@ export function TopSellingSection() {
     <ProductsSection
       id="top-selling"
       title="Top Selling Products"
-      sort="top_selling"
+      sort={TOP_SELLING_QUERY.sort}
       href="/products?sort=top_selling"
       ranked
       filterable
@@ -620,7 +623,7 @@ function SellerStoriesSkeleton({ count }: { count: number }) {
 }
 
 export function FeaturedSellersSection({
-  limit = 6,
+  limit = FEATURED_SELLERS_LIMIT,
   paged = false,
   page = 1,
   filterable = false,

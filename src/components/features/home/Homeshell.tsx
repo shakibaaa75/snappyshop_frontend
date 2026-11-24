@@ -316,10 +316,14 @@ export function HomeShell({ children }: { children: ReactNode }) {
       ? "all"
       : "home";
 
+  // The first view is already on screen (rendered by the server), so it must
+  // not fade in a second time. Only later view changes animate.
+  const firstKey = useRef(key).current;
+
   return (
     <div className="min-w-0">
       <style>{SWAP_CSS}</style>
-      <div key={key} className="home-swap min-w-0">
+      <div key={key} className={cn("min-w-0", key !== firstKey && "home-swap")}>
         {category ? (
           <CategoryView category={category} />
         ) : view === "categories" ? (
