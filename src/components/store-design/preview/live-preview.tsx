@@ -64,6 +64,7 @@ function LiveStorePreviewInner({
   looksSlot,
   page = "home",
   initialCategory,
+  hideFab = false,
 }: PreviewProps) {
   const mobile = useIsMobile(interactive, device === "mobile");
   const wide = useWide(interactive);
@@ -216,9 +217,7 @@ function LiveStorePreviewInner({
                   <div
                     className={cn(
                       "flex flex-wrap items-center gap-x-6 gap-y-4",
-                      ["centered", "editorial", "framed", "spotlight"].includes(
-                        d.headerStyle,
-                      )
+                      d.headerStyle === "spotlight"
                         ? "flex-col-reverse"
                         : "justify-between",
                     )}
@@ -261,7 +260,7 @@ function LiveStorePreviewInner({
       : null),
   };
 
-  const showFab = d.whatsappEnabled && d.whatsappNumber && !loading;
+  const showFab = d.whatsappEnabled && d.whatsappNumber && !loading && !hideFab;
 
   const fab = showFab && (
     <a
@@ -274,10 +273,23 @@ function LiveStorePreviewInner({
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"
       className={cn(
-        "sticky z-40 flex h-14 w-14 items-center justify-center rounded-full text-white shadow-xl transition-transform duration-150 active:scale-90",
-        mobile ? "mb-2 ml-auto mr-5 -mt-4" : "fixed bottom-6 right-6",
+        "z-40 flex h-14 w-14 items-center justify-center rounded-full text-white shadow-xl transition-transform duration-150 active:scale-90",
+        // Live store: really float above the bottom dock. (`sticky` with no
+        // bottom offset never stuck, so the button scrolled away with the page.)
+        interactive
+          ? mobile
+            ? "fixed right-4"
+            : "fixed bottom-6 right-6"
+          : mobile
+            ? "sticky mb-2 ml-auto mr-5 -mt-4"
+            : "fixed bottom-6 right-6",
       )}
-      style={{ background: "#25D366" }}
+      style={{
+        background: "#25D366",
+        ...(interactive && mobile
+          ? { bottom: "calc(6rem + env(safe-area-inset-bottom, 0px))" }
+          : null),
+      }}
     >
       <MessageCircle className="h-6 w-6" />
     </a>

@@ -2,7 +2,7 @@
 
 import { resolveHeaderStyle } from "@/lib/store-design/types";
 import { type CSSProperties, type ReactNode, useEffect, useState } from "react";
-import { ArrowRight, BadgeCheck, Check, Heart } from "lucide-react";
+import { ArrowRight, BadgeCheck, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { img } from "@/lib/images";
 import { Link, Mark } from "./blocks";
@@ -103,7 +103,10 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
      height of its grid cell (split layout); `children` sit on top of it. */
   const coverBox = (aspect: string, children?: ReactNode, fill = false) => (
     <div
-      className="relative w-full overflow-hidden"
+      className={cn(
+        "relative w-full overflow-hidden",
+        mobile && layout === "banner" && "grid items-end",
+      )}
       style={{
         aspectRatio: fill ? undefined : aspect,
         height: fill ? "100%" : undefined,
@@ -145,6 +148,9 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
     </span>
   );
 
+  const phoneProfile =
+    "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2";
+  const phoneAction = "col-span-2 justify-self-end";
   const nameEl = (
     <div className={cn("min-w-0", centered ? "text-center" : "flex-1")}>
       <div
@@ -155,7 +161,9 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
       >
         <h1
           className={cn(
-            "truncate font-semibold leading-tight tracking-tight",
+            mobile
+              ? "min-w-0 break-words font-semibold leading-tight tracking-tight"
+              : "truncate font-semibold leading-tight tracking-tight",
             compactLayout ? "text-lg sm:text-2xl" : "text-xl sm:text-3xl",
           )}
         >
@@ -180,7 +188,10 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
         style={muted}
       >
         {meta.map((m, i) => (
-          <span key={m} className="inline-flex items-center gap-2">
+          <span
+            key={m}
+            className="inline-flex items-center gap-2 whitespace-nowrap"
+          >
             {i > 0 && <span aria-hidden>·</span>}
             {m}
           </span>
@@ -207,20 +218,6 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
     </button>
   );
 
-  const wishlistLink =
-    d.showWishlist && !mobile ? (
-      <Link
-        on={interactive}
-        href={`${base}/wishlist`}
-        title="Wishlist"
-        className="inline-flex items-center gap-1.5 text-xs transition-opacity active:opacity-60 sm:text-sm"
-        style={muted}
-      >
-        <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-        Wishlist
-      </Link>
-    ) : null;
-
   const bioEl = bio ? (
     <p
       className={cn(
@@ -239,10 +236,7 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
       <div className="flex flex-col items-center">
         {avatarEl}
         <div className="mt-3 w-full">{nameEl}</div>
-        <div className="mt-3 flex items-center gap-4">
-          {followBtn}
-          {wishlistLink}
-        </div>
+        <div className="mt-3 flex items-center gap-4">{followBtn}</div>
       </div>
     );
   } else if (layout === "overlap") {
@@ -252,7 +246,6 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
         <div className="min-w-0 flex-1 pt-3">{nameEl}</div>
         <div className="flex shrink-0 flex-col items-center gap-2 pt-3">
           {followBtn}
-          {wishlistLink}
         </div>
       </div>
     );
@@ -266,12 +259,19 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
     );
   } else {
     body = (
-      <div className="flex items-start gap-4 sm:gap-5">
+      <div
+        className={mobile ? phoneProfile : "flex items-start gap-4 sm:gap-5"}
+      >
         {avatarEl}
         <div className="min-w-0 flex-1 self-center">{nameEl}</div>
-        <div className="flex shrink-0 flex-col items-center gap-2 self-center">
+        <div
+          className={
+            mobile
+              ? phoneAction
+              : "flex shrink-0 flex-col items-center gap-2 self-center"
+          }
+        >
           {followBtn}
-          {wishlistLink}
         </div>
       </div>
     );
@@ -286,18 +286,7 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
 
   /* New layouts use the same theme variables, verified state and Follow action
      in the editor and the public storefront. Mobile utilities stay in MobileTop. */
-  if (["editorial", "framed", "spotlight"].includes(layout)) {
-    const identity = (
-      <div className="flex min-w-0 items-center gap-3">
-        <span
-          className="shrink-0 overflow-hidden rounded-full"
-          style={{ border: "1px solid var(--s-border)" }}
-        >
-          <Mark d={d} size={mobile ? 44 : 56} />
-        </span>
-        <div className="min-w-0 flex-1">{nameEl}</div>
-      </div>
-    );
+  if (layout === "spotlight") {
     const details = bio ? (
       <p className="mt-4 max-w-xl text-sm leading-relaxed" style={muted}>
         {bio}
@@ -316,83 +305,6 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
         </Link>
       </div>
     );
-    if (layout === "editorial")
-      return (
-        <section
-          data-header-layout="editorial"
-          className={cn("w-full", sectionClass)}
-          data-sf="hero"
-          style={sectionStyle}
-        >
-          <div
-            className="grid overflow-hidden"
-            style={{
-              gridTemplateColumns: mobile
-                ? "minmax(0,1fr)"
-                : "minmax(0,1.15fr) minmax(0,1fr)",
-              border: "1px solid var(--s-border)",
-              borderRadius: 20,
-            }}
-          >
-            <div className={mobile ? "p-3" : "p-4"}>
-              {coverBox(mobile ? "2 / 1" : "4 / 3")}
-            </div>
-            <div
-              className={
-                mobile
-                  ? "min-w-0 px-5 pb-6 pt-2"
-                  : "flex min-w-0 flex-col justify-center p-7"
-              }
-            >
-              <p
-                className="mb-5 text-[10px] font-semibold uppercase tracking-[.22em]"
-                style={muted}
-              >
-                Meet the store
-              </p>
-              {identity}
-              {details}
-              {actions}
-            </div>
-          </div>
-        </section>
-      );
-    if (layout === "framed")
-      return (
-        <section
-          data-header-layout="framed"
-          className={cn("w-full", sectionClass)}
-          data-sf="hero"
-          style={sectionStyle}
-        >
-          {coverBox(mobile ? "2.2 / 1" : "4.5 / 1")}
-          <div
-            className={cn(
-              "relative z-10 mx-auto",
-              mobile
-                ? "-mt-7 w-[calc(100%-24px)] p-5"
-                : "-mt-10 w-[calc(100%-80px)] max-w-4xl p-7",
-            )}
-            style={{
-              background: "var(--s-bg)",
-              border: "1px solid var(--s-border)",
-              borderRadius: 18,
-              boxShadow: "0 12px 32px rgba(0,0,0,.06)",
-            }}
-          >
-            <div
-              className={
-                mobile ? "" : "flex items-center justify-between gap-5"
-              }
-            >
-              <div className="min-w-0 flex-1">{identity}</div>
-              {!mobile && <div className="shrink-0">{followBtn}</div>}
-            </div>
-            {details}
-            {mobile && actions}
-          </div>
-        </section>
-      );
     return (
       <section
         data-header-layout="spotlight"
@@ -461,31 +373,42 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
     const size =
       layout === "compact" || layout === "minimal" ? 44 : big ? 72 : 56;
     const centeredRow = layout === "centered";
+    const phoneRow = mobile && !centeredRow;
     return (
       <div
         className={cn(
-          "flex min-w-0 gap-3",
+          phoneRow
+            ? "grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-2 gap-y-0.5"
+            : "flex gap-3",
+          "min-w-0",
+          mobile && "box-border w-full px-4",
           centeredRow
             ? "w-full flex-col items-center text-center"
             : "items-center",
         )}
       >
         <span
-          className="shrink-0 overflow-hidden rounded-full"
+          className={cn(
+            "shrink-0 overflow-hidden rounded-full",
+            phoneRow && "col-start-1 row-start-1 row-span-2 self-start",
+          )}
           style={{ border: "1px solid var(--s-border)" }}
         >
-          <Mark d={d} size={size} />
+          <Mark d={d} size={phoneRow ? Math.min(size, 48) : size} />
         </span>
-        <div className="min-w-0">
+        <div className={phoneRow ? "contents" : "min-w-0"}>
           <div
             className={cn(
-              "flex items-center gap-1.5",
+              "flex min-w-0 items-center gap-1.5",
+              phoneRow && "col-start-2 row-start-1",
               centeredRow && "justify-center",
             )}
           >
             <h1
               className={cn(
-                "truncate font-semibold leading-tight tracking-tight",
+                mobile
+                  ? "min-w-0 break-words font-semibold leading-tight tracking-tight"
+                  : "truncate font-semibold leading-tight tracking-tight",
                 big || centeredRow ? "text-xl" : "text-base",
               )}
             >
@@ -499,17 +422,41 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
               />
             )}
           </div>
-          <p className="truncate text-xs" style={muted}>
-            @{d.storeSlug || "your-store"} · {meta.join(" · ")}
+          <p
+            className={cn(
+              "text-xs",
+              mobile ? "break-words" : "truncate",
+              phoneRow && "col-start-2 col-span-2 row-start-2",
+            )}
+            style={muted}
+          >
+            @{d.storeSlug || "your-store"} ·{" "}
+            {meta.map((item, index) => (
+              <span key={item} className="mr-1 inline-block">
+                {index > 0 && " · "}
+                {item}
+              </span>
+            ))}
           </p>
           {(big || centeredRow) && bio && (
-            <p className="mt-1 line-clamp-2 max-w-md text-xs" style={muted}>
+            <p
+              className={cn(
+                "mt-1 line-clamp-2 max-w-md text-xs",
+                phoneRow && "col-start-2 col-span-2 row-start-3",
+              )}
+              style={muted}
+            >
               {bio}
             </p>
           )}
         </div>
-        <div className="flex shrink-0 items-center gap-3">
-          {!mobile && wishlistLink}
+        <div
+          className={
+            phoneRow
+              ? "col-start-3 row-start-1 justify-self-end"
+              : "flex shrink-0 items-center gap-3"
+          }
+        >
           {followBtn}
         </div>
       </div>
@@ -533,7 +480,11 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
               aria-hidden
             />
             <div
-              className="absolute inset-x-0 bottom-0 flex items-end gap-3 p-4 sm:gap-5 sm:p-8"
+              className={
+                mobile
+                  ? cn(phoneProfile, "relative min-h-full content-end p-3")
+                  : "absolute inset-x-0 bottom-0 flex items-end gap-3 p-4 sm:gap-5 sm:p-8"
+              }
               style={{ color: "#ffffff" }}
             >
               <span
@@ -544,7 +495,14 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
               </span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <h1 className="truncate text-xl font-semibold leading-tight tracking-tight sm:text-4xl">
+                  <h1
+                    className={cn(
+                      "min-w-0 font-semibold leading-tight tracking-tight",
+                      mobile
+                        ? "break-words text-xl"
+                        : "truncate text-xl sm:text-4xl",
+                    )}
+                  >
                     {d.storeName || "Your store"}
                   </h1>
                   {d.showVerifiedBadge && verified && (
@@ -559,7 +517,10 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
                 </p>
                 <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs opacity-80 sm:text-sm">
                   {meta.map((m, i) => (
-                    <span key={m} className="inline-flex items-center gap-2">
+                    <span
+                      key={m}
+                      className="inline-flex items-center gap-2 whitespace-nowrap"
+                    >
                       {i > 0 && <span aria-hidden>·</span>}
                       {m}
                     </span>
@@ -570,7 +531,12 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
                 type="button"
                 onClick={toggleFollow}
                 aria-pressed={following}
-                className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-full px-5 text-sm font-semibold transition-all duration-300 active:scale-95 sm:h-12 sm:px-8 sm:text-base"
+                className={cn(
+                  "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full text-sm font-semibold transition-all duration-300 active:scale-95",
+                  mobile
+                    ? cn(phoneAction, "h-11 px-5")
+                    : "h-10 px-5 sm:h-12 sm:px-8 sm:text-base",
+                )}
                 style={
                   following
                     ? {
@@ -622,7 +588,6 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
             {bioEl}
             <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
               {followBtn}
-              {wishlistLink}
             </div>
           </div>
           <div className={mobile ? "order-1" : "h-full"}>
@@ -638,13 +603,19 @@ export function StoreHero({ ctx, slim = false }: { ctx: Ctx; slim?: boolean }) {
     return (
       <section className={sectionClass} data-sf="hero" style={sectionStyle}>
         <div
-          className="flex items-center gap-4 pb-5 sm:gap-6"
+          className={cn(
+            "pb-5",
+            mobile ? phoneProfile : "flex items-center gap-4 sm:gap-6",
+          )}
           style={{ borderBottom: "1px solid var(--s-border)" }}
         >
           {avatarEl}
           {nameEl}
-          <div className="flex shrink-0 items-center gap-3">
-            {!mobile && wishlistLink}
+          <div
+            className={
+              mobile ? phoneAction : "flex shrink-0 items-center gap-3"
+            }
+          >
             {followBtn}
           </div>
         </div>

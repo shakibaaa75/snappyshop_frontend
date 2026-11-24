@@ -17,15 +17,11 @@ export type HeaderStyle =
   | "split"
   /** No cover: avatar, name and Follow in one clean row. */
   | "minimal"
-  | "editorial"
-  | "framed"
   | "spotlight";
 export const HEADER_STYLES = [
   "standard",
   "banner",
   "minimal",
-  "editorial",
-  "framed",
   "spotlight",
 ] as const;
 
@@ -34,10 +30,7 @@ export function resolveHeaderStyle(
   value: unknown,
 ): (typeof HEADER_STYLES)[number] {
   const legacy: Record<string, (typeof HEADER_STYLES)[number]> = {
-    centered: "framed",
-    overlap: "framed",
     compact: "minimal",
-    split: "editorial",
   };
   if (typeof value !== "string") return "standard";
   if (Object.prototype.hasOwnProperty.call(legacy, value)) return legacy[value];

@@ -15,7 +15,7 @@ import { readableOn } from "@/lib/store-design/utilts";
 import { useCart } from "@/lib/store-design/cart";
 import { CategoryThumb } from "@/components/seller/CategoryThumb";
 import { Badge, Link, Mark } from "./blocks";
-import { isActive } from "./mobile-nav";
+import { isActive, isStoreWishlistLink } from "./mobile-nav";
 import { SearchField } from "./search-field";
 import { catImage, CTA_BG, INK, muted, THUMB_THEME } from "./tokens";
 import { type Ctx } from "./types";
@@ -67,31 +67,33 @@ export function SideNav({ ctx }: { ctx: Ctx }) {
       </Link>
 
       <nav className="flex flex-col gap-1">
-        {d.navLinks.map((l, i) => {
-          const Icon = navIcon(l.label);
-          const active = interactive
-            ? isActive(pathname, base, l.url)
-            : i === 0;
-          return (
-            <Link
-              key={l.id}
-              on={interactive}
-              href={l.url || "/"}
-              className={cn(
-                "flex h-11 items-center gap-3 rounded-2xl px-3.5 text-sm font-medium transition-colors",
-                !active && "hover:bg-[var(--s-surface)]",
-              )}
-              style={
-                active
-                  ? { background: CTA_BG, color: "var(--s-on-primary)" }
-                  : muted
-              }
-            >
-              <Icon className="h-[18px] w-[18px] shrink-0" />
-              <span className="truncate">{l.label}</span>
-            </Link>
-          );
-        })}
+        {d.navLinks
+          .filter((link) => !isStoreWishlistLink(link.url, base))
+          .map((l, i) => {
+            const Icon = navIcon(l.label);
+            const active = interactive
+              ? isActive(pathname, base, l.url)
+              : i === 0;
+            return (
+              <Link
+                key={l.id}
+                on={interactive}
+                href={l.url || "/"}
+                className={cn(
+                  "flex h-11 items-center gap-3 rounded-2xl px-3.5 text-sm font-medium transition-colors",
+                  !active && "hover:bg-[var(--s-surface)]",
+                )}
+                style={
+                  active
+                    ? { background: CTA_BG, color: "var(--s-on-primary)" }
+                    : muted
+                }
+              >
+                <Icon className="h-[18px] w-[18px] shrink-0" />
+                <span className="truncate">{l.label}</span>
+              </Link>
+            );
+          })}
       </nav>
 
       {categories.length > 0 && (

@@ -13,7 +13,6 @@ import {
 import { usePathname } from "next/navigation";
 import {
   ChevronRight,
-  Heart,
   Home,
   LayoutGrid,
   Menu,
@@ -44,6 +43,13 @@ export function isActive(pathname: string, base: string, url: string) {
   if (url === base) return pathname === base || pathname === `${base}/`;
   return pathname === url || pathname.startsWith(url + "/");
 }
+/** Both saved template links and live storefront links can name this route. */
+export function isStoreWishlistLink(url: string, base: string) {
+  const path = url.trim().split(/[?#]/, 1)[0].replace(/\/+$/, "");
+  return (
+    path === "wishlist" || path === "/wishlist" || path === base + "/wishlist"
+  );
+}
 const IconBtn = "sf-icon-btn";
 export const MobileTop = memo(function MobileTop({ ctx }: { ctx: Ctx }) {
   const { d, interactive, openCart } = ctx;
@@ -52,6 +58,7 @@ export const MobileTop = memo(function MobileTop({ ctx }: { ctx: Ctx }) {
   const count = interactive ? cart.count : 2;
   const btn =
     "relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border shadow-sm";
+  const yokai = d.template === "yokai";
   const topSurface: CSSProperties = {
     background: normalizeHex(d.bgColor, "#ffffff"),
     color: readableOn(normalizeHex(d.bgColor, "#ffffff")),
@@ -59,8 +66,15 @@ export const MobileTop = memo(function MobileTop({ ctx }: { ctx: Ctx }) {
   };
   return (
     <header
-      className="absolute inset-x-0 top-0 z-20 flex items-center gap-2 px-4 pb-2"
-      style={{ paddingTop: "max(0.75rem, env(safe-area-inset-top))" }}
+      className={cn(
+        "inset-x-0 top-0 z-20 flex items-center gap-2",
+        yokai ? "relative px-5 pb-3" : "absolute px-4 pb-2",
+      )}
+      style={{
+        paddingTop: yokai
+          ? "max(1rem, env(safe-area-inset-top))"
+          : "max(0.75rem, env(safe-area-inset-top))",
+      }}
     >
       <div className="min-w-0 flex-1">
         <SearchField ctx={ctx} compact mobileHeader />
@@ -91,17 +105,6 @@ export const MobileTop = memo(function MobileTop({ ctx }: { ctx: Ctx }) {
               {count > 0 && <Badge n={count} />}
             </Link>
           ))}
-        {d.showWishlist && (
-          <Link
-            on={interactive}
-            href={`${base}/wishlist`}
-            title="Wishlist"
-            className={btn}
-            style={topSurface}
-          >
-            <Heart className="h-[18px] w-[18px]" />
-          </Link>
-        )}
       </div>
     </header>
   );
@@ -217,12 +220,12 @@ export const MobileDock = memo(function MobileDock({
     { label: "Contact", url: `${base}/contact` },
     ...(d.navLinks ?? []).filter(
       (link) =>
+        !isStoreWishlistLink(link.url, base) &&
         ![
           base,
           `${base}/products`,
           `${base}/about`,
           `${base}/contact`,
-          `${base}/wishlist`,
         ].includes(link.url),
     ),
   ].filter(

@@ -541,6 +541,7 @@ export default function ProductClient({
           <section
             className={cn(
               "relative",
+              phone.inset && "pt-[calc(max(0.75rem,env(safe-area-inset-top,0px))+3.25rem)] lg:pt-0",
               !editorial && !stacked && "lg:sticky lg:top-[96px]",
               galleryLeft && "lg:flex lg:flex-row-reverse lg:gap-4",
               galleryRight && "lg:flex lg:flex-row lg:gap-4",
@@ -551,7 +552,7 @@ export default function ProductClient({
                 "relative overflow-hidden lg:rounded-[var(--pp-r)]",
                 phone.aspect,
                 phone.inset
-                  ? "mx-4 mt-[calc(env(safe-area-inset-top,0px)+4.5rem)] w-[calc(100%-2rem)] rounded-[var(--pp-r)] lg:mx-0 lg:mt-0 lg:w-full"
+                  ? "mx-4 rounded-[var(--pp-r)] lg:mx-0 lg:w-full"
                   : "w-full rounded-b-[32px]",
                 PRODUCT_IMAGE_LG_ASPECT[layout],
                 sideThumbs && "lg:min-w-0 lg:flex-1",
@@ -689,7 +690,7 @@ export default function ProductClient({
                       phone.sheet ? "bottom-12" : "bottom-3",
                     ),
                   phone.thumbs === "row" &&
-                    "flex gap-2 overflow-x-auto px-4 pt-3",
+                    "flex gap-2 overflow-x-auto px-4 pt-2",
                 )}
               >
                 {slides.map((url, i) => (
@@ -722,17 +723,17 @@ export default function ProductClient({
               </div>
             )}
 
-            {/* Editorial: every photo stacked (phone and desktop), no thumbnails */}
+            {/* Editorial: lead photo above a compact grid of supporting photos. */}
             {editorial && (
-              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+              <div className="grid grid-cols-2 gap-2 px-4 lg:gap-3 lg:px-0">
                 {slides.map((url, i) => (
                   <div
                     key={`${url}-${i}`}
                     className={cn(
                       "overflow-hidden",
                       i === 0
-                        ? "aspect-[4/5] rounded-b-[32px] rounded-t-none lg:col-span-2 lg:aspect-[5/4] lg:rounded-[var(--pp-r)]"
-                        : "mx-4 aspect-[4/5] rounded-[var(--pp-r)] lg:mx-0",
+                        ? "col-span-2 -mx-4 aspect-square rounded-b-[32px] rounded-t-none lg:mx-0 lg:aspect-[5/4] lg:rounded-[var(--pp-r)]"
+                        : "aspect-square rounded-[var(--pp-r)] lg:aspect-[4/5]",
                     )}
                     style={{ background: "var(--s-surface)" }}
                   >
@@ -788,8 +789,8 @@ export default function ProductClient({
 
           <section
             className={cn(
-              "relative space-y-5 px-5 pb-4 lg:mt-0 lg:space-y-6 lg:rounded-none lg:p-0",
-              phone.sheet ? "-mt-8 rounded-t-[32px] pt-6" : "mt-5 pt-0",
+              "relative space-y-3 px-4 pb-4 lg:px-5 lg:mt-0 lg:space-y-6 lg:rounded-none lg:p-0",
+              phone.sheet ? "-mt-8 rounded-t-[32px] pt-4" : "mt-3 pt-0",
               editorial && "lg:sticky lg:top-[96px]",
             )}
             style={{ background: pageBg }}

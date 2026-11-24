@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   normalizeHex,
@@ -246,6 +246,7 @@ export function StorePreviewViewport({
     ) : previewPath === "about" || previewPath === "contact" ? (
       <LiveStorePreview
         {...props}
+        hideFab
         interactive={false}
         loading={loading}
         activeTab={previewPath === "about" ? "about" : "contact"}
@@ -276,6 +277,7 @@ export function StorePreviewViewport({
       <>
         <LiveStorePreview
           {...props}
+          hideFab
           key={previewPath + previewCategory}
           interactive={false}
           loading={loading}
@@ -285,6 +287,26 @@ export function StorePreviewViewport({
         />
       </>
     );
+  // WhatsApp button. Inside the scaled frame `fixed`/`sticky` cannot track the
+  // visible area, so it is drawn here, over the scroll area (above the dock).
+  const showFab =
+    !!design.whatsappEnabled &&
+    !!design.whatsappNumber &&
+    !loading &&
+    mode !== "product" &&
+    !previewPath.startsWith("products/");
+  const fab = showFab && (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "pointer-events-none absolute bottom-4 right-4 z-30 flex items-center justify-center rounded-full text-white shadow-xl",
+        mobile ? "h-14 w-14" : "h-11 w-11",
+      )}
+      style={{ background: "#25D366" }}
+    >
+      <MessageCircle className={mobile ? "h-6 w-6" : "h-5 w-5"} />
+    </span>
+  );
   const screen = (
     <PreviewNavigation.Provider value={browsing ? navigate : null}>
       <div
@@ -313,55 +335,59 @@ export function StorePreviewViewport({
             ))}
           </nav>
         )}
-        <div
-          ref={scrollRef}
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:thin] [-webkit-overflow-scrolling:touch]"
-        >
-          <ScaledFrame baseWidth={mobile ? 390 : 1280}>
-            <div
-              className={
-                browsing ? "select-none" : "pointer-events-none select-none"
-              }
-              onClickCapture={
-                browsing
-                  ? (event) => {
-                      const anchor = (event.target as Element).closest(
-                        "a[href]",
-                      );
-                      if (!anchor) return;
-                      event.preventDefault();
-                      event.stopPropagation();
-                      navigate(anchor.getAttribute("href") || "");
-                    }
-                  : undefined
-              }
-              onSubmitCapture={
-                browsing
-                  ? (event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                    }
-                  : undefined
-              }
-            >
-              {mode === "product" ? (
-                <ProductPagePreview
-                  design={design}
-                  products={products}
-                  device={device}
-                  loading={loading}
-                />
-              ) : browsing || mode === "about" || mode === "contact" ? (
-                previewPage
-              ) : (
-                <LiveStorePreview
-                  {...props}
-                  interactive={false}
-                  loading={loading}
-                />
-              )}
-            </div>
-          </ScaledFrame>
+        <div className="relative min-h-0 flex-1">
+          <div
+            ref={scrollRef}
+            className="h-full overflow-y-auto overscroll-contain [scrollbar-width:thin] [-webkit-overflow-scrolling:touch]"
+          >
+            <ScaledFrame baseWidth={mobile ? 390 : 1280}>
+              <div
+                className={
+                  browsing ? "select-none" : "pointer-events-none select-none"
+                }
+                onClickCapture={
+                  browsing
+                    ? (event) => {
+                        const anchor = (event.target as Element).closest(
+                          "a[href]",
+                        );
+                        if (!anchor) return;
+                        event.preventDefault();
+                        event.stopPropagation();
+                        navigate(anchor.getAttribute("href") || "");
+                      }
+                    : undefined
+                }
+                onSubmitCapture={
+                  browsing
+                    ? (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }
+                    : undefined
+                }
+              >
+                {mode === "product" ? (
+                  <ProductPagePreview
+                    design={design}
+                    products={products}
+                    device={device}
+                    loading={loading}
+                  />
+                ) : browsing || mode === "about" || mode === "contact" ? (
+                  previewPage
+                ) : (
+                  <LiveStorePreview
+                    {...props}
+                    hideFab
+                    interactive={false}
+                    loading={loading}
+                  />
+                )}
+              </div>
+            </ScaledFrame>
+          </div>
+          {fab}
         </div>
         {browsing && (
           <div className="shrink-0" style={themeVars(design)}>

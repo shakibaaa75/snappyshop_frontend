@@ -8,7 +8,7 @@ import { img } from "@/lib/images";
 import { useCart } from "@/lib/store-design/cart";
 import { Badge, Link, Mark } from "./blocks";
 import { catPhoto } from "./category-tiles";
-import { isActive } from "./mobile-nav";
+import { isActive, isStoreWishlistLink } from "./mobile-nav";
 import { SearchField } from "./search-field";
 import { StoreHero } from "./store-hero";
 import { CTA_BG, muted } from "./tokens";
@@ -74,43 +74,53 @@ function HeaderActions({ ctx }: { ctx: Ctx }) {
     </div>
   );
 }
-export function HeaderNav({ ctx, variant }: { ctx: Ctx; variant: "pill" | "text" }) {
+export function HeaderNav({
+  ctx,
+  variant,
+}: {
+  ctx: Ctx;
+  variant: "pill" | "text";
+}) {
   const { d, interactive } = ctx;
   const pathname = usePathname() ?? "";
   const base = `/store/${d.storeSlug}`;
   return (
     <nav className="flex min-w-0 items-center gap-1 overflow-x-auto no-scrollbar">
-      {d.navLinks.map((l, i) => {
-        const active = interactive ? isActive(pathname, base, l.url) : i === 0;
-        return variant === "pill" ? (
-          <Link
-            key={l.id}
-            on={interactive}
-            href={l.url || "/"}
-            className="flex h-10 shrink-0 items-center rounded-full px-4 text-sm font-medium transition-colors"
-            style={
-              active
-                ? { background: CTA_BG, color: "var(--s-on-primary)" }
-                : muted
-            }
-          >
-            {l.label}
-          </Link>
-        ) : (
-          <Link
-            key={l.id}
-            on={interactive}
-            href={l.url || "/"}
-            className="mx-3 shrink-0 border-b pb-1 text-xs font-medium uppercase tracking-[0.18em] transition-colors"
-            style={{
-              borderColor: active ? "var(--s-text)" : "transparent",
-              ...(active ? null : muted),
-            }}
-          >
-            {l.label}
-          </Link>
-        );
-      })}
+      {d.navLinks
+        .filter((link) => !isStoreWishlistLink(link.url, base))
+        .map((l, i) => {
+          const active = interactive
+            ? isActive(pathname, base, l.url)
+            : i === 0;
+          return variant === "pill" ? (
+            <Link
+              key={l.id}
+              on={interactive}
+              href={l.url || "/"}
+              className="flex h-10 shrink-0 items-center rounded-full px-4 text-sm font-medium transition-colors"
+              style={
+                active
+                  ? { background: CTA_BG, color: "var(--s-on-primary)" }
+                  : muted
+              }
+            >
+              {l.label}
+            </Link>
+          ) : (
+            <Link
+              key={l.id}
+              on={interactive}
+              href={l.url || "/"}
+              className="mx-3 shrink-0 border-b pb-1 text-xs font-medium uppercase tracking-[0.18em] transition-colors"
+              style={{
+                borderColor: active ? "var(--s-text)" : "transparent",
+                ...(active ? null : muted),
+              }}
+            >
+              {l.label}
+            </Link>
+          );
+        })}
     </nav>
   );
 }
@@ -196,7 +206,8 @@ export function YokaiHeader({ ctx }: { ctx: Ctx }) {
           {d.navLinks
             .filter(
               (l) =>
-                !/^\/?(products|shop)\/?$/i.test(l.url) || mega.length === 0,
+                !isStoreWishlistLink(l.url, base) &&
+                (!/^\/?(products|shop)\/?$/i.test(l.url) || mega.length === 0),
             )
             .map((l, i) => {
               const active = interactive

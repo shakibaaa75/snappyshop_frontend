@@ -71,14 +71,22 @@ const states = [
   "Rejected",
   "Unpublished",
 ];
-function useList(path: string, user = "public", enabled = true) {
+/**
+ * Public (shopper) lists are served from the cache for a minute and are not
+ * polled, so traffic to a popular store does not become API load. Signed-in
+ * lists stay fresh, and only dashboards (`poll`) refresh on a timer.
+ * Saving or replying still refreshes everything through invalidateQueries.
+ */
+function useList(path: string, user = "public", enabled = true, poll = false) {
+  const isPublic = user === "public";
   return useQuery({
     queryKey: ["reviews", user, path],
     queryFn: ({ signal }) => apiFetch<Page>(path, { signal }),
     enabled,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: "always",
-    refetchInterval: 30000,
+    staleTime: isPublic ? 60_000 : 0,
+    refetchOnMount: isPublic ? true : "always",
+    refetchOnWindowFocus: isPublic ? false : "always",
+    refetchInterval: poll ? 30000 : false,
   });
 }
 function useUser() {
@@ -829,9 +837,17 @@ export function ProductReviews({
     measure();
     el.addEventListener("scroll", measure, { passive: true });
     window.addEventListener("resize", measure);
+    // The editor preview changes width without a window resize (device
+    // toggle, panel resize), so observe the track itself as well.
+    const ro =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(measure)
+        : null;
+    ro?.observe(el);
     return () => {
       el.removeEventListener("scroll", measure);
       window.removeEventListener("resize", measure);
+      ro?.disconnect();
     };
   }, [measure, count, carousel]);
   const go = (d: 1 | -1) =>
@@ -845,7 +861,7 @@ export function ProductReviews({
       onClick={() => go(dir === "left" ? -1 : 1)}
       disabled={dir === "left" ? pos.start : pos.end}
       aria-label={dir === "left" ? "Previous reviews" : "Next reviews"}
-      className="absolute top-1/2 z-10 hidden size-10 -translate-y-1/2 place-items-center rounded-full shadow-md transition disabled:opacity-30 sm:grid"
+      className="absolute top-1/2 z-10 hidden size-10 -translate-y-1/2 place-items-center rounded-full shadow-md transition disabled:opacity-30 @lg:grid"
       style={{
         [dir]: "-0.75rem",
         background: T.bg,
@@ -879,22 +895,25 @@ export function ProductReviews({
         </p>
       )}
       <div
-        className="flex items-start justify-between gap-3 pb-3 sm:pb-4"
+        className="flex items-start justify-between gap-3 pb-3 @lg:pb-4"
         style={{ borderBottom: `1px solid ${T.border}` }}
       >
-        <div className="min-w-0">
-          <h2 className="text-lg font-bold tracking-tight sm:text-2xl">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-lg font-bold tracking-tight [overflow-wrap:anywhere] @lg:text-2xl">
             {heading?.trim() || "Customer reviews"}
           </h2>
           {!!total && (
-            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 sm:mt-2 sm:gap-3">
-              <span className="text-2xl font-bold leading-none sm:text-4xl">
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 @lg:mt-2 @lg:gap-3">
+              <span className="text-2xl font-bold leading-none @lg:text-4xl">
                 {average.toFixed(1)}
               </span>
-              <span className="inline-flex [&_svg]:size-4 sm:[&_svg]:size-[22px]">
+              <span className="inline-flex [&_svg]:size-4 @lg:[&_svg]:size-[22px]">
                 <Stars value={average} size={22} />
               </span>
-              <span className="text-xs sm:text-base" style={{ color: T.muted }}>
+              <span
+                className="text-xs @lg:text-base"
+                style={{ color: T.muted }}
+              >
                 ({total} {total === 1 ? "review" : "reviews"})
               </span>
             </div>
@@ -944,10 +963,13 @@ export function ProductReviews({
           </div>
         ))}
       {layout === "carousel" && count > 0 && (
-        <div className="flex items-center justify-between gap-3">
-          <span className="hidden w-40 sm:block" />
+        <div className="flex flex-wrap items-center justify-center gap-3 @lg:flex-nowrap @lg:justify-between">
+          <span className="hidden w-40 @lg:block" />
           {!all && pos.pages > 1 ? (
-            <div className="flex items-center gap-2" aria-label="Review pages">
+            <div
+              className="flex max-w-full flex-wrap items-center justify-center gap-2"
+              aria-label="Review pages"
+            >
               {Array.from({ length: pos.pages }).map((_, i) => (
                 <button
                   key={i}
@@ -1014,9 +1036,9 @@ export function MarketplaceReviews() {
         "/reviews?feed=marketplace&page=" + page,
         { signal },
       ),
-    refetchOnMount: "always",
-    refetchOnWindowFocus: "always",
-    refetchInterval: 30000,
+    staleTime: 60_000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   });
   return (
     <section aria-label="Verified customer reviews" className="space-y-4">
@@ -1085,6 +1107,7 @@ export function FeaturedReviews({ design }: { design: StoreDesign }) {
   if (!hasSelection || (!page && !q.data?.rows?.length)) return null;
   return (
     <section
+      className="@container"
       style={{
         padding: design.reviewPadding ?? 20,
         backgroundColor: design.reviewColor ?? "transparent",
@@ -1099,7 +1122,7 @@ export function FeaturedReviews({ design }: { design: StoreDesign }) {
             ? "flex overflow-x-auto gap-4 snap-x pb-2 [&>article]:w-[min(85%,22rem)] [&>article]:shrink-0 [&>article]:snap-start"
             : design.reviewLayout === "testimonial"
               ? "mx-auto grid max-w-2xl gap-4 [&>article]:text-center"
-              : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+              : "grid gap-4 @lg:grid-cols-2 @3xl:grid-cols-3"
         }
       >
         {q.data?.rows?.map((r) => (
@@ -1175,6 +1198,7 @@ export function ReviewDashboard({
       new URLSearchParams({ status, product, rating, page: String(page) }),
     user.data?.id,
     !!user.data,
+    true,
   );
   const cache = useQueryClient();
   const [notice, setNotice] = useState("");

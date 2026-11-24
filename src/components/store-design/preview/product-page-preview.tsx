@@ -175,6 +175,7 @@ export function ProductPagePreview({
               <section
                 className={cn(
                   "relative",
+                  mobile && phone.inset && "pt-16",
                   wide && galleryLeft && "flex flex-row-reverse gap-4",
                   wide && galleryRight && "flex flex-row gap-4",
                 )}
@@ -198,19 +199,19 @@ export function ProductPagePreview({
                     ))}
                   </div>
                 ) : mobile && phone.stackAll ? (
-                  <div className="grid gap-3">
+                  <div className="grid grid-cols-2 gap-2 px-4">
                     {[0, 1, 2].map((i) => (
                       <div
                         key={i}
                         className={cn(
                           "overflow-hidden",
                           i === 0
-                            ? "rounded-b-[32px]"
-                            : "mx-4 rounded-[var(--pp-r)]",
+                            ? "col-span-2 -mx-4 rounded-b-[32px]"
+                            : "rounded-[var(--pp-r)]",
                         )}
                         style={{
                           background: "var(--s-surface)",
-                          aspectRatio: "4 / 5",
+                          aspectRatio: "1 / 1",
                         }}
                       >
                         <ProductArt
@@ -226,7 +227,7 @@ export function ProductPagePreview({
                       "overflow-hidden",
                       mobile
                         ? phone.inset
-                          ? "mx-4 mt-[4.5rem] rounded-[var(--pp-r)]"
+                          ? "mx-4 rounded-[var(--pp-r)]"
                           : "rounded-b-[32px]"
                         : "rounded-[var(--pp-r)]",
                       wide && sideThumbs && "min-w-0 flex-1",
@@ -304,7 +305,7 @@ export function ProductPagePreview({
                           phone.sheet ? "bottom-12" : "bottom-3",
                         ),
                       phone.thumbs === "row" &&
-                        "flex gap-2 overflow-x-auto px-4 pt-3",
+                        "flex gap-2 overflow-x-auto px-4 pt-2",
                     )}
                   >
                     {[0, 1, 2, 3].map((i) => (
@@ -332,11 +333,11 @@ export function ProductPagePreview({
 
               <section
                 className={cn(
-                  "space-y-5 px-5 pb-8",
+                  mobile ? "space-y-3 px-4 pb-4" : "space-y-5 px-5 pb-8",
                   mobile
                     ? phone.sheet
-                      ? "-mt-8 rounded-t-[32px] pt-6"
-                      : "mt-5 pt-0"
+                      ? "-mt-8 rounded-t-[32px] pt-4"
+                      : "mt-3 pt-0"
                     : "pt-2",
                 )}
                 style={{ background: pageBg }}

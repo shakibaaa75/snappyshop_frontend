@@ -33,6 +33,8 @@ export interface PreviewProps {
   page?: "home" | "products";
   /** Category id to preselect on the products page (from ?category=). */
   initialCategory?: string;
+  /** Hide the in-page WhatsApp button (the editor device frame draws its own). */
+  hideFab?: boolean;
 }
 export interface Ctx {
   d: StoreDesign;

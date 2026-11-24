@@ -76,6 +76,7 @@ export const ProductGrid = memo(function ProductGrid({
     ? Math.min(2, ctx.d.productsPerRow)
     : ctx.d.productsPerRow;
   const look = productDisplay(ctx.d.template, ctx.mobile);
+  const mobileYokai = ctx.mobile && ctx.d.template === "yokai";
   const flush = ctx.d.cardVariant === "grid";
   /* Catalog cards sit nearly edge to edge, like a lookbook sheet. */
   const tight = ctx.d.cardVariant === "catalog" || ctx.d.cardVariant === "drop";
@@ -87,6 +88,7 @@ export const ProductGrid = memo(function ProductGrid({
         gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
         columnGap: flush ? 0 : tight ? 4 : look.gap,
         rowGap: flush ? 0 : look.rowGap,
+        ...(mobileYokai && { columnGap: 10, rowGap: 24 }),
         ...(flush
           ? {
               borderTop: "1px solid var(--s-border)",

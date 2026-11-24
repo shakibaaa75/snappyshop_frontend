@@ -41,36 +41,12 @@ function HeaderLayoutThumb({ layout }: { layout: string }) {
           <rect x="43" y="42" width="43" height="3" opacity=".3" />
           <rect x="123" y="32" width="25" height="12" rx="6" opacity=".3" />
         </g>
-      ) : layout === "editorial" ? (
-        <g fill="currentColor">
-          <rect x="8" y="18" width="85" height="49" rx="4" opacity=".18" />
-          <circle cx="116" cy="25" r="7" opacity=".4" />
-          <rect x="103" y="39" width="43" height="5" rx="2" />
-          <rect x="103" y="49" width="32" height="3" opacity=".3" />
-        </g>
       ) : layout === "spotlight" ? (
         <g fill="currentColor">
           <rect x="8" y="22" width="89" height="7" rx="2" />
           <rect x="8" y="34" width="69" height="7" rx="2" />
           <rect x="8" y="52" width="34" height="10" rx="5" opacity=".4" />
           <rect x="111" y="18" width="41" height="49" rx="20" opacity=".18" />
-        </g>
-      ) : layout === "framed" ? (
-        <g fill="currentColor">
-          <rect x="8" y="17" width="144" height="36" rx="4" opacity=".2" />
-          <rect
-            x="28"
-            y="36"
-            width="104"
-            height="31"
-            rx="5"
-            fill="var(--background, white)"
-            stroke="currentColor"
-            strokeOpacity=".2"
-          />
-          <circle cx="45" cy="49" r="6" opacity=".4" />
-          <rect x="58" y="45" width="59" height="4" rx="2" />
-          <rect x="58" y="54" width="37" height="3" opacity=".3" />
         </g>
       ) : layout === "banner" ? (
         <g fill="currentColor">
@@ -140,8 +116,6 @@ export function HeaderPanel({ design, update }: PanelProps) {
               { value: "standard", label: "Classic" },
               { value: "banner", label: "Banner" },
               { value: "minimal", label: "Minimal" },
-              { value: "editorial", label: "Editorial" },
-              { value: "framed", label: "Framed" },
               { value: "spotlight", label: "Spotlight" },
             ].map((option) => ({
               ...option,

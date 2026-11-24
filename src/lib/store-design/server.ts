@@ -108,9 +108,27 @@ function toPublicProduct(p: BackendProduct): Product {
  */
 const STORE_REVALIDATE_SECONDS = 30;
 
+/**
+ * One cache tag per store. The Go API (or anything else) clears a store's
+ * cached data by calling POST /internal/revalidate with the slug.
+ */
+export const storeTag = (slug: string) =>
+  `store:${slug.trim().toLowerCase()}`;
+
+/**
+ * Seconds the store DESIGN may be served from Next's data cache.
+ * 0 (default) keeps today's behaviour: always fetched fresh.
+ * Turn this on (e.g. 60) only after the Go API calls /internal/revalidate on
+ * publish, shop name/URL change and visibility change; see the route's notes.
+ */
+const DESIGN_CACHE_SECONDS = Math.max(
+  0,
+  Number(process.env.STORE_DESIGN_CACHE_SECONDS ?? 0) || 0,
+);
+
 const getJson = (url: string, slug: string) =>
   fetch(url, {
-    next: { revalidate: STORE_REVALIDATE_SECONDS, tags: [`store:${slug}`] },
+    next: { revalidate: STORE_REVALIDATE_SECONDS, tags: [storeTag(slug)] },
     headers: { Accept: "application/json" },
   });
 
@@ -125,6 +143,14 @@ const getFresh = (url: string) =>
     headers: { Accept: "application/json" },
   });
 
+const getDesign = (url: string, slug: string) =>
+  DESIGN_CACHE_SECONDS > 0
+    ? fetch(url, {
+        next: { revalidate: DESIGN_CACHE_SECONDS, tags: [storeTag(slug)] },
+        headers: { Accept: "application/json" },
+      })
+    : getFresh(url);
+
 /**
  * Fetch a published store by slug on the server.
  * Returns null if the store doesn't exist (caller renders 404).
@@ -134,12 +160,19 @@ export const fetchStoreServer = cache(async function fetchStoreServer(
 ): Promise<PublicStoreData | null> {
   const encoded = encodeURIComponent(slug);
 
-  const [designRes, productsRes, categoriesRes] = await Promise.all([
-    getFresh(`${API_BASE_URL}/store/${encoded}`),
+  const designUrl = `${API_BASE_URL}/store/${encoded}`;
+  const [cachedDesignRes, productsRes, categoriesRes] = await Promise.all([
+    getDesign(designUrl, slug),
     getJson(`${API_BASE_URL}/store/${encoded}/products`, slug).catch(() => null),
     getJson(`${API_BASE_URL}/store/${encoded}/categories`, slug).catch(() => null),
   ]);
 
+  // Never trust a cached "not found": confirm it against the API so a store
+  // that was just published (or a retired address) is answered correctly.
+  const designRes =
+    !cachedDesignRes.ok && DESIGN_CACHE_SECONDS > 0
+      ? await getFresh(designUrl)
+      : cachedDesignRes;
   if (!designRes.ok) {
     return null;
   }

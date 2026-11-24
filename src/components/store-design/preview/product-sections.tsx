@@ -318,9 +318,7 @@ function DropProducts({ ctx, section }: { ctx: Ctx; section: HomeSection }) {
   );
 }
 /**
- * Yokai product rail: centered bold heading with a muted line under it, a
- * sideways-scrolling row of square cards with a peek of the next one, and a
- * square "View all" button.
+ * Yokai uses a mobile product grid and a scrollable desktop rail.
  */
 function YokaiProducts({ ctx, section }: { ctx: Ctx; section: HomeSection }) {
   const { d, mobile, interactive } = ctx;
@@ -329,8 +327,8 @@ function YokaiProducts({ ctx, section }: { ctx: Ctx; section: HomeSection }) {
     [section, ctx.products],
   );
   const { ref, edge, sync, go } = useRailScroll(`${list.length}-${mobile}`);
-  const gap = mobile ? 8 : 12;
-  const cols = mobile ? 2.2 : Math.min(5, Math.max(3, d.productsPerRow)) + 0.25;
+  const gap = 12;
+  const cols = Math.min(5, Math.max(3, d.productsPerRow)) + 0.25;
   const title = section.title || sectionMeta[section.id].label;
   const arrow =
     "absolute top-[34%] z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center border shadow-sm sm:flex";
@@ -353,15 +351,14 @@ function YokaiProducts({ ctx, section }: { ctx: Ctx; section: HomeSection }) {
       </div>
       {list.length === 0 ? (
         <Placeholder>No products to show yet.</Placeholder>
+      ) : mobile ? (
+        <ProductGrid products={list} ctx={ctx} />
       ) : (
         <div className="relative">
           <div
             ref={ref}
             onScroll={sync}
-            className={cn(
-              "no-scrollbar flex snap-x snap-mandatory overflow-x-auto [-webkit-overflow-scrolling:touch]",
-              mobile && "-mx-4 scroll-px-4 px-4",
-            )}
+            className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto [-webkit-overflow-scrolling:touch]"
             style={{ gap }}
           >
             {list.map((p, i) => (
@@ -370,14 +367,14 @@ function YokaiProducts({ ctx, section }: { ctx: Ctx; section: HomeSection }) {
                 className="shrink-0 snap-start"
                 style={{
                   width: `calc((100% - ${gap * (Math.ceil(cols) - 1)}px) / ${cols})`,
-                  minWidth: mobile ? 140 : 170,
+                  minWidth: 170,
                 }}
               >
                 <ProductCard p={p} ctx={ctx} index={i} />
               </div>
             ))}
           </div>
-          {!mobile && !edge.start && (
+          {!edge.start && (
             <button
               type="button"
               aria-label="Previous products"
@@ -388,7 +385,7 @@ function YokaiProducts({ ctx, section }: { ctx: Ctx; section: HomeSection }) {
               <ChevronLeft className="h-5 w-5" />
             </button>
           )}
-          {!mobile && !edge.end && (
+          {!edge.end && (
             <button
               type="button"
               aria-label="Next products"
@@ -419,7 +416,13 @@ function YokaiProducts({ ctx, section }: { ctx: Ctx; section: HomeSection }) {
     </Block>
   );
 }
-export function ProductsSection({ ctx, section }: { ctx: Ctx; section: HomeSection }) {
+export function ProductsSection({
+  ctx,
+  section,
+}: {
+  ctx: Ctx;
+  section: HomeSection;
+}) {
   if (usesYokaiLayout(ctx.d)) {
     return <YokaiProducts ctx={ctx} section={section} />;
   }
