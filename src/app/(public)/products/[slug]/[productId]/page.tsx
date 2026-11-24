@@ -5,6 +5,16 @@ import MarketplaceProduct from "./marketplace-product";
 
 type PageProps = { params: Promise<{ slug: string; productId: string }> };
 
+// Once a product page has been built it is reused for every visitor for up to
+// a minute, instead of being rebuilt on each click. A product or publish
+// change clears it at once (the Go API calls /internal/revalidate).
+//
+// This needs STORE_DESIGN_CACHE_SECONDS to be set (see lib/store-design/
+// server.ts). Without it the store is fetched uncached, which makes Next build
+// the page on every request, exactly as before, so this line is safe to ship
+// first. It must stay a plain number: Next rejects values from an import.
+export const revalidate = 60;
+
 export async function generateMetadata({ params }: PageProps) {
   const { slug, productId } = await params;
   const data = await fetchProductServer(slug, productId);
