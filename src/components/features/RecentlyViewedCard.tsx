@@ -1,3 +1,4 @@
+import { DiscountBadge } from "./DiscountBadge";
 import Image from "next/image";
 import Link from "next/link";
 import { ImageOff } from "lucide-react";
@@ -16,10 +17,12 @@ import type { ViewedProduct } from "@/lib/viewed-products";
 export function RecentlyViewedCard({
   product,
   coverImage = false,
+  showDiscount = false,
 }: {
   product: ViewedProduct;
   /** Fill the whole image box (used on the public home page). */
   coverImage?: boolean;
+  showDiscount?: boolean;
 }) {
   const { id, slug, title, image, price, compareAtPrice } = product;
 
@@ -42,6 +45,7 @@ export function RecentlyViewedCard({
             <ImageOff size={22} aria-hidden />
           </span>
         )}
+        {showDiscount && <DiscountBadge price={price} compareAtPrice={compareAtPrice} />}
       </span>
 
       <span className="mt-[5px] line-clamp-2 text-[clamp(.75rem,1vw,.9375rem)] font-[550] leading-[1.35] tracking-[-.018em] group-hover:underline">

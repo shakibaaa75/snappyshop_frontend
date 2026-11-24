@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DiscountBadge } from "./DiscountBadge";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart } from "lucide-react";
@@ -36,11 +37,13 @@ const focus =
 export function TopSellingCard({
   product,
   coverImage = false,
+  showDiscount = false,
 }: {
   product: CardProduct;
   rank?: number;
   /** Always fill the whole image box (used on the public home page). */
   coverImage?: boolean;
+  showDiscount?: boolean;
 }) {
   const { id, store, title, images, price, compareAtPrice } = product;
   const saved = useWishlisted(store.slug, id);
@@ -85,6 +88,7 @@ export function TopSellingCard({
             }}
           />
         </Link>
+        {showDiscount && <DiscountBadge price={price} compareAtPrice={compareAtPrice} />}
         <button
           type="button"
           aria-pressed={saved}

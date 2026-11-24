@@ -335,6 +335,7 @@ function ProductsSection({
               key={p.id}
               product={p}
               rank={ranked ? i + 1 : undefined}
+              showDiscount
               coverImage
             />
           ))}
@@ -429,7 +430,7 @@ export function BigDealsSection() {
             }`}
           >
             {items.map((p) => (
-              <DealCard key={p.id} product={p} coverImage />
+              <DealCard key={p.id} product={p} showDiscount coverImage />
             ))}
           </div>
         )}
@@ -537,7 +538,7 @@ export function RecommendedSection() {
             }`}
           >
             {items.map((p) => (
-              <TopSellingCard key={p.id} product={p} coverImage />
+              <TopSellingCard key={p.id} product={p} showDiscount coverImage />
             ))}
           </div>
 
@@ -852,7 +853,7 @@ export function RecentlyViewedSection() {
               i >= RECENT_FROM_PHONE ? "hidden min-w-0 md:block" : "min-w-0"
             }
           >
-            <RecentlyViewedCard product={p} coverImage />
+            <RecentlyViewedCard product={p} showDiscount coverImage />
           </div>
         ))}
       </div>
