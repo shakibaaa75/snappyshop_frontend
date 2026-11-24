@@ -9,7 +9,7 @@
  *
  * No "use client" and no server-only code: both sides import this file.
  */
-import type { ProductQuery } from "@/lib/api/marketplace";
+import type { ProductQuery, ProductSort } from "@/lib/api/marketplace";
 
 /** Deals above this percent are hidden (likely fake "compare at" prices). */
 export const MAX_DEAL_DISCOUNT = 40;
@@ -23,7 +23,8 @@ export const HOME_ROW_LIMIT = 12;
 /** Featured sellers shown on the home page. */
 export const FEATURED_SELLERS_LIMIT = 6;
 
-export const TOP_SELLING_QUERY: ProductQuery = {
+/** `sort` is required here (the Top Selling row always has one). */
+export const TOP_SELLING_QUERY: ProductQuery & { sort: ProductSort } = {
   sort: "top_selling",
   limit: HOME_ROW_LIMIT,
 };
