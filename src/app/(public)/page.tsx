@@ -14,7 +14,6 @@ import {
   TOP_SELLING_QUERY,
 } from "@/lib/home-queries";
 import {
-  MARKETPLACE_REVALIDATE_SECONDS,
   fetchMarketplaceCategoriesServer,
   fetchMarketplaceProductsServer,
   fetchMarketplaceSellersServer,
@@ -82,7 +81,10 @@ const heroSlides: HeroSlide[] = [
  * every visitor, so the home page costs the API a handful of calls per minute
  * no matter how many people open it.
  */
-export const revalidate = MARKETPLACE_REVALIDATE_SECONDS;
+// Must be a plain number written here: Next reads it at build time and rejects
+// values that come from an import. Keep it equal to
+// MARKETPLACE_REVALIDATE_SECONDS in lib/api/marketplace.server.ts.
+export const revalidate = 60;
 
 /**
  * Loads the public, same-for-everyone sections on the server and hands them to
