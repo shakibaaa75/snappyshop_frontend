@@ -153,7 +153,7 @@ export function Block({
   ctx: Ctx;
   children: ReactNode;
   /** Hook name for template themes (e.g. the Grocery Pookie look). */
-  sf?: "section" | "promo" | "trust";
+  sf?: "section" | "promo" | "trust" | "looks";
 }) {
   return (
     <section className={ctx.mobile ? "px-4" : undefined} data-sf={sf}>

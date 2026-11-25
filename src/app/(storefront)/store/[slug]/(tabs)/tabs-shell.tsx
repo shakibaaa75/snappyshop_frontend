@@ -11,7 +11,6 @@ import type { PublicStoreData } from "@/lib/store-design/server";
 import { AboutContent } from "../_components/AboutContent";
 import { ContactContent } from "../_components/ContactContent";
 import { WishlistContent } from "../_components/WishlistContent";
-import { StoreLooksTeaser } from "@/components/seller/looks/Storelooksteaser";
 
 type StoreTab = "shop" | "about" | "contact" | "wishlist";
 
@@ -87,9 +86,6 @@ export function StoreTabsShell({
         interactive
         activeTab={activeTab}
         tabContent={tabContent}
-        looksSlot={
-          activeTab === "shop" ? <StoreLooksTeaser store={slug} /> : undefined
-        }
       />
     </div>
   );

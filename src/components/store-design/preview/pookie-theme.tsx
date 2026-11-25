@@ -49,7 +49,14 @@ const GINGHAM = svg(
 const HEART_ICON = svg(`<path d='${HEART}'/>`, 24, 24);
 
 const CSS = `
-[data-pookie] { --pk-hearts: ${HEARTS_TILE}; --pk-gingham: ${GINGHAM}; --pk-heart: ${HEART_ICON}; }
+[data-pookie] {
+  --pk-hearts: ${HEARTS_TILE}; --pk-gingham: ${GINGHAM}; --pk-heart: ${HEART_ICON};
+  /* One spacing scale for every panel, so edges line up. */
+  --pk-pad-x: 20px; --pk-pad-y: 20px; --pk-radius: 28px; --pk-gutter: 16px;
+}
+@media (max-width: 767px) {
+  [data-pookie] { --pk-pad-x: 14px; --pk-pad-y: 16px; --pk-radius: 24px; }
+}
 
 /* 1. Page: floating hearts behind everything */
 [data-pookie-page] { position: relative; isolation: isolate; }
@@ -61,53 +68,76 @@ const CSS = `
 }
 
 /* 2. Hero: a faint heart layer over the banner (keeps the photo/gradient visible) */
-[data-pookie] [data-sf="hero"] { position: relative; overflow: hidden; border-radius: 28px; }
+[data-pookie] [data-sf="hero"] { position: relative; overflow: hidden; border-radius: var(--pk-radius); }
 [data-pookie] [data-sf="hero"]::after {
   content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background: #fff; opacity: .16;
   -webkit-mask-image: var(--pk-hearts); mask-image: var(--pk-hearts);
   -webkit-mask-size: 190px; mask-size: 190px;
 }
+@media (max-width: 767px) {
+  /* The mobile hero runs edge to edge: round only the bottom corners. */
+  [data-pookie] [data-sf="hero"] { border-radius: 0 0 var(--pk-radius) var(--pk-radius); }
+}
 
-/* 3. Section wrapper: soft rounded panel */
-[data-pookie] [data-sf="section"] {
-  background: color-mix(in srgb, #fff 62%, transparent);
-  border: 1px solid color-mix(in srgb, var(--s-secondary) 26%, transparent);
-  border-radius: 28px;
-  padding: 18px 20px 20px;
+/* 3. Section + offer panels: same box model.
+   NOTE: the mobile preview is a prop, not a viewport, so media queries are not
+   reliable for it. Block adds the "px-4" class on mobile, so we key off that. */
+[data-pookie] [data-sf="section"],
+[data-pookie] [data-sf="promo"] {
+  box-sizing: border-box;
+  padding: var(--pk-pad-y) var(--pk-pad-x);
+  border-radius: var(--pk-radius);
+  border: 1px solid color-mix(in srgb, var(--s-secondary) 28%, transparent);
   box-shadow: 0 10px 30px -18px color-mix(in srgb, var(--s-primary) 45%, transparent),
               inset 0 1px 0 #fff;
 }
-@media (max-width: 767px) {
-  [data-pookie] [data-sf="section"] { padding: 14px 12px 16px; border-radius: 24px; }
+[data-pookie] [data-sf="section"] {
+  background: color-mix(in srgb, #fff 62%, transparent);
 }
-
-/* 4. Offer banners: gingham with a pink border */
 [data-pookie] [data-sf="promo"] {
   background-color: color-mix(in srgb, #fff 70%, transparent);
   background-image: var(--pk-gingham);
-  border: 1px solid color-mix(in srgb, var(--s-secondary) 35%, transparent);
-  border-radius: 28px; padding: 18px 20px 20px;
-  box-shadow: 0 10px 30px -18px color-mix(in srgb, var(--s-primary) 45%, transparent);
 }
 
-/* 5. Benefit strip: pill with a dashed scalloped edge */
+/* Mobile blocks (the ones Block gives px-4): outer gutter as a margin, tighter padding. */
+[data-pookie] [data-sf].px-4:not([data-sf="looks"]) {
+  --pk-pad-x: 14px; --pk-pad-y: 16px; --pk-radius: 24px;
+  margin-inline: var(--pk-gutter);
+}
+
+/* Mobile scrollers use -mx-4 px-4 to bleed to the screen edge. Inside a panel they
+   must bleed only to the panel edge, so cards never run past the rounded border. */
+[data-pookie] [data-sf] .no-scrollbar.overflow-x-auto {
+  margin-inline: calc(var(--pk-pad-x) * -1);
+  padding-inline: var(--pk-pad-x);
+  scroll-padding-inline: var(--pk-pad-x);
+}
+
+/* 5. Benefit strip: dashed rounded panel (a full pill clips the title and the cards). */
 [data-pookie] [data-sf="trust"] {
+  box-sizing: border-box;
   background: color-mix(in srgb, #fff 80%, transparent);
   border: 2px dashed color-mix(in srgb, var(--s-secondary) 55%, transparent);
-  border-radius: 999px; padding: 10px 22px;
+  border-radius: 32px;
+  padding: 16px 24px 12px;
 }
-@media (max-width: 767px) {
-  [data-pookie] [data-sf="trust"] { border-radius: 24px; padding: 12px; }
+[data-pookie] [data-sf="trust"].px-4 {
+  border-radius: var(--pk-radius);
+  padding: 14px var(--pk-pad-x) 12px;
 }
+[data-pookie] [data-sf="trust"] > div {
+  background: transparent !important; border: 0 !important;
+  padding: 4px 0; gap: 16px;
+}
+/* Mobile trust scroller: keep cards inside the dashed border */
+[data-pookie] [data-sf="trust"] > div.overflow-x-auto { padding: 0 var(--pk-pad-x) 4px; }
 
-[data-pookie] [data-sf="trust"] > div { background: transparent !important; border: 0 !important; }
-
-/* Section titles get a little heart */
+/* Section titles: heart sits on the text's optical centre, never alone on a new line */
 [data-pookie] #store-feed h2 { color: var(--s-primary); letter-spacing: -0.01em; }
 [data-pookie] #store-feed h2::after {
   content: ""; display: inline-block; width: .62em; height: .62em; margin-left: .4em;
-  background: var(--s-secondary); vertical-align: baseline;
+  background: var(--s-secondary); vertical-align: -0.02em;
   -webkit-mask: var(--pk-heart) center / contain no-repeat; mask: var(--pk-heart) center / contain no-repeat;
 }
 

@@ -10,6 +10,7 @@ import {
 import {
   CategoryPicker,
   ChoiceGrid,
+  ColorField,
   ImageField,
   Notice,
   ProductPicker,
@@ -370,6 +371,107 @@ export function SectionSettings({
           />
         </div>
       );
+
+    case "looks": {
+      const hasColors = !!(
+        section.looksBgColor ||
+        section.looksAccentColor ||
+        section.looksTextColor
+      );
+      return (
+        <div className="space-y-5">
+          {titleField}
+          <TextField
+            label="Description"
+            value={section.subtitle ?? ""}
+            onChange={(v) => patch({ subtitle: v })}
+            maxLength={120}
+            hint="It only shows to shoppers when you have published looks."
+          />
+
+          <div className="space-y-2">
+            <p className="text-sm font-semibold">Style</p>
+            <ChoiceGrid
+              label="Banner style"
+              cols={3}
+              value={section.looksStyle ?? "auto"}
+              onChange={(v) => patch({ looksStyle: v })}
+              options={[
+                { value: "auto", label: "Match theme" },
+                { value: "soft", label: "Soft" },
+                { value: "clean", label: "Clean" },
+                { value: "bold", label: "Bold" },
+                { value: "pookie", label: "Hearts" },
+              ]}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-sm font-semibold">Photo layout</p>
+            <Segmented
+              label="Photo layout"
+              value={section.looksLayout ?? "auto"}
+              onChange={(v) => patch({ looksLayout: v })}
+              options={[
+                { value: "auto", label: "Auto" },
+                { value: "tilted", label: "Tilted" },
+                { value: "row", label: "Straight row" },
+              ]}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-sm font-semibold">Photos on (wide screens)</p>
+            <Segmented
+              label="Photo side"
+              value={section.looksImageSide ?? "right"}
+              onChange={(v) => patch({ looksImageSide: v })}
+              options={[
+                { value: "right", label: "Right" },
+                { value: "left", label: "Left" },
+              ]}
+            />
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold">Colors</p>
+              {hasColors && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    patch({
+                      looksBgColor: "",
+                      looksAccentColor: "",
+                      looksTextColor: "",
+                    })
+                  }
+                  className="text-xs font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                >
+                  Reset to theme
+                </button>
+              )}
+            </div>
+            <ColorField
+              label="Background"
+              value={section.looksBgColor || "#ffffff"}
+              onChange={(v) => patch({ looksBgColor: v })}
+            />
+            <ColorField
+              label="Accent (button and details)"
+              value={section.looksAccentColor || "#111111"}
+              onChange={(v) => patch({ looksAccentColor: v })}
+            />
+            <ColorField
+              label="Text"
+              hint="Leave on Reset to pick a readable color automatically."
+              value={section.looksTextColor || "#111111"}
+              onChange={(v) => patch({ looksTextColor: v })}
+            />
+          </div>
+        </div>
+      );
+    }
 
     default:
       return null;

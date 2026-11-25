@@ -102,7 +102,7 @@ export const TEMPLATE_CATEGORY_LOOK: Partial<
 };
 
 const ALL: HomeSectionId[] = [
-  "hero", "countdown", "trust", "categories", "featured", "bestSellers", "spotlight",
+  "hero", "countdown", "trust", "categories", "looks", "featured", "bestSellers", "spotlight",
   "promo", "gallery", "newArrivals", "allProducts", "story",
 ];
 
@@ -572,6 +572,31 @@ export function getTemplate(id: string): StoreTemplate | undefined {
 }
 
 /**
+ * Where the Try the Look section sits by default. Fashion-led templates show it
+ * right under the hero; the rest put it after the categories. The seller can
+ * move it anywhere in Section arrangement.
+ */
+const LOOKS_AFTER: Partial<Record<TemplateId, HomeSectionId>> = {
+  fashion: "hero",
+  boutique: "hero",
+  lookbook: "hero",
+  casual: "hero",
+};
+function withLooks(id: TemplateId, order: HomeSectionId[]): HomeSectionId[] {
+  if (order.includes("looks")) return order;
+  const anchors: HomeSectionId[] = [
+    LOOKS_AFTER[id] ?? "categories",
+    "featured",
+    "newArrivals",
+    "bestSellers",
+    "hero",
+  ];
+  const anchor = anchors.find((a) => order.includes(a));
+  const at = anchor ? order.indexOf(anchor) + 1 : order.length;
+  return [...order.slice(0, at), "looks", ...order.slice(at)];
+}
+
+/**
  * Returns a design with the template's look applied; seller content is kept.
  * Card color overrides are reset, then the template's card colors are set.
  * They stay editable afterwards.
@@ -582,8 +607,9 @@ export function applyTemplate(design: StoreDesign, id: TemplateId): StoreDesign 
   const byId = new Map(design.sections.map((s) => [s.id, s]));
   const fallback = new Map(defaultDesign.sections.map((s) => [s.id, s]));
   const pick = (sid: HomeSectionId) => byId.get(sid) ?? fallback.get(sid)!;
-  const shown = t.order.map((sid) => ({ ...pick(sid), enabled: true }));
-  const hidden = ALL.filter((sid) => !t.order.includes(sid)).map((sid) => ({
+  const order = withLooks(id, t.order);
+  const shown = order.map((sid) => ({ ...pick(sid), enabled: true }));
+  const hidden = ALL.filter((sid) => !order.includes(sid)).map((sid) => ({
     ...pick(sid),
     enabled: false,
   }));

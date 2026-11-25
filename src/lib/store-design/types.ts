@@ -253,6 +253,7 @@ export type HomeSectionId =
   | "story"
   | "countdown"
   | "gallery"
+  | "looks"
   | "reviews";
 
 export type SectionKind =
@@ -266,6 +267,7 @@ export type SectionKind =
   | "story"
   | "countdown"
   | "gallery"
+  | "looks"
   | "reviews";
 
 /* ------------------------------------------------------------------ */
@@ -399,6 +401,20 @@ export interface HomeSection {
   limit: number;
   /** Small muted line under the heading (Yokai product rails). */
   subtitle?: string;
+
+  /* "Try the Look" banner options. All optional: saved designs load unchanged. */
+  /** Visual style. "auto" (or unset) follows the store template. */
+  looksStyle?: "auto" | "pookie" | "soft" | "clean" | "bold";
+  /** Photo arrangement. "auto" (or unset) follows the style. */
+  looksLayout?: "auto" | "tilted" | "row";
+  /** Which side the photos sit on, on wide screens. Default "right". */
+  looksImageSide?: "left" | "right";
+  /** Banner background color (hex). "" or unset = theme color. */
+  looksBgColor?: string;
+  /** Accent / button color (hex). "" or unset = theme color. */
+  looksAccentColor?: string;
+  /** Text color (hex). "" or unset = automatic, readable on the background. */
+  looksTextColor?: string;
 }
 
 export interface NavLink {
@@ -1050,6 +1066,11 @@ export const sectionMeta: Record<
     description: "A photo collection with captions and prices",
     kind: "gallery",
   },
+  looks: {
+    label: "Try the Look",
+    description: "Outfit banner. Its style follows your theme",
+    kind: "looks",
+  },
 };
 
 /* ------------------------------------------------------------------ */
@@ -1131,6 +1152,9 @@ export const defaultDesign: StoreDesign = {
     section("countdown", "Flash sale", { enabled: false }),
     section("trust", "Why shop with us"),
     section("categories", "Shop by category"),
+    section("looks", "Try the Look", {
+      subtitle: "See complete outfits on real models, then shop each piece.",
+    }),
     section("featured", "Featured products"),
     section("bestSellers", "Best sellers"),
     section("spotlight", "Our top category"),
@@ -1680,6 +1704,14 @@ export function normalizeDesign(raw: unknown): StoreDesign {
     ...(defaultDesign.sections.find((d) => d.id === s.id) as HomeSection),
     ...s,
   }));
+
+  // Drafts saved before this section existed: put it right after the categories.
+  if (!seen.has("looks")) {
+    const at = merged.sections.findIndex((s) => s.id === "looks");
+    const [looks] = merged.sections.splice(at, 1);
+    const cat = merged.sections.findIndex((s) => s.id === "categories");
+    merged.sections.splice(cat >= 0 ? cat + 1 : 1, 0, looks);
+  }
 
   if (!seen.has("reviews")) {
     const index = merged.sections.findIndex(s => s.id === "reviews");

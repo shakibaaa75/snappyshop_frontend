@@ -11,6 +11,7 @@ import { YokaiHero } from "./hero-yokai";
 import { ProductsSection } from "./product-sections";
 import { Promo, Spotlight } from "./promo-sections";
 import { Story } from "./story";
+import { StoreLooksBanner } from "@/components/seller/looks/Storelooksteaser";
 import { TrustBar } from "./trust-bar";
 import { type Ctx } from "./types";
 
@@ -50,6 +51,8 @@ export function SectionRenderer({
       return <Countdown ctx={ctx} section={section} />;
     case "gallery":
       return <Gallery ctx={ctx} section={section} />;
+    case "looks":
+      return <StoreLooksBanner ctx={ctx} section={section} />;
     default:
       return null;
   }

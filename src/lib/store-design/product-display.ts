@@ -18,7 +18,7 @@ export const PRODUCT_DISPLAYS = {
   sport: { gap: 4, rowGap: 24 },
   urban: { gap: 8, rowGap: 32, feature: "last" },
   boutique: { gap: 28, rowGap: 44, stagger: 28 },
-  grocery: { gap: 12, rowGap: 16 },
+  grocery: { gap: 16, rowGap: 20 },
   tech: { gap: 16, rowGap: 16, feature: "first" },
   beauty: { gap: 32, rowGap: 48 },
   living: { gap: 24, rowGap: 48, feature: "every-five" },
