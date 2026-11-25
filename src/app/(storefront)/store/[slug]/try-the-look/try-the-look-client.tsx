@@ -11,16 +11,18 @@ import {
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  ArrowLeft,
   ArrowRight,
   Check,
   ChevronDown,
   Loader2,
   Plus,
+  Shirt,
   ShoppingBag,
 } from "lucide-react";
 import { fetchPublicStore } from "@/lib/store-design/api";
 import type { PublicStoreData } from "@/lib/store-design/server";
-import { useCart } from "@/lib/store-design/cart";
+import { lineKey, useCart } from "@/lib/store-design/cart";
 import { formatPrice, loadFont, themeVars } from "@/lib/store-design/utilts";
 import type { Product } from "@/lib/store-design/types";
 import {
@@ -51,6 +53,7 @@ function ItemRow({
   sel,
   onPick,
   canAdd,
+  inBag,
   justAdded,
   onAdd,
 }: {
@@ -60,9 +63,12 @@ function ItemRow({
   sel: Selection;
   onPick: (optionId: string, valueId: string) => void;
   canAdd: boolean;
+  /** This exact product (and size/colour) is already in the bag. */
+  inBag: boolean;
   justAdded: boolean;
   onAdd: () => void;
 }) {
+  const done = justAdded || inBag;
   const vp = product as VariantProduct | undefined;
   const opts = vp ? variantOptions(vp) : [];
   const combo = vp && opts.length ? findCombination(vp, sel) : null;
@@ -119,18 +125,22 @@ function ItemRow({
           </div>
         </Link>
 
-        {/* + adds just this product (with the size/colour picked below) */}
+        {/* + adds just this product (with the size/colour picked below).
+            Once it is in the bag the button shows a check and does nothing,
+            so tapping again can't raise the quantity. */}
         <button
           type="button"
           disabled={!canAdd}
-          onClick={onAdd}
+          onClick={() => {
+            if (!inBag) onAdd();
+          }}
           aria-label={
-            justAdded ? `${item.name} added to bag` : `Add ${item.name} to bag`
+            done ? `${item.name} is in your bag` : `Add ${item.name} to bag`
           }
-          title="Add to bag"
+          title={done ? "In your bag" : "Add to bag"}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition active:scale-90 disabled:opacity-30"
           style={
-            justAdded
+            done
               ? {
                   background: "var(--s-primary)",
                   color: "var(--s-on-primary)",
@@ -139,11 +149,7 @@ function ItemRow({
               : { borderColor: "var(--s-border)" }
           }
         >
-          {justAdded ? (
-            <Check className="h-4 w-4" />
-          ) : (
-            <Plus className="h-4 w-4" />
-          )}
+          {done ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
         </button>
       </div>
 
@@ -258,24 +264,40 @@ function LookPanel({
     return { p, c: null };
   };
 
+  // Is exactly what is picked right now (product + size/colour) in the bag?
+  const inBag = (it: PublicLookItem): boolean => {
+    const plan = planFor(it);
+    if (!plan) return false;
+    const k = lineKey({ productId: plan.p.id, variantId: plan.c?.id });
+    return cart.lines.some((l) => lineKey(l) === k);
+  };
+
+  // The last argument (onlyIfAbsent) means a second tap never adds another
+  // copy; quantity is changed in the bag.
   const addOne = (it: PublicLookItem): boolean => {
     const plan = planFor(it);
     if (!plan) return false;
     if (plan.c) {
-      cart.addItem(plan.p, 1, {
-        id: plan.c.id,
-        label: comboLabel(plan.p, plan.c),
-        price: effectivePrice(plan.p, plan.c),
-        sku: plan.c.sku,
-        imageUrl: plan.c.imageUrls?.[0],
-      });
+      cart.addItem(
+        plan.p,
+        1,
+        {
+          id: plan.c.id,
+          label: comboLabel(plan.p, plan.c),
+          price: effectivePrice(plan.p, plan.c),
+          sku: plan.c.sku,
+          imageUrl: plan.c.imageUrls?.[0],
+        },
+        true,
+      );
     } else {
-      cart.addItem(plan.p, 1);
+      cart.addItem(plan.p, 1, undefined, true);
     }
     return true;
   };
 
   const onAddOne = (it: PublicLookItem) => {
+    if (inBag(it)) return;
     if (!addOne(it)) return;
     setJustAdded(it.productId);
     clearTimeout(timer.current);
@@ -338,6 +360,7 @@ function LookPanel({
                   sel={p ? getSel(p) : {}}
                   onPick={(o, v) => p && setSel(p, o, v)}
                   canAdd={planFor(it) !== null}
+                  inBag={inBag(it)}
                   justAdded={justAdded === it.productId}
                   onAdd={() => onAddOne(it)}
                 />
@@ -520,48 +543,71 @@ export default function TryTheLookClient({
       }}
       className="storefront min-h-screen text-[15px] leading-normal"
     >
-      {/* Header: logo left, nav + bag right */}
+      {/* Header: back + store left, page pill centre, home + bag right */}
       <header
-        className="fixed inset-x-0 top-0 z-30"
-        style={{ background: "var(--s-bg)" }}
+        className="fixed inset-x-0 top-0 z-30 border-b backdrop-blur-md"
+        style={{
+          background: "color-mix(in srgb, var(--s-bg) 86%, transparent)",
+          borderColor: "var(--s-border)",
+        }}
       >
-        <div className="flex h-14 items-center justify-between px-5 sm:px-8">
-          <Link href={storeHref} className="flex min-w-0 items-center gap-2.5">
-            {design.logoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={design.logoUrl}
-                alt={design.storeName}
-                className="h-7 w-auto"
-              />
-            ) : (
-              <span className="truncate text-base font-bold tracking-tight">
-                {design.storeName}
-              </span>
-            )}
-          </Link>
-          <nav className="flex items-center gap-5 text-xs font-medium sm:gap-7">
+        <div className="mx-auto grid h-14 max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 sm:px-6">
+          <div className="flex min-w-0 items-center gap-1.5">
             <Link
               href={storeHref}
-              className="opacity-70 transition hover:opacity-100"
+              aria-label="Back to store"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition active:scale-95"
+              style={{ borderColor: "var(--s-border)" }}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+            <Link
+              href={storeHref}
+              className="hidden min-w-0 items-center gap-2 pl-1 min-[420px]:flex"
+            >
+              {design.logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={design.logoUrl}
+                  alt={design.storeName}
+                  className="h-6 w-auto max-w-[110px] object-contain sm:h-7"
+                />
+              ) : (
+                <span className="truncate text-sm font-bold tracking-tight sm:text-base">
+                  {design.storeName}
+                </span>
+              )}
+            </Link>
+          </div>
+
+          <span
+            className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold sm:px-4 sm:text-sm"
+            style={{
+              background: "var(--s-primary)",
+              color: "var(--s-on-primary)",
+            }}
+          >
+            <Shirt className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            Try the Look
+          </span>
+
+          <nav className="flex items-center justify-end gap-2 sm:gap-3">
+            <Link
+              href={storeHref}
+              className="hidden rounded-full px-3 py-1.5 text-sm font-medium opacity-70 transition hover:opacity-100 sm:inline-block"
             >
               Home
             </Link>
-            <span
-              className="border-b pb-0.5"
-              style={{ borderColor: "var(--s-text)" }}
-            >
-              Try the Look
-            </span>
             <Link
               href={`${storeHref}/cart`}
               aria-label="Open bag"
-              className="relative flex h-9 w-9 items-center justify-center"
+              className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition active:scale-95"
+              style={{ borderColor: "var(--s-border)" }}
             >
-              <ShoppingBag className="h-5 w-5" />
+              <ShoppingBag className="h-[18px] w-[18px]" />
               {cart.count > 0 && (
                 <span
-                  className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold"
+                  className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] font-bold"
                   style={{
                     background: "var(--s-primary)",
                     color: "var(--s-on-primary)",
@@ -626,19 +672,28 @@ export default function TryTheLookClient({
             <div className="flex h-full flex-col lg:flex-row">
               {/* LEFT: models */}
               <div className="relative h-[58%] min-w-0 overflow-hidden lg:h-full lg:flex-1">
-                <div className="absolute left-4 top-2 z-20 sm:left-8 sm:top-8">
-                  <h1 className="text-2xl font-semibold tracking-tight sm:text-5xl">
+                {/* The header already names the page on phones */}
+                <h1 className="sr-only sm:hidden">Try the Look</h1>
+                <div className="absolute left-8 top-8 z-20 hidden sm:block">
+                  <span
+                    className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em]"
+                    style={{ color: "var(--s-muted)" }}
+                  >
+                    <Shirt className="h-3.5 w-3.5" />
+                    Outfit inspiration
+                  </span>
+                  <h1 className="mt-1.5 text-4xl font-semibold tracking-tight lg:text-5xl">
                     Try the Look.
                   </h1>
                   <p
-                    className="mt-1.5 hidden text-xs sm:block"
+                    className="mt-2 max-w-[34ch] text-xs leading-relaxed"
                     style={{ color: "var(--s-muted)" }}
                   >
                     Scroll to see the next look. Tap a piece to shop it.
                   </p>
                 </div>
 
-                <div className="absolute inset-x-0 bottom-[10%] top-[13%] sm:bottom-[9%] sm:top-[24%] lg:top-[22%]">
+                <div className="absolute inset-x-0 bottom-[10%] top-3 sm:bottom-[9%] sm:top-[26%] lg:top-[24%]">
                   {looks.map((l, i) => {
                     const d = i - idx;
                     const ad = Math.abs(d);
