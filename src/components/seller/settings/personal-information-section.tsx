@@ -132,7 +132,7 @@ export function PersonalInformationSection() {
           </div>
         ) : personal.isError || !p ? (
           <div role="alert" className="space-y-3 text-sm">
-            <p>We couldn't load your personal information.</p>
+            <p>We couldn&apos;t load your personal information.</p>
             <Button
               size="sm"
               variant="outline"
@@ -182,8 +182,8 @@ export function PersonalInformationSection() {
                   <>
                     {!p.availability.email && (
                       <Unavailable>
-                        Email verification isn't available right now, so the
-                        email can't be changed or verified yet. Please try again
+                        Email verification isn&apos;t available right now, so the
+                        email can&apos;t be changed or verified yet. Please try again
                         later.
                       </Unavailable>
                     )}
@@ -231,8 +231,8 @@ export function PersonalInformationSection() {
                   <>
                     {!p.availability.phone && (
                       <Unavailable>
-                        Phone verification isn't available right now, so the
-                        phone number can't be changed yet. Please try again
+                        Phone verification isn&apos;t available right now, so the
+                        phone number can&apos;t be changed yet. Please try again
                         later.
                       </Unavailable>
                     )}
@@ -291,8 +291,8 @@ export function PersonalInformationSection() {
             >
               <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
               <span>
-                This is your private account information. Your store's public
-                phone and WhatsApp number are set in Store design and aren't
+                This is your private account information. Your store&apos;s public
+                phone and WhatsApp number are set in Store design and aren&apos;t
                 affected by anything here.
               </span>
             </p>

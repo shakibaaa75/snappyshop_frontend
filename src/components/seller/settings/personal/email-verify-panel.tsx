@@ -56,7 +56,7 @@ export function EmailVerifyCodePanel({
       {!sentOnce ? (
         <>
           <p className="text-sm">
-            We'll send a 6-digit code to <strong className="break-all">{email}</strong>.
+            We&apos;ll send a 6-digit code to <strong className="break-all">{email}</strong>.
           </p>
           {error && (
             <p role="alert" className="text-sm text-destructive">
