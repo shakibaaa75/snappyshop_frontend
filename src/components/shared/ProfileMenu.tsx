@@ -187,7 +187,8 @@ function useSession() {
     me,
     isLoading,
     name,
-    logo: store?.design?.logoUrl || undefined,
+    // Personal picture first, store logo as the fallback.
+    logo: me?.avatarUrl || store?.design?.logoUrl || undefined,
     logout,
     loggingOut,
   };

@@ -26,6 +26,7 @@ import {
   themeVars,
 } from "@/lib/store-design/utilts";
 import { ProductArt } from "@/components/store-design/productArt";
+import { getPreviousPath } from "@/components/store/ScrollToTop";
 import type { Product, StoreDesign } from "@/lib/store-design/types";
 import type { PublicStoreData } from "@/lib/store-design/server";
 
@@ -239,7 +240,21 @@ export default function CartClient({
           <div className="sf-container grid h-16 grid-cols-[44px_1fr_44px] items-center gap-2">
             <Link
               href={storeHref}
-              aria-label="Continue shopping"
+              // Go back to the page the shopper came from (Try the Look, a
+              // product, a category...). Only fall back to the store home
+              // when they arrived some other way, e.g. a direct link.
+              onClick={(e) => {
+                const prev = getPreviousPath();
+                if (
+                  prev &&
+                  prev.startsWith(storeHref) &&
+                  !/\/(cart|checkout)(\/|$)/.test(prev)
+                ) {
+                  e.preventDefault();
+                  router.back();
+                }
+              }}
+              aria-label="Back"
               className="flex h-11 w-11 items-center justify-center rounded-full transition active:scale-90"
               style={{ background: "var(--s-surface)" }}
             >

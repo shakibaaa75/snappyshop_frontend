@@ -23,6 +23,7 @@ import {
 import { fetchPublicStore } from "@/lib/store-design/api";
 import type { PublicStoreData } from "@/lib/store-design/server";
 import { lineKey, useCart } from "@/lib/store-design/cart";
+import { getPreviousPath } from "@/components/store/ScrollToTop";
 import { formatPrice, loadFont, themeVars } from "@/lib/store-design/utilts";
 import type { Product } from "@/lib/store-design/types";
 import {
@@ -476,6 +477,43 @@ export default function TryTheLookClient({
     anchors.current.slice(0, n).forEach((el) => el && io.observe(el));
     return () => io.disconnect();
   }, [n]);
+
+  // Coming back from the bag (or a product) puts the shopper on the look they
+  // were viewing instead of the first one. A fresh visit still starts at the
+  // top.
+  const saveKey = `ttl-look:${slug}`;
+  const restored = useRef(false);
+  const pendingRestore = useRef<number | null>(null);
+  useEffect(() => {
+    if (n === 0 || restored.current) return;
+    restored.current = true;
+    const prev = getPreviousPath();
+    if (!prev || !/\/(cart|checkout|products)(\/|$)/.test(prev)) return;
+    let saved = 0;
+    try {
+      saved = Number(sessionStorage.getItem(saveKey)) || 0;
+    } catch {}
+    if (saved <= 0 || saved >= n) return;
+    pendingRestore.current = saved;
+    setActive(saved);
+    requestAnimationFrame(() => {
+      const c = wrap.current;
+      const s = stage.current;
+      if (!c || !s) return;
+      const top = c.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: top + saved * s.offsetHeight, behavior: "auto" });
+    });
+  }, [n, saveKey]);
+  useEffect(() => {
+    if (!restored.current) return;
+    if (pendingRestore.current !== null) {
+      if (active === pendingRestore.current) pendingRestore.current = null;
+      return;
+    }
+    try {
+      sessionStorage.setItem(saveKey, String(active));
+    } catch {}
+  }, [active, saveKey]);
 
   const goTo = useCallback(
     (i: number) => {

@@ -597,7 +597,9 @@ export function SellerShell({
     staleTime: 60_000,
     retry: false,
   });
-  const logoUrl = store?.design?.logoUrl || undefined;
+  // The owner's own picture (Settings > Personal information) wins; the store
+  // logo is the fallback for sellers who have not set one.
+  const logoUrl = me?.avatarUrl || store?.design?.logoUrl || undefined;
 
   // Fallback redirects for a session that ends mid-visit.
   useEffect(() => {
@@ -736,7 +738,10 @@ export function SellerShell({
     <div
       className={cn(
         "min-h-screen text-foreground",
-        pathname === `/seller/${storeSlug}/reviews` ? "bg-white" : "bg-muted",
+        pathname === `/seller/${storeSlug}/reviews` ||
+          pathname.startsWith(`/seller/${storeSlug}/settings`)
+          ? "bg-white"
+          : "bg-muted",
         MARKETPLACE_THEME,
       )}
     >

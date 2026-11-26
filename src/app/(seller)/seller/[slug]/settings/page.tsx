@@ -1,18 +1,10 @@
-import { CustomDomainPanel } from "@/components/seller/custom-domain-panel";
+import { PersonalInformationSection } from "@/components/seller/settings/personal-information-section";
 
+/**
+ * /settings. On mobile the layout shows the category list here and hides this
+ * content; on desktop the sidebar is next to it and this shows the first
+ * section, so there is no empty pane and no redirect.
+ */
 export default function SellerSettingsPage() {
-  return (
-    <div className="w-full min-w-0 max-w-full space-y-6">
-      <header>
-        <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">
-          Settings
-        </h1>
-        <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-          Manage how customers find your store.
-        </p>
-      </header>
-
-      <CustomDomainPanel />
-    </div>
-  );
+  return <PersonalInformationSection />;
 }

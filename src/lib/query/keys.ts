@@ -11,6 +11,7 @@ export const qk = {
   },
 
   seller: {
+    personal: ["seller", "personal"] as const,
     stats: (since?: string) => ["seller", "stats", since ?? "all"] as const,
 
     products: {

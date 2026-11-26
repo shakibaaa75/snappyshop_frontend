@@ -15,6 +15,7 @@ export type UploadKind =
   | "category"
   | "seller_cover"
   | "seller_profile"
+  | "avatar" // the owner's personal picture (not the storefront image)
   | "homepage"
   | "banner_video"
   | "look_model";

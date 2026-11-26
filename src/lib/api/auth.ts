@@ -3,7 +3,7 @@ import type { LoginFormValues, RegisterFormValues } from "@/lib/validations/auth
 import { apiFetch } from "./http";
 
 /** The API returns the frontend `User` type plus the user's name. */
-export type AuthUser = User & { name?: string };
+export type AuthUser = User & { name?: string; avatarUrl?: string };
 
 interface UserResponse {
   user: AuthUser;
